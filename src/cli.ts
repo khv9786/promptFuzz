@@ -1,9 +1,31 @@
 import { Command } from 'commander';
+import chalk from 'chalk';
 import { installCommand } from './commands/install.js';
 import { uninstallCommand } from './commands/uninstall.js';
 import { statusCommand } from './commands/status.js';
 import { shaveCommand } from './commands/shave.js';
 import { tickCommand } from './commands/tick.js';
+
+// 인자 없이 'promptfuzz'만 실행된 경우 환영 메시지 후 종료.
+// --help / -h / 서브커맨드는 commander에 그대로 위임.
+if (process.argv.length === 2) {
+  printWelcome();
+  process.exit(0);
+}
+
+function printWelcome(): void {
+  const lines = [
+    chalk.cyan.bold('🧔 PromptFuzz') + chalk.cyan(' — 토큰을 수염으로, 휴식을 면도로'),
+    '',
+    '  ' + chalk.bold('promptfuzz status') + chalk.dim('       오늘의 수염 보기'),
+    '  ' + chalk.bold('promptfuzz shave') + chalk.dim('        면도하고 스트레칭'),
+    '  ' + chalk.bold('promptfuzz install') + chalk.dim('      Claude Code에 연결'),
+    '  ' + chalk.bold('promptfuzz --help') + chalk.dim('       전체 명령 보기'),
+    '',
+    '  ' + chalk.dim("처음이신가요? ") + chalk.cyan("'promptfuzz install'") + chalk.dim('부터 시작하세요.'),
+  ];
+  console.log(lines.join('\n'));
+}
 
 const program = new Command();
 
