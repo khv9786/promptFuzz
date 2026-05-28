@@ -7,7 +7,10 @@
     "promptfuzz": "./dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18.0.0"
@@ -24,13 +27,23 @@
     "claude",
     "claude-code",
     "cli",
+    "productivity",
     "wellness",
     "stretching",
     "tokens",
-    "developer-tools"
+    "developer-tools",
+    "korean"
   ],
-  "author": "",
+  "author": "khv9786 <hyunvin02@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/khv9786/promptFuzz#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khv9786/promptFuzz.git"
+  },
+  "bugs": {
+    "url": "https://github.com/khv9786/promptFuzz/issues"
+  },
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
