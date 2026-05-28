@@ -6,3 +6,7 @@ dist/
 .env.local
 coverage/
 .vitest/
+
+# Claude Code 로컬 설정 (개인 권한 정책, 커밋 금지)
+.claude/settings.local.json
+.claude/cache/
