@@ -18,6 +18,7 @@ function createInitialState(): PromptFuzzState {
     currentStage: 'smooth',
     shaveHistory: [],
     stretchCardsShown: [],
+    onboardingShaveDone: false,
   };
 }
 
@@ -57,10 +58,11 @@ export async function saveState(state: PromptFuzzState): Promise<void> {
 }
 
 function migrate(state: PromptFuzzState): PromptFuzzState {
-  if (state.version === CURRENT_VERSION) return state;
+  const defaults = createInitialState();
   return {
-    ...createInitialState(),
+    ...defaults,
     ...state,
     version: CURRENT_VERSION,
+    onboardingShaveDone: state.onboardingShaveDone ?? false,
   };
 }

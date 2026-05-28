@@ -24,6 +24,7 @@ export interface PromptFuzzState {
   currentStage: BeardStage;
   shaveHistory: ShaveRecord[];
   stretchCardsShown: string[];
+  onboardingShaveDone: boolean;
 }
 
 export interface UsageDelta {
