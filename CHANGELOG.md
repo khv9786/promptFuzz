@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `shave` 명령이 Ink dynamic import로 미니게임 + 스트레칭 카드를 호출하도록 변경. ink/react는 `tsup` external + chunk splitting으로 분리 빌드돼, **tick/status/install/uninstall의 부팅 시간(~60ms)은 보존**.
 
+### Fixed
+
+- StretchCard가 짧은 카드로 `[s]` 키 교체 직후 또는 카운트다운 만료 시점에 `RangeError: Invalid count value: -N`으로 크래시하던 문제 수정 (실환경 dogfooding에서 발견). 진행률 바 계산을 순수 함수 `computeProgressBar`로 추출하고 모든 경계 케이스(remaining > total, 음수 remaining, total=0)를 클램프.
+
 ### Changed
 
 - 5단계 한국어 이름을 의태어 중심으로 변경: 까칠 → **까끌까끌**, 더부룩 → **북슬북슬**, 산적 → **따갑따갑**, 헤르미트 → **고슴도치**. 영문 ID, 토큰 임계치, 단계별 멘트는 변경 없음.

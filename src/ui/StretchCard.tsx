@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text, useInput } from 'ink';
 import type { StretchCard as StretchCardData } from '../types/index.js';
 import { classifyStretchKey } from './stretchCardKey.js';
+import { computeProgressBar } from './stretchCardProgress.js';
+
+const BAR_WIDTH = 12;
 
 export interface StretchCardProps {
   initialCard: StretchCardData;
@@ -14,7 +17,7 @@ export function StretchCard({ initialCard, pickNext, onComplete, onAbort }: Stre
   const [card, setCard] = useState(initialCard);
   const [remaining, setRemaining] = useState(initialCard.durationSeconds);
 
-  // 카드가 바뀌면 카운트다운 리셋.
+  // 카드가 바뀌면 카운트다운 리셋 (방어선 #1 — race 시 늦게 도착해도 동작).
   useEffect(() => {
     setRemaining(card.durationSeconds);
   }, [card.id, card.durationSeconds]);
@@ -38,17 +41,23 @@ export function StretchCard({ initialCard, pickNext, onComplete, onAbort }: Stre
       return;
     }
     if (action === 'swap') {
-      setCard(pickNext());
+      const next = pickNext();
+      // 방어선 #2 — setCard와 setRemaining을 같은 batch에서 호출해
+      // useEffect 발동 전 첫 render에서도 remaining > total 케이스 차단.
+      setCard(next);
+      setRemaining(next.durationSeconds);
     }
   });
 
-  const total = card.durationSeconds;
-  const elapsed = total - remaining;
-  const filledCount = total > 0 ? Math.floor((elapsed / total) * 12) : 12;
-  const bar = '█'.repeat(filledCount) + '░'.repeat(Math.max(0, 12 - filledCount));
-  const mins = Math.floor(remaining / 60).toString().padStart(2, '0');
-  const secs = (remaining % 60).toString().padStart(2, '0');
-  const timeUp = remaining === 0;
+  // 방어선 #3 — 진행률 바 계산은 순수 함수가 모든 경계 케이스 클램프.
+  const { bar } = computeProgressBar({
+    totalSeconds: card.durationSeconds,
+    remainingSeconds: remaining,
+    barWidth: BAR_WIDTH,
+  });
+  const mins = Math.floor(Math.max(0, remaining) / 60).toString().padStart(2, '0');
+  const secs = (Math.max(0, remaining) % 60).toString().padStart(2, '0');
+  const timeUp = remaining <= 0;
 
   return (
     <Box flexDirection="column" borderStyle="round" paddingX={2}>
