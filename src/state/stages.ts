@@ -13,7 +13,7 @@ export const STAGES: StageInfo[] = [
   },
   {
     id: 'stubble',
-    nameKr: '까칠',
+    nameKr: '까끌까끌',
     threshold: 10_000,
     color: 'green',
     beardArt: '\\.\'.\'./',
@@ -23,7 +23,7 @@ export const STAGES: StageInfo[] = [
   },
   {
     id: 'bushy',
-    nameKr: '더부룩',
+    nameKr: '북슬북슬',
     threshold: 50_000,
     color: 'yellow',
     beardArt: '\\▒▒▒/',
@@ -33,7 +33,7 @@ export const STAGES: StageInfo[] = [
   },
   {
     id: 'rugged',
-    nameKr: '산적',
+    nameKr: '따갑따갑',
     threshold: 200_000,
     color: 'red',
     beardArt: '\\▓▓▓/',
@@ -43,7 +43,7 @@ export const STAGES: StageInfo[] = [
   },
   {
     id: 'hermit',
-    nameKr: '헤르미트',
+    nameKr: '고슴도치',
     threshold: 500_000,
     color: 'red',
     beardArt: '\\███/',
