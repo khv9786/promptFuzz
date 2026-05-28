@@ -9,11 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 인터랙티브 면도 미니게임 (Ink) — 진입 화면 → ←/→ 키 6회 → 매끈 완료의 3단계 의식. q 또는 Ctrl+C로 중단 가능. 비대화형 환경(CI / Claude Code hook)에서는 자동으로 면도 진행 후 종료.
+- 스트레칭 카드 모달 (Ink) — 카운트다운 표시(자동 종료 X), Enter 완료 / s 다른 카드 / q 닫기.
 - 단계 상승 알림에 구분선, 단계 번호(①~⑤), Buddy 표정과 인용 멘트, 권장 안내(③ 이상)를 더해 *사건감*을 살림.
 - 인자 없이 `promptfuzz`를 실행하면 짧은 환영 메시지와 첫 사용 안내(`promptfuzz install`)를 출력.
 - `promptfuzz install` 직후 기존 Claude Code 토큰 히스토리가 임계치(② 이상)를 넘으면 *온보딩 면도* 흐름 실행 — 면도하고 새 출발 / 이대로 유지 중 선택. 비대화형 환경에서는 자동으로 면도를 선택.
 - 프로젝트 컨텍스트 문서: [`CLAUDE.md`](CLAUDE.md)(헌법), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)(코드 구조).
 - 개발자용 슬래시 커맨드 `/test-full` — typecheck + build + test 일괄 실행.
+
+### Changed
+
+- `shave` 명령이 Ink dynamic import로 미니게임 + 스트레칭 카드를 호출하도록 변경. ink/react는 `tsup` external + chunk splitting으로 분리 빌드돼, **tick/status/install/uninstall의 부팅 시간(~60ms)은 보존**.
 
 ### Changed
 
