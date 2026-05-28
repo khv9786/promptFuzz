@@ -23,7 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- StretchCard가 짧은 카드로 `[s]` 키 교체 직후 또는 카운트다운 만료 시점에 `RangeError: Invalid count value: -N`으로 크래시하던 문제 수정 (실환경 dogfooding에서 발견). 진행률 바 계산을 순수 함수 `computeProgressBar`로 추출하고 모든 경계 케이스(remaining > total, 음수 remaining, total=0)를 클램프.
+- StretchCard: prevent crash from negative `String.repeat` count in progress bar (race condition between setCard/setRemaining on `[s]` swap; discovered via real-environment dogfooding). 진행률 바 계산을 순수 함수 `computeProgressBar`로 추출하고 모든 경계 케이스(remaining > total, 음수 remaining, total=0)를 클램프.
+- 첫 푸시에서 `package-lock.json`이 누락돼 CI(`npm ci`)가 실패하던 문제를 lockfile 추가로 해결.
+- `.gitattributes`로 줄끝을 LF로 명시 고정해, Windows 환경에서 매 커밋마다 발생하던 CRLF 경고를 해소.
 
 ### Changed
 
