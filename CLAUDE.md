@@ -23,6 +23,14 @@ Claude Code 토큰 사용량을 *가상 수염*으로 시각화하고, 면도(�
 3. **비파괴** — Hook 등록 시 `~/.claude/settings.json` 기존 내용 보존, 백업 생성, uninstall로 완전 복구.
 4. **단일 책임** — Parser는 토큰만, State는 단계 계산만, Renderer는 출력만.
 
+## 의존성 정책 (Ink / React)
+
+- `ink`와 `react`는 **`src/ui/`와 `src/commands/shave.ts`에서만** import.
+- `tick`, `status`, `install`, `uninstall`은 chalk + console.log만 사용 (정적/동적 import 모두 금지).
+- 새 사용처를 추가할 때는 항상 dynamic import: `const { render } = await import('ink')`.
+- `tsup.config.ts`는 `external: ['ink', 'react']`로 두 모듈을 정적 번들에서 제외.
+- **측정 근거**: 정적 import는 부팅 시간 60ms → 323ms (+262ms, 5.4배)를 부른다. tick은 PRD 13.3에서 "<100ms"를 약속했으므로 정적 import는 곧 PRD 위반.
+
 ## 절대 하지 말 것
 
 - 네트워크 요청 (fetch, http, https, axios 등 import 금지)
@@ -30,6 +38,7 @@ Claude Code 토큰 사용량을 *가상 수염*으로 시각화하고, 면도(�
 - JSONL 본문 저장 또는 메모리 누적
 - `~/.claude/settings.json` 다른 도구의 hook 덮어쓰기
 - 사용자의 `state.json`을 마이그레이션 없이 비호환 변경
+- `tick`/`status`/`install`/`uninstall`에 ink 또는 react import (정적이든 동적이든)
 
 ## 자주 쓰는 명령
 
