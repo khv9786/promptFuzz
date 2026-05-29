@@ -34,9 +34,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `promptfuzz --info` (= `info`) — 진단용 환경/상태/hook/활동 요약.
 - `promptfuzz stats` — 회고용 통계 (활성일·면도 간격·완료율·추세, `--days`/`--json`).
 - `CONTRIBUTING.md` — 기여자 가이드.
+- `extreme` 프로필 (Agent Teams 풀가동, 1M/5M/20M/50M 임계치).
+- `status` 첫 5회 교육 멘트 (온보딩).
+- `status`/`config`에 `--json` 출력.
+- `PROMPTFUZZ_COMPACT=1` 환경변수로 단계 변화 알림 1줄 축약.
+- 침묵 시간대 (`config --quiet-hours 23-07`) — 설정 범위엔 알림 침묵, 기록은 계속.
+- E2E 통합 테스트 + 부팅 시간 회귀 벤치(`npm run perf`, 임계 100ms).
+- `CODE_OF_CONDUCT.md`, PR 템플릿, dependabot 설정.
 - JSONL 토큰 파서 — `~/.claude/projects/**/*.jsonl`의 `usage` 필드만 추출하며 프롬프트/응답 본문은 메모리에 올리지 않음 (content-blind).
 - 수염 5단계와 프로필 기반(medium 기본: 50K / 300K / 1.5M / 5M) 상태 엔진.
-- CLI 명령 10종: `install`, `uninstall`, `status`, `shave`, `tick`, `config`, `log`, `reset`, `info`, `stats`.
+- CLI 명령 10종: `install`, `uninstall`, `status`, `shave`, `tick`, `config`, `log`, `reset`, `info`, `stats` (+ 전역 `--info`).
 - Claude Code Stop hook 비파괴 설치 — 기존 설정 보존, 백업 파일 생성, `uninstall`로 완전 복구 가능.
 - 영속 상태 저장: `~/.promptfuzz/state.json` (권한 0600).
 - 스트레칭 카드 5장 — 거북목 / 허리 / 손목 / 어깨 / 눈.

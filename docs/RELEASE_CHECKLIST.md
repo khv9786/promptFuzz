@@ -10,7 +10,8 @@ npm run typecheck && npm run build && npm test
 
 - [ ] typecheck 통과
 - [ ] build 통과 (dist/cli.js + 3 chunks)
-- [ ] test 47/47 통과
+- [ ] test 전부 통과 (현재 155개)
+- [ ] `npm run perf` 통과 (부팅 median ≤ 100ms)
 - [ ] `node dist/cli.js --version` → `0.1.0`
 - [ ] `node dist/cli.js` → 환영 메시지 정상
 - [ ] `node dist/cli.js status` → 출력 정상

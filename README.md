@@ -77,11 +77,16 @@ promptfuzz --help      # 전체 명령 보기
 | `light` | Pro 플랜 + Sonnet 위주 | 1.5M |
 | `medium` | 평균 (기본) | 5M |
 | `heavy` | Max + Opus + Agent Teams | 15M |
+| `extreme` | Agent Teams 풀가동 | 50M |
 
 ```bash
 promptfuzz config                       # 현재 프로필 + 임계치 표
 promptfuzz config --threshold heavy     # 프로필 변경 (단계 즉시 재계산)
+promptfuzz config --quiet-hours 23-07   # 야간 알림 침묵 (해제: off)
+promptfuzz config --json                # 기계 판독용
 ```
+
+야간 코딩 중 잔소리가 싫다면 `--quiet-hours`로 알림을 끌 수 있어요 (활동 기록은 계속됩니다). hook이 매 턴 부담스럽다면 `PROMPTFUZZ_COMPACT=1`로 단계 변화 알림을 한 줄로 줄일 수 있습니다.
 
 ### 활동 로그 (잔디)
 

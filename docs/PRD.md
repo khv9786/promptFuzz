@@ -148,7 +148,7 @@ Claude Buddy는 '비공식 마스코트'로서 작고 둥근 ASCII 캐릭터로 
 | ④ 따갑따갑 | 1.5M~5M | ▓▓▓ | `(╥﹏╥)` | "아빠 무서워요... 면도하고 와요..." | 강력권장 |
 | ⑤ 고슴도치 | 5M+ | ███ | `(;﹏;)` | "이제 안아주기 힘들어요... 푹 쉬다 와요" | 강제휴식 신호 |
 
-**프로필별 ⑤ 고슴도치 임계치**: light 1.5M / medium 5M / heavy 15M. `promptfuzz config --threshold`로 전환. 실측 결과 Opus + Agent Teams 사용 시 하루 1M+ 토큰에 도달해, 단일 임계치로는 Sonnet 사용자와 동일 경험을 줄 수 없어 프로필을 도입했다.
+**프로필별 ⑤ 고슴도치 임계치**: light 1.5M / medium 5M / heavy 15M / extreme 50M. `promptfuzz config --threshold`로 전환. 실측 결과 Opus + Agent Teams 풀가동 시 하루 수천만 토큰에 도달해(관측 65M+), 단일 임계치로는 Sonnet 사용자와 동일 경험을 줄 수 없어 4단 프로필을 도입했다.
 
 ---
 
@@ -187,8 +187,13 @@ Claude Buddy는 '비공식 마스코트'로서 작고 둥근 ASCII 캐릭터로 
 | F7 | 스트레칭 카드 | P0 | 5~7종 (거북목, 허리, 손목, 어깨, 눈) |
 | F8 | 단계별 색상 | P1 | chalk로 매끈=초록, 북슬북슬=노랑, 따갑따갑 이상=빨강 |
 | F9 | 도움말 / 버전 | P1 | `promptfuzz --help`, `--version` |
-| F10 | config 명령 | P1 | `promptfuzz config [--threshold <id>]` — 임계치 프로필(light/medium/heavy) 보기·변경 |
+| F10 | config 명령 | P1 | `promptfuzz config [--threshold <id>] [--quiet-hours <range>] [--json]` — 프로필(light/medium/heavy/extreme)·침묵 시간대 보기·변경 |
 | F11 | log 명령 | P1 | `promptfuzz log [--days N] [--json]` — 일자별 활동 잔디 시각화 (dailyLog, 90일 보관) |
+| F12 | info 명령 | P2 | `promptfuzz info` (= `--info`) — 진단용 환경/상태/hook/활동 요약 |
+| F13 | stats 명령 | P2 | `promptfuzz stats [--days N] [--json]` — 회고용 통계 요약 |
+| F14 | reset 명령 | P2 | `promptfuzz reset [--yes]` — 전체 초기화 (확인 후) |
+| F15 | 축약 알림 | P2 | `PROMPTFUZZ_COMPACT=1` — 단계 변화 알림 1줄 |
+| F16 | status 교육/요약 | P2 | 첫 5회 교육 멘트 + 최근 7일 미니 요약, `--json` |
 
 ---
 
@@ -274,6 +279,8 @@ Claude Code 세션
   "stretchCardsShown": ["turtle-neck", "lower-back"],
   "onboardingShaveDone": true,
   "thresholdProfile": "medium",
+  "statusViewCount": 3,
+  "quietHours": { "start": 23, "end": 7 },
   "dailyLog": {
     "2026-05-28": {
       "date": "2026-05-28",
@@ -286,7 +293,9 @@ Claude Code 세션
 }
 ```
 
-- `thresholdProfile`: `light` | `medium` | `heavy`. 단계 임계치 세트 선택. 누락/손상 시 `medium`으로 복구.
+- `thresholdProfile`: `light` | `medium` | `heavy` | `extreme`. 단계 임계치 세트 선택. 누락/손상 시 `medium`으로 복구.
+- `statusViewCount`: status 누적 조회 횟수. 첫 5회 교육 멘트에만 사용.
+- `quietHours`: `{ start, end }` (0-23시) 또는 `null`. 범위 내엔 단계 변화 알림 침묵(기록은 계속). start>end면 자정 넘김.
 - `dailyLog`: 날짜(YYYY-MM-DD) → 그날 활동 요약. **날짜 단위만** 저장(시간 단위 X). 90일 후 자동 정리.
 
 ### 12.2 파일 권한
