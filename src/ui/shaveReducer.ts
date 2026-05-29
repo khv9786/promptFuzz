@@ -4,6 +4,8 @@
  * 핵심 로직은 이 모듈에서 단위 검증한다.
  */
 
+import type { BeardStage } from '../types/index.js';
+
 export type ShavePhase = 'intro' | 'shaving' | 'done';
 
 export interface ShaveStateInternal {
@@ -23,10 +25,35 @@ export interface ShaveTransition {
   effect: ShaveEffect;
 }
 
+/** 기본 키 입력 횟수 (③ bushy 기준, 기존 동작 보존). */
 export const TOTAL_SHAVE_STEPS = 6;
+
 export const INITIAL_SHAVE_STATE: ShaveStateInternal = { phase: 'intro', progress: 0 };
 
-export function reduceShave(state: ShaveStateInternal, action: ShaveAction): ShaveTransition {
+/**
+ * 면도 직전 단계에 따라 필요한 키 입력 횟수.
+ * 수염이 길수록 더 진중한 의식 (더 많은 입력).
+ */
+export function requiredKeyCount(stageBeforeShave: BeardStage): number {
+  switch (stageBeforeShave) {
+    case 'rugged':
+      return 8;
+    case 'hermit':
+      return 10;
+    default:
+      // smooth/stubble/bushy 모두 기본 6회.
+      return TOTAL_SHAVE_STEPS;
+  }
+}
+
+/**
+ * @param requiredKeys 이 면도에 필요한 총 키 입력 횟수 (requiredKeyCount로 계산).
+ */
+export function reduceShave(
+  state: ShaveStateInternal,
+  action: ShaveAction,
+  requiredKeys: number = TOTAL_SHAVE_STEPS,
+): ShaveTransition {
   if (action.type === 'quit') {
     // 어느 단계에서든 즉시 abort.
     return { state, effect: 'abort' };
@@ -38,9 +65,9 @@ export function reduceShave(state: ShaveStateInternal, action: ShaveAction): Sha
 
   if (state.phase === 'shaving' && action.type === 'arrow') {
     const next = state.progress + 1;
-    if (next >= TOTAL_SHAVE_STEPS) {
+    if (next >= requiredKeys) {
       return {
-        state: { phase: 'done', progress: TOTAL_SHAVE_STEPS },
+        state: { phase: 'done', progress: requiredKeys },
         effect: 'shaved',
       };
     }

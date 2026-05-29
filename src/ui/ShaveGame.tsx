@@ -4,8 +4,8 @@ import type { StageInfo } from '../types/index.js';
 import { getStage } from '../state/stages.js';
 import {
   INITIAL_SHAVE_STATE,
-  TOTAL_SHAVE_STEPS,
   reduceShave,
+  requiredKeyCount,
   type ShaveAction,
   type ShaveStateInternal,
 } from './shaveReducer.js';
@@ -14,14 +14,23 @@ const RULE = '━'.repeat(48);
 
 export interface ShaveGameProps {
   currentStage: StageInfo;
-  onShaved: () => void;        // 6번째 키 직후, performShave 호출 시점
-  onCompleted: () => void;     // 단계 3 표시 후 1초, 부모는 unmount + 전환
-  onAbort: () => void;         // q 또는 Ctrl+C
+  /** 완료 화면에 표시할 멘트 (마일스톤/단계별 — shave.ts가 결정). */
+  completionMessage: string;
+  onShaved: () => void; // 마지막 키 직후, performShave 호출 시점
+  onCompleted: () => void; // 단계 3 표시 후 1초, 부모는 unmount + 전환
+  onAbort: () => void; // q 또는 Ctrl+C
 }
 
-export function ShaveGame({ currentStage, onShaved, onCompleted, onAbort }: ShaveGameProps): JSX.Element {
+export function ShaveGame({
+  currentStage,
+  completionMessage,
+  onShaved,
+  onCompleted,
+  onAbort,
+}: ShaveGameProps): JSX.Element {
   const [state, setState] = useState<ShaveStateInternal>(INITIAL_SHAVE_STATE);
   const smooth = getStage('smooth');
+  const requiredKeys = requiredKeyCount(currentStage.id);
 
   useInput((input, key) => {
     let action: ShaveAction;
@@ -33,7 +42,7 @@ export function ShaveGame({ currentStage, onShaved, onCompleted, onAbort }: Shav
       action = { type: 'any-key' };
     }
 
-    const { state: next, effect } = reduceShave(state, action);
+    const { state: next, effect } = reduceShave(state, action, requiredKeys);
     if (effect === 'abort') {
       onAbort();
       return;
@@ -63,10 +72,10 @@ export function ShaveGame({ currentStage, onShaved, onCompleted, onAbort }: Shav
   }
 
   if (state.phase === 'shaving') {
-    const remaining = TOTAL_SHAVE_STEPS - state.progress;
+    const remaining = requiredKeys - state.progress;
     const beard = '▓'.repeat(remaining) + ' '.repeat(state.progress);
     const filled = '█'.repeat(state.progress);
-    const empty = '░'.repeat(TOTAL_SHAVE_STEPS - state.progress);
+    const empty = '░'.repeat(requiredKeys - state.progress);
 
     return (
       <Box flexDirection="column">
@@ -78,7 +87,7 @@ export function ShaveGame({ currentStage, onShaved, onCompleted, onAbort }: Shav
         <Text>   ( o o )</Text>
         <Text>    {`\\${beard}/`}</Text>
         <Text> </Text>
-        <Text>{`[${filled}${empty}] ${state.progress}/${TOTAL_SHAVE_STEPS}`}</Text>
+        <Text>{`[${filled}${empty}] ${state.progress}/${requiredKeys}`}</Text>
         <Text> </Text>
         <Text dimColor>← / → 키로 면도하세요.   q 로 중단</Text>
       </Box>
@@ -93,7 +102,7 @@ export function ShaveGame({ currentStage, onShaved, onCompleted, onAbort }: Shav
       <Text color="green">   {smooth.buddyFace}</Text>
       <Text color="green">    {smooth.beardArt}</Text>
       <Text> </Text>
-      <Text bold color="green">✨ 매끈! 시원해졌어요.</Text>
+      <Text bold color="green">{completionMessage}</Text>
       <Text> </Text>
       <Text dimColor>→ 곧 스트레칭 카드를 띄울게요...</Text>
     </Box>

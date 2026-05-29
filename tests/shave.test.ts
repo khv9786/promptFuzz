@@ -19,6 +19,7 @@ vi.mock('../src/state/storage.js', () => ({
 import { shaveCommand } from '../src/commands/shave.js';
 import {
   reduceShave,
+  requiredKeyCount,
   INITIAL_SHAVE_STATE,
   TOTAL_SHAVE_STEPS,
   type ShaveStateInternal,
@@ -128,5 +129,40 @@ describe('reduceShave (ShaveGame 상태 전이)', () => {
     expect(r1).toEqual({ state, effect: null });
     const r2 = reduceShave(state, { type: 'any-key' });
     expect(r2).toEqual({ state, effect: null });
+  });
+});
+
+describe('requiredKeyCount (단계별 키 입력 횟수)', () => {
+  it('smooth/stubble/bushy → 6회', () => {
+    expect(requiredKeyCount('smooth')).toBe(6);
+    expect(requiredKeyCount('stubble')).toBe(6);
+    expect(requiredKeyCount('bushy')).toBe(6);
+  });
+  it('rugged → 8회', () => {
+    expect(requiredKeyCount('rugged')).toBe(8);
+  });
+  it('hermit → 10회', () => {
+    expect(requiredKeyCount('hermit')).toBe(10);
+  });
+});
+
+describe('reduceShave 가변 키 횟수', () => {
+  it('rugged(8회): 8번째 arrow에 done', () => {
+    let s: ShaveStateInternal = { phase: 'shaving', progress: 6 };
+    let r = reduceShave(s, { type: 'arrow' }, 8);
+    expect(r.state.phase).toBe('shaving'); // 7
+    expect(r.effect).toBeNull();
+    r = reduceShave(r.state, { type: 'arrow' }, 8);
+    expect(r.state.phase).toBe('done'); // 8
+    expect(r.effect).toBe('shaved');
+  });
+
+  it('hermit(10회): 9번째까진 shaving, 10번째 done', () => {
+    let s: ShaveStateInternal = { phase: 'shaving', progress: 8 };
+    let r = reduceShave(s, { type: 'arrow' }, 10);
+    expect(r.state.phase).toBe('shaving'); // 9
+    r = reduceShave(r.state, { type: 'arrow' }, 10);
+    expect(r.state.phase).toBe('done'); // 10
+    expect(r.effect).toBe('shaved');
   });
 });
