@@ -62,6 +62,7 @@ promptfuzz log         # 일자별 활동 잔디 보기
 promptfuzz config      # 임계치 프로필 보기/변경
 promptfuzz install     # Claude Code에 hook 등록
 promptfuzz uninstall   # hook 제거 (~/.promptfuzz/는 유지)
+promptfuzz reset       # 모든 데이터 + hook 완전 초기화 (확인 후)
 promptfuzz --help      # 전체 명령 보기
 ```
 
