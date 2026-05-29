@@ -34,6 +34,8 @@ function baseState(o: Partial<PromptFuzzState> = {}): PromptFuzzState {
     shaveHistory: [],
     stretchCardsShown: [],
     onboardingShaveDone: true,
+    thresholdProfile: 'medium',
+    dailyLog: {},
     ...o,
   };
 }

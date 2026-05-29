@@ -1,41 +1,40 @@
 import { describe, it, expect } from 'vitest';
-import { stageFromTokens, getStage, STAGES } from '../src/state/stages.js';
+import { stageFromTokens, getStage, STAGES, higherStage } from '../src/state/stages.js';
+import { PROFILES } from '../src/state/profiles.js';
+
+const medium = PROFILES.medium;
 
 describe('stages', () => {
   it('5개 단계가 정의되어 있다', () => {
     expect(STAGES).toHaveLength(5);
   });
 
-  it('0 토큰 → 매끈', () => {
-    expect(stageFromTokens(0).id).toBe('smooth');
+  it('0 토큰 → 매끈 (medium)', () => {
+    expect(stageFromTokens(0, medium).id).toBe('smooth');
   });
 
-  it('9999 토큰 → 매끈 (임계치 직전)', () => {
-    expect(stageFromTokens(9_999).id).toBe('smooth');
+  it('49,999 토큰 → 매끈 (medium 임계치 직전)', () => {
+    expect(stageFromTokens(49_999, medium).id).toBe('smooth');
   });
 
-  it('10000 토큰 → 까끌까끌 (임계치 정확)', () => {
-    expect(stageFromTokens(10_000).id).toBe('stubble');
+  it('50,000 토큰 → 까끌까끌 (medium 임계치 정확)', () => {
+    expect(stageFromTokens(50_000, medium).id).toBe('stubble');
   });
 
-  it('49999 토큰 → 까끌까끌', () => {
-    expect(stageFromTokens(49_999).id).toBe('stubble');
+  it('300,000 토큰 → 북슬북슬 (medium)', () => {
+    expect(stageFromTokens(300_000, medium).id).toBe('bushy');
   });
 
-  it('50000 토큰 → 북슬북슬', () => {
-    expect(stageFromTokens(50_000).id).toBe('bushy');
+  it('1,500,000 토큰 → 따갑따갑 (medium)', () => {
+    expect(stageFromTokens(1_500_000, medium).id).toBe('rugged');
   });
 
-  it('200000 토큰 → 따갑따갑', () => {
-    expect(stageFromTokens(200_000).id).toBe('rugged');
-  });
-
-  it('500000 토큰 → 고슴도치', () => {
-    expect(stageFromTokens(500_000).id).toBe('hermit');
+  it('5,000,000 토큰 → 고슴도치 (medium)', () => {
+    expect(stageFromTokens(5_000_000, medium).id).toBe('hermit');
   });
 
   it('아주 큰 값에서도 고슴도치 유지', () => {
-    expect(stageFromTokens(10_000_000).id).toBe('hermit');
+    expect(stageFromTokens(100_000_000, medium).id).toBe('hermit');
   });
 
   it('getStage로 한국어 이름 조회 (의태어)', () => {
@@ -44,5 +43,11 @@ describe('stages', () => {
     expect(getStage('bushy').nameKr).toBe('북슬북슬');
     expect(getStage('rugged').nameKr).toBe('따갑따갑');
     expect(getStage('hermit').nameKr).toBe('고슴도치');
+  });
+
+  it('higherStage는 더 높은 단계를 반환', () => {
+    expect(higherStage('smooth', 'rugged')).toBe('rugged');
+    expect(higherStage('hermit', 'bushy')).toBe('hermit');
+    expect(higherStage('stubble', 'stubble')).toBe('stubble');
   });
 });

@@ -39,6 +39,10 @@ export async function statusCommand(): Promise<void> {
       chalk.dim('  ·  면도 이력: ') +
       chalk.bold(state.shaveHistory.length.toString())
   );
+  lines.push(
+    '  ' + chalk.dim('프로필: ') + chalk.bold(state.thresholdProfile) +
+      chalk.dim('  ·  promptfuzz config 로 변경')
+  );
   lines.push('');
 
   if (!installed) {

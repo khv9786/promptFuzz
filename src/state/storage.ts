@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import type { PromptFuzzState } from '../types/index.js';
+import { isValidProfileId, DEFAULT_PROFILE } from './profiles.js';
 
 export const PROMPTFUZZ_DIR = join(homedir(), '.promptfuzz');
 export const STATE_FILE = join(PROMPTFUZZ_DIR, 'state.json');
@@ -19,6 +20,8 @@ function createInitialState(): PromptFuzzState {
     shaveHistory: [],
     stretchCardsShown: [],
     onboardingShaveDone: false,
+    thresholdProfile: DEFAULT_PROFILE,
+    dailyLog: {},
   };
 }
 
@@ -59,10 +62,21 @@ export async function saveState(state: PromptFuzzState): Promise<void> {
 
 function migrate(state: PromptFuzzState): PromptFuzzState {
   const defaults = createInitialState();
-  return {
+  const merged: PromptFuzzState = {
     ...defaults,
     ...state,
     version: CURRENT_VERSION,
     onboardingShaveDone: state.onboardingShaveDone ?? false,
   };
+
+  // 손상되거나 수동 편집된 state.json 방어 — nullish 병합만으로는
+  // 잘못된 문자열/타입을 못 막으므로 명시적 타입 가드.
+  if (!isValidProfileId(merged.thresholdProfile)) {
+    merged.thresholdProfile = DEFAULT_PROFILE;
+  }
+  if (typeof merged.dailyLog !== 'object' || merged.dailyLog === null) {
+    merged.dailyLog = {};
+  }
+
+  return merged;
 }

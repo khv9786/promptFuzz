@@ -41,6 +41,8 @@ function baseState(overrides: Partial<PromptFuzzState> = {}): PromptFuzzState {
     shaveHistory: [],
     stretchCardsShown: [],
     onboardingShaveDone: true,
+    thresholdProfile: 'medium',
+    dailyLog: {},
     ...overrides,
   };
 }
@@ -66,9 +68,11 @@ describe('tickCommand 출력', () => {
     chalk.level = previousChalkLevel;
   });
 
+  // medium 프로필 임계치: stubble 50K / bushy 300K / rugged 1.5M / hermit 5M
+
   it('단계 변화가 없으면 아무것도 출력하지 않는다', async () => {
     hoisted.state.current = baseState({
-      cumulativeTokens: 10_000,
+      cumulativeTokens: 50_000,
       currentStage: 'stubble',
     });
     hoisted.scan.current = {
@@ -87,7 +91,7 @@ describe('tickCommand 출력', () => {
       currentStage: 'smooth',
     });
     hoisted.scan.current = {
-      totalDelta: { inputTokens: 6_000, outputTokens: 4_001, total: 10_001 },
+      totalDelta: { inputTokens: 30_000, outputTokens: 20_001, total: 50_001 },
       updatedOffsets: {},
     };
 
@@ -104,11 +108,11 @@ describe('tickCommand 출력', () => {
 
   it('② 까끌까끌 → ④ 따갑따갑 상승 시 알림 + 안내(shave) 포함', async () => {
     hoisted.state.current = baseState({
-      cumulativeTokens: 10_000,
+      cumulativeTokens: 50_000,
       currentStage: 'stubble',
     });
     hoisted.scan.current = {
-      totalDelta: { inputTokens: 100_000, outputTokens: 90_001, total: 190_001 },
+      totalDelta: { inputTokens: 800_000, outputTokens: 650_001, total: 1_450_001 },
       updatedOffsets: {},
     };
 
