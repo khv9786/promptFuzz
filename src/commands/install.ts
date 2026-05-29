@@ -15,6 +15,9 @@ export async function installCommand(): Promise<void> {
     console.log(chalk.green('✓ PromptFuzz가 Claude Code에 연결되었습니다.'));
     console.log(chalk.dim('  ~/.claude/settings.json에 Stop hook이 추가되었습니다.'));
     console.log();
+    console.log('🔒 PromptFuzz는 외부와 통신하지 않습니다.');
+    console.log(chalk.dim('   모든 데이터는 이 컴퓨터에만 저장됩니다.'));
+    console.log();
 
     await runOnboardingShave();
 
