@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import { tick } from '../state/index.js';
 import { STAGES } from '../state/stages.js';
-import type { BeardStage, StageInfo } from '../types/index.js';
+import { stagePaint } from '../ui/theme.js';
+import type { BeardStage } from '../types/index.js';
 
 const RULE = '━'.repeat(50);
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
@@ -20,14 +21,6 @@ function stageLabel(id: BeardStage): string {
   return `${NUMERAL[idx] ?? ''} ${info.nameKr}`;
 }
 
-function colorOf(stage: StageInfo) {
-  return stage.color === 'green'
-    ? chalk.green
-    : stage.color === 'yellow'
-      ? chalk.yellow
-      : chalk.red;
-}
-
 /**
  * Hook이 호출하는 명령. 100ms 이내 종료 목표.
  * 단계가 올라간 경우에만 메시지 출력 (소음 최소화).
@@ -38,7 +31,7 @@ export async function tickCommand(): Promise<void> {
     const result = await tick();
     if (!result.stageChanged || result.stage.id === 'smooth') return;
 
-    const colorFn = colorOf(result.stage);
+    const colorFn = stagePaint(chalk, result.stage.id);
     const from = stageLabel(result.previousStage);
     const to = stageLabel(result.stage.id);
     const emoji = HEADER_EMOJI[result.stage.id];
