@@ -182,11 +182,13 @@ async function promptProfileChoice(
   output.write('    ' + chalk.cyan('[1]') + ' 가볍게 — Sonnet 위주, Pro 플랜\n');
   output.write('    ' + chalk.cyan('[2]') + ' 균형 — 평균 (기본, 잘 모르겠으면 이것)\n');
   output.write('    ' + chalk.cyan('[3]') + ' 무겁게 — Opus + Agent Teams, Max 플랜\n');
+  output.write('    ' + chalk.cyan('[4]') + ' 극단적 — Agent Teams 풀가동\n');
   const rl = createInterface({ input, output });
   try {
     const answer = (await rl.question('  선택 (Enter = 균형 권장): ')).trim();
     if (answer === '1') return 'light';
     if (answer === '3') return 'heavy';
+    if (answer === '4') return 'extreme';
     if (answer === '2' || answer === '') return 'medium';
     return isValidProfileId(fallback) ? fallback : 'medium';
   } finally {

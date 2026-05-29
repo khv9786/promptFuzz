@@ -1,7 +1,7 @@
 export type BeardStage = 'smooth' | 'stubble' | 'bushy' | 'rugged' | 'hermit';
 
 /** 임계치 프로필 ID. 상세 정의는 src/state/profiles.ts. */
-export type ProfileId = 'light' | 'medium' | 'heavy';
+export type ProfileId = 'light' | 'medium' | 'heavy' | 'extreme';
 
 export interface StageInfo {
   id: BeardStage;

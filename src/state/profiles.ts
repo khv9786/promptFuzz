@@ -1,6 +1,6 @@
 import type { BeardStage } from '../types/index.js';
 
-export type ProfileId = 'light' | 'medium' | 'heavy';
+export type ProfileId = 'light' | 'medium' | 'heavy' | 'extreme';
 
 /** smooth는 항상 0이므로 임계치 표에서 제외. */
 export type StageWithThreshold = Exclude<BeardStage, 'smooth'>;
@@ -46,12 +46,23 @@ export const PROFILES: Record<ProfileId, ThresholdProfile> = {
       hermit: 15_000_000,
     },
   },
+  extreme: {
+    id: 'extreme',
+    nameKr: '극단적 (Agent Teams 풀가동)',
+    description: 'Opus + 다중 Agent Teams 동시 운영, 하루 수천만 토큰',
+    thresholds: {
+      stubble: 1_000_000,
+      bushy: 5_000_000,
+      rugged: 20_000_000,
+      hermit: 50_000_000,
+    },
+  },
 };
 
 export const DEFAULT_PROFILE: ProfileId = 'medium';
 
 export function isValidProfileId(value: unknown): value is ProfileId {
-  return value === 'light' || value === 'medium' || value === 'heavy';
+  return value === 'light' || value === 'medium' || value === 'heavy' || value === 'extreme';
 }
 
 export function getProfile(id: ProfileId): ThresholdProfile {

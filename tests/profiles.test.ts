@@ -3,8 +3,8 @@ import { PROFILES, getProfile, isValidProfileId, DEFAULT_PROFILE } from '../src/
 import { stageFromTokens } from '../src/state/stages.js';
 
 describe('PROFILES 정의', () => {
-  it('3종 프로필이 존재한다', () => {
-    expect(Object.keys(PROFILES).sort()).toEqual(['heavy', 'light', 'medium']);
+  it('4종 프로필이 존재한다', () => {
+    expect(Object.keys(PROFILES).sort()).toEqual(['extreme', 'heavy', 'light', 'medium']);
   });
 
   it('각 프로필 임계치가 단조 증가', () => {
@@ -16,9 +16,14 @@ describe('PROFILES 정의', () => {
     }
   });
 
-  it('light < medium < heavy (같은 단계 임계치 비교)', () => {
+  it('light < medium < heavy < extreme (같은 단계 임계치 비교)', () => {
     expect(PROFILES.light.thresholds.hermit).toBeLessThan(PROFILES.medium.thresholds.hermit);
     expect(PROFILES.medium.thresholds.hermit).toBeLessThan(PROFILES.heavy.thresholds.hermit);
+    expect(PROFILES.heavy.thresholds.hermit).toBeLessThan(PROFILES.extreme.thresholds.hermit);
+  });
+
+  it('extreme hermit 임계치는 50M', () => {
+    expect(PROFILES.extreme.thresholds.hermit).toBe(50_000_000);
   });
 
   it('기본 프로필은 medium', () => {
@@ -31,6 +36,7 @@ describe('isValidProfileId', () => {
     expect(isValidProfileId('light')).toBe(true);
     expect(isValidProfileId('medium')).toBe(true);
     expect(isValidProfileId('heavy')).toBe(true);
+    expect(isValidProfileId('extreme')).toBe(true);
   });
 
   it('잘못된 값은 false', () => {
