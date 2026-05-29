@@ -1,6 +1,13 @@
 import { loadState, saveState } from './storage.js';
 import { scanAllSessions } from '../parser/index.js';
 import { stageFromTokens } from './stages.js';
+import { getProfile } from './profiles.js';
+import {
+  updateDailyTokens,
+  recordDailyShave,
+  recordDailyStretch,
+  pruneOldEntries,
+} from './dailyLog.js';
 import type { BeardStage, PromptFuzzState, StageInfo } from '../types/index.js';
 
 export interface TickResult {
@@ -18,18 +25,23 @@ export interface TickResult {
 export async function tick(): Promise<TickResult> {
   const state = await loadState();
   const previousStage = state.currentStage;
+  const profile = getProfile(state.thresholdProfile);
 
   const { totalDelta, updatedOffsets } = await scanAllSessions(state.lastJsonlOffset);
 
   const newCumulative = state.cumulativeTokens + totalDelta.total;
-  const stage = stageFromTokens(newCumulative);
+  const stage = stageFromTokens(newCumulative, profile);
 
-  const updated: PromptFuzzState = {
+  let updated: PromptFuzzState = {
     ...state,
     cumulativeTokens: newCumulative,
     lastJsonlOffset: updatedOffsets,
     currentStage: stage.id,
   };
+
+  // 그날 활동 기록 (토큰 증가가 있을 때만) + 오래된 entry 정리.
+  updated = updateDailyTokens(updated, totalDelta.total, stage.id);
+  updated = { ...updated, dailyLog: pruneOldEntries(updated.dailyLog) };
 
   await saveState(updated);
 
@@ -48,7 +60,7 @@ export async function tick(): Promise<TickResult> {
  */
 export async function performShave(): Promise<PromptFuzzState> {
   const state = await loadState();
-  const updated: PromptFuzzState = {
+  let updated: PromptFuzzState = {
     ...state,
     cumulativeTokens: 0,
     currentStage: 'smooth',
@@ -57,6 +69,7 @@ export async function performShave(): Promise<PromptFuzzState> {
       { at: new Date().toISOString(), tokensAtShave: state.cumulativeTokens },
     ].slice(-30),
   };
+  updated = recordDailyShave(updated);
   await saveState(updated);
   return updated;
 }
@@ -64,7 +77,8 @@ export async function performShave(): Promise<PromptFuzzState> {
 export async function recordStretchCard(cardId: string): Promise<void> {
   const state = await loadState();
   const shown = [...state.stretchCardsShown, cardId].slice(-10);
-  await saveState({ ...state, stretchCardsShown: shown });
+  const updated = recordDailyStretch({ ...state, stretchCardsShown: shown });
+  await saveState(updated);
 }
 
 export async function getCurrentState(): Promise<{
@@ -72,5 +86,6 @@ export async function getCurrentState(): Promise<{
   stage: StageInfo;
 }> {
   const state = await loadState();
-  return { state, stage: stageFromTokens(state.cumulativeTokens) };
+  const profile = getProfile(state.thresholdProfile);
+  return { state, stage: stageFromTokens(state.cumulativeTokens, profile) };
 }
