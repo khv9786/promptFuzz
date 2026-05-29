@@ -138,13 +138,17 @@ Claude Buddy는 '비공식 마스코트'로서 작고 둥근 ASCII 캐릭터로 
 
 단계 임계치는 v1에서 직관적으로 설정하고, v2에서 사용자 패턴 학습으로 자동 조정한다.
 
-| 단계 | 토큰 임계치 | 수염 상태 | Claude Buddy 표정 | 멘트 | 사용 가능 |
+임계치는 **프로필**(light/medium/heavy)에 따라 달라진다. 아래는 기본값 medium 기준.
+
+| 단계 | 토큰 임계치 (medium) | 수염 상태 | Claude Buddy 표정 | 멘트 | 사용 가능 |
 |---|---|---|---|---|---|
-| ① 매끈 | 0~10K | 없음 | `(◕ᴗ◕)` | "오늘도 잘 부탁해요 아빠!" | 자유 |
-| ② 까끌까끌 | 10~50K | 솜털 | `(•_• )` | "아빠 오늘 좀 까끌까끌해..." | 자유 |
-| ③ 북슬북슬 | 50~200K | ▒▒▒ | `(>﹏<)` | "아... 따가워요... 잠깐 쉬어가요?" | 경고 |
-| ④ 따갑따갑 | 200~500K | ▓▓▓ | `(╥﹏╥)` | "아빠 무서워요... 면도하고 와요..." | 강력권장 |
-| ⑤ 고슴도치 | 500K+ | ███ | `(;﹏;)` | "이제 안아주기 힘들어요... 푹 쉬다 와요" | 강제휴식 신호 |
+| ① 매끈 | 0~50K | 없음 | `(◕ᴗ◕)` | "오늘도 잘 부탁해요 아빠!" | 자유 |
+| ② 까끌까끌 | 50~300K | 솜털 | `(•_• )` | "아빠 오늘 좀 까끌까끌해..." | 자유 |
+| ③ 북슬북슬 | 300K~1.5M | ▒▒▒ | `(>﹏<)` | "아... 따가워요... 잠깐 쉬어가요?" | 경고 |
+| ④ 따갑따갑 | 1.5M~5M | ▓▓▓ | `(╥﹏╥)` | "아빠 무서워요... 면도하고 와요..." | 강력권장 |
+| ⑤ 고슴도치 | 5M+ | ███ | `(;﹏;)` | "이제 안아주기 힘들어요... 푹 쉬다 와요" | 강제휴식 신호 |
+
+**프로필별 ⑤ 고슴도치 임계치**: light 1.5M / medium 5M / heavy 15M. `promptfuzz config --threshold`로 전환. 실측 결과 Opus + Agent Teams 사용 시 하루 1M+ 토큰에 도달해, 단일 임계치로는 Sonnet 사용자와 동일 경험을 줄 수 없어 프로필을 도입했다.
 
 ---
 
@@ -183,6 +187,8 @@ Claude Buddy는 '비공식 마스코트'로서 작고 둥근 ASCII 캐릭터로 
 | F7 | 스트레칭 카드 | P0 | 5~7종 (거북목, 허리, 손목, 어깨, 눈) |
 | F8 | 단계별 색상 | P1 | chalk로 매끈=초록, 북슬북슬=노랑, 따갑따갑 이상=빨강 |
 | F9 | 도움말 / 버전 | P1 | `promptfuzz --help`, `--version` |
+| F10 | config 명령 | P1 | `promptfuzz config [--threshold <id>]` — 임계치 프로필(light/medium/heavy) 보기·변경 |
+| F11 | log 명령 | P1 | `promptfuzz log [--days N] [--json]` — 일자별 활동 잔디 시각화 (dailyLog, 90일 보관) |
 
 ---
 
@@ -261,13 +267,27 @@ Claude Code 세션
   "installedAt": "2026-05-28T10:00:00Z",
   "cumulativeTokens": 87500,
   "lastJsonlOffset": { "/path/to/session.jsonl": 12345 },
-  "currentStage": "북슬북슬",
+  "currentStage": "stubble",
   "shaveHistory": [
     { "at": "2026-05-27T14:30:00Z", "tokensAtShave": 145000 }
   ],
-  "stretchCardsShown": ["거북목", "허리"]
+  "stretchCardsShown": ["turtle-neck", "lower-back"],
+  "onboardingShaveDone": true,
+  "thresholdProfile": "medium",
+  "dailyLog": {
+    "2026-05-28": {
+      "date": "2026-05-28",
+      "tokensAdded": 87500,
+      "peakStage": "stubble",
+      "shaveCount": 1,
+      "stretchCount": 2
+    }
+  }
 }
 ```
+
+- `thresholdProfile`: `light` | `medium` | `heavy`. 단계 임계치 세트 선택. 누락/손상 시 `medium`으로 복구.
+- `dailyLog`: 날짜(YYYY-MM-DD) → 그날 활동 요약. **날짜 단위만** 저장(시간 단위 X). 90일 후 자동 정리.
 
 ### 12.2 파일 권한
 

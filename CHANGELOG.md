@@ -18,9 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `promptfuzz install` 직후 기존 Claude Code 토큰 히스토리가 임계치(② 이상)를 넘으면 *온보딩 면도* 흐름 실행 — 면도하고 새 출발 / 이대로 유지 중 선택. 비대화형 환경에서는 자동으로 면도를 선택.
 - 프로젝트 컨텍스트 문서: [`CLAUDE.md`](CLAUDE.md)(헌법), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)(코드 구조).
 - 개발자용 슬래시 커맨드 `/test-full` — typecheck + build + test 일괄 실행.
+- 임계치 프로필 3종 (light/medium/heavy) — 사용 패턴별 단계 임계치. `promptfuzz config`로 보기·변경.
+- 일자별 활동 추적 (`dailyLog`) — 90일 보관, 토큰·단계·면도·스트레칭 카운트. `promptfuzz log`로 잔디 시각화 (`--days`, `--json` 옵션).
+- 온보딩 면도 흐름에 프로필 선택 단계 추가 (비대화형은 자동 medium).
 - JSONL 토큰 파서 — `~/.claude/projects/**/*.jsonl`의 `usage` 필드만 추출하며 프롬프트/응답 본문은 메모리에 올리지 않음 (content-blind).
-- 수염 5단계와 임계치(10K / 50K / 200K / 500K) 기반 상태 엔진.
-- CLI 명령 5종: `install`, `uninstall`, `status`, `shave`, `tick`.
+- 수염 5단계와 프로필 기반(medium 기본: 50K / 300K / 1.5M / 5M) 상태 엔진.
+- CLI 명령 7종: `install`, `uninstall`, `status`, `shave`, `tick`, `config`, `log`.
 - Claude Code Stop hook 비파괴 설치 — 기존 설정 보존, 백업 파일 생성, `uninstall`로 완전 복구 가능.
 - 영속 상태 저장: `~/.promptfuzz/state.json` (권한 0600).
 - 스트레칭 카드 5장 — 거북목 / 허리 / 손목 / 어깨 / 눈.
