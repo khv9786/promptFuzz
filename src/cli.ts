@@ -7,6 +7,7 @@ import { shaveCommand } from './commands/shave.js';
 import { tickCommand } from './commands/tick.js';
 import { configCommand } from './commands/config.js';
 import { logCommand } from './commands/log.js';
+import { resetCommand } from './commands/reset.js';
 
 // 인자 없이 'promptfuzz'만 실행된 경우 환영 메시지 후 종료.
 // --help / -h / 서브커맨드는 commander에 그대로 위임.
@@ -73,6 +74,12 @@ program
   .option('--days <n>', '최근 N일 (최대 90)')
   .option('--json', 'JSON으로 출력')
   .action((opts) => logCommand(opts));
+
+program
+  .command('reset')
+  .description('모든 데이터 + hook을 완전히 초기화합니다')
+  .option('-y, --yes', '확인 없이 진행 (비대화형/자동화용)')
+  .action((opts) => resetCommand(opts));
 
 program.parseAsync().catch((err) => {
   console.error('Unexpected error:', err);
