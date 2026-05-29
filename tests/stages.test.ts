@@ -50,4 +50,12 @@ describe('stages', () => {
     expect(higherStage('hermit', 'bushy')).toBe('hermit');
     expect(higherStage('stubble', 'stubble')).toBe('stubble');
   });
+
+  it('강화된 buddyFace (이모지 포함)', () => {
+    expect(getStage('smooth').buddyFace).toBe('(◕ᴗ◕)✨');
+    expect(getStage('stubble').buddyFace).toBe('(•_• )?');
+    expect(getStage('bushy').buddyFace).toBe('(>﹏<;)');
+    expect(getStage('rugged').buddyFace).toBe('(╥﹏╥)💧');
+    expect(getStage('hermit').buddyFace).toBe('(;﹏;)🆘');
+  });
 });
