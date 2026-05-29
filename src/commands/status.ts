@@ -1,10 +1,11 @@
 import chalk from 'chalk';
-import { getCurrentState } from '../state/index.js';
+import { getCurrentState, incrementStatusView } from '../state/index.js';
 import { isInstalled } from '../hooks/manager.js';
 import { tick } from '../state/index.js';
 import { getStage, STAGE_ORDER } from '../state/stages.js';
 import { stagePaint } from '../ui/theme.js';
 import { computeWeeklySummary, trendArrow } from '../state/weeklySummary.js';
+import { educationHint } from '../ui/educationHint.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
 
@@ -13,11 +14,36 @@ function numeralFor(id: string): string {
   return NUMERAL[i] ?? '';
 }
 
-export async function statusCommand(): Promise<void> {
+export interface StatusOptions {
+  json?: boolean;
+}
+
+export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
   await tick();
 
   const { state, stage } = await getCurrentState();
   const installed = await isInstalled();
+
+  // --json: 부수효과 없음 (count 증가 X, 교육 멘트 X).
+  if (opts.json) {
+    const summary = computeWeeklySummary(state.dailyLog);
+    console.log(
+      JSON.stringify(
+        {
+          cumulativeTokens: state.cumulativeTokens,
+          stage: stage.id,
+          stageNameKr: stage.nameKr,
+          profile: state.thresholdProfile,
+          shaveCount: state.shaveHistory.length,
+          hookInstalled: installed,
+          weekly: summary,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
 
   const colorFn = stagePaint(chalk, stage.id);
 
@@ -50,7 +76,6 @@ export async function statusCommand(): Promise<void> {
       chalk.dim('  ·  promptfuzz config 로 변경')
   );
 
-  // 최근 7일 미니 요약 (데이터 충분할 때만).
   const summary = computeWeeklySummary(state.dailyLog);
   if (summary) {
     const avg = getStage(summary.avgStage);
@@ -71,6 +96,13 @@ export async function statusCommand(): Promise<void> {
     lines.push('  ' + chalk.yellow('⚠ ') + chalk.dim('Hook이 설치되지 않았어요. ') + chalk.cyan('promptfuzz install'));
   } else if (stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit') {
     lines.push('  ' + chalk.dim("💡 " + chalk.cyan('promptfuzz shave') + ' 로 면도 + 스트레칭'));
+  }
+
+  // 첫 5회 교육 멘트 (count 증가는 사람용 출력에서만).
+  const viewCount = await incrementStatusView();
+  const hint = educationHint(viewCount);
+  if (hint) {
+    lines.push('  ' + chalk.dim(hint));
   }
 
   console.log(lines.join('\n'));

@@ -46,6 +46,8 @@ function baseState(o: Partial<PromptFuzzState> = {}): PromptFuzzState {
     dailyLog: {
       '2026-05-20': { date: '2026-05-20', tokensAdded: 100_000, peakStage: 'bushy', shaveCount: 2, stretchCount: 1 },
     },
+    statusViewCount: 0,
+    quietHours: null,
     ...o,
   };
 }

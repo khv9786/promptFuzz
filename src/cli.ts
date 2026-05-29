@@ -58,7 +58,8 @@ program
 program
   .command('status')
   .description('현재 수염 상태를 보여줍니다')
-  .action(statusCommand);
+  .option('--json', 'JSON으로 출력')
+  .action((opts) => statusCommand(opts));
 
 program
   .command('shave')
@@ -73,7 +74,9 @@ program
 program
   .command('config')
   .description('임계치 프로필을 보거나 변경합니다')
-  .option('--threshold [profile]', '프로필 변경 (light|medium|heavy)')
+  .option('--threshold [profile]', '프로필 변경 (light|medium|heavy|extreme)')
+  .option('--quiet-hours <range>', '알림 침묵 시간대 설정 (예: 23-07, 해제: off)')
+  .option('--json', 'JSON으로 출력')
   .action((opts) => configCommand(opts));
 
 program

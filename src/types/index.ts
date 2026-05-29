@@ -38,6 +38,8 @@ export interface PromptFuzzState {
   onboardingShaveDone: boolean;
   thresholdProfile: ProfileId;
   dailyLog: Record<string, DailyEntry>;
+  statusViewCount: number;
+  quietHours: { start: number; end: number } | null;
 }
 
 export interface UsageDelta {

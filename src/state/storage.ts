@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 import type { PromptFuzzState } from '../types/index.js';
 import { isValidProfileId, DEFAULT_PROFILE } from './profiles.js';
+import { isValidQuietHours } from './quietHours.js';
 
 export const PROMPTFUZZ_DIR = join(homedir(), '.promptfuzz');
 export const STATE_FILE = join(PROMPTFUZZ_DIR, 'state.json');
@@ -22,6 +23,8 @@ function createInitialState(): PromptFuzzState {
     onboardingShaveDone: false,
     thresholdProfile: DEFAULT_PROFILE,
     dailyLog: {},
+    statusViewCount: 0,
+    quietHours: null,
   };
 }
 
@@ -76,6 +79,12 @@ function migrate(state: PromptFuzzState): PromptFuzzState {
   }
   if (typeof merged.dailyLog !== 'object' || merged.dailyLog === null) {
     merged.dailyLog = {};
+  }
+  if (typeof merged.statusViewCount !== 'number' || !Number.isFinite(merged.statusViewCount)) {
+    merged.statusViewCount = 0;
+  }
+  if (!isValidQuietHours(merged.quietHours)) {
+    merged.quietHours = null;
   }
 
   return merged;

@@ -2,15 +2,44 @@ import chalk from 'chalk';
 import { loadState, saveState } from '../state/storage.js';
 import { stageFromTokens } from '../state/stages.js';
 import { PROFILES, getProfile, isValidProfileId } from '../state/profiles.js';
+import { parseQuietHours, formatQuietHours } from '../state/quietHours.js';
 import type { ProfileId } from '../types/index.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
 
 export interface ConfigOptions {
   threshold?: string | boolean;
+  quietHours?: string;
+  json?: boolean;
 }
 
 export async function configCommand(opts: ConfigOptions = {}): Promise<void> {
+  // --json → 현재 프로필 + 임계치를 JSON으로 (부수효과 없음)
+  if (opts.json) {
+    const state = await loadState();
+    const profile = getProfile(state.thresholdProfile);
+    console.log(
+      JSON.stringify(
+        {
+          profile: profile.id,
+          nameKr: profile.nameKr,
+          description: profile.description,
+          thresholds: profile.thresholds,
+          quietHours: state.quietHours,
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
+
+  // --quiet-hours <range|off>
+  if (typeof opts.quietHours === 'string') {
+    await changeQuietHours(opts.quietHours);
+    return;
+  }
+
   // --threshold 값 없이 호출 → 사용 가능한 프로필 안내
   if (opts.threshold === true) {
     printProfileChoices();
@@ -25,6 +54,24 @@ export async function configCommand(opts: ConfigOptions = {}): Promise<void> {
 
   // 인자 없음 → 현재 설정 표시
   await printCurrent();
+}
+
+async function changeQuietHours(raw: string): Promise<void> {
+  const parsed = parseQuietHours(raw);
+  if (parsed === undefined) {
+    console.error(chalk.red(`잘못된 형식: '${raw}'`));
+    console.error(chalk.dim('예: 23-07 (밤 11시~아침 7시), 해제: off'));
+    process.exitCode = 1;
+    return;
+  }
+  const state = await loadState();
+  await saveState({ ...state, quietHours: parsed });
+  if (parsed === null) {
+    console.log(chalk.green('✓ 침묵 시간대를 해제했습니다.'));
+  } else {
+    console.log(chalk.green(`✓ 침묵 시간대를 ${formatQuietHours(parsed)}로 설정했습니다.`));
+    console.log(chalk.dim('  이 시간엔 단계 변화 알림이 조용합니다 (기록은 계속).'));
+  }
 }
 
 async function printCurrent(): Promise<void> {
@@ -45,7 +92,9 @@ async function printCurrent(): Promise<void> {
   lines.push(`  ${NUMERAL[3]} 따갑따갑  ` + fmtRange(t.rugged, t.hermit));
   lines.push(`  ${NUMERAL[4]} 고슴도치  ` + chalk.bold(t.hermit.toLocaleString()) + '+');
   lines.push('');
-  lines.push(chalk.dim('다른 프로필: ') + chalk.cyan('promptfuzz config --threshold {light|medium|heavy}'));
+  lines.push(chalk.dim('침묵 시간대: ') + chalk.bold(formatQuietHours(state.quietHours)));
+  lines.push('');
+  lines.push(chalk.dim('다른 프로필: ') + chalk.cyan('promptfuzz config --threshold {light|medium|heavy|extreme}'));
 
   console.log(lines.join('\n'));
 }

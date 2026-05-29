@@ -89,3 +89,14 @@ export async function getCurrentState(): Promise<{
   const profile = getProfile(state.thresholdProfile);
   return { state, stage: stageFromTokens(state.cumulativeTokens, profile) };
 }
+
+/**
+ * status 조회 횟수를 1 증가시키고 새 값을 반환.
+ * 교육 멘트는 이 값(1부터)으로 결정한다.
+ */
+export async function incrementStatusView(): Promise<number> {
+  const state = await loadState();
+  const next = (state.statusViewCount ?? 0) + 1;
+  await saveState({ ...state, statusViewCount: next });
+  return next;
+}

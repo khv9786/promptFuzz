@@ -43,6 +43,8 @@ function baseState(overrides: Partial<PromptFuzzState> = {}): PromptFuzzState {
     onboardingShaveDone: true,
     thresholdProfile: 'medium',
     dailyLog: {},
+    statusViewCount: 0,
+    quietHours: null,
     ...overrides,
   };
 }
