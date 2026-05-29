@@ -59,7 +59,9 @@ promptfuzz             # 환영 화면 + 사용 안내
 promptfuzz status      # 오늘의 수염 보기
 promptfuzz shave       # 면도 미니게임 → 스트레칭 카드
 promptfuzz log         # 일자별 활동 잔디 보기
+promptfuzz stats       # 회고용 통계 요약
 promptfuzz config      # 임계치 프로필 보기/변경
+promptfuzz info        # 진단용 환경 정보 (= --info)
 promptfuzz install     # Claude Code에 hook 등록
 promptfuzz uninstall   # hook 제거 (~/.promptfuzz/는 유지)
 promptfuzz reset       # 모든 데이터 + hook 완전 초기화 (확인 후)

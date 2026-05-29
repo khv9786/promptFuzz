@@ -26,9 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `install` 직후 오프라인 안심 메시지 (외부 통신 0 명시).
 - GitHub Issue 템플릿 3종 (bug report / feature request / config).
 - `docs/DEMO_SCRIPT.md` — asciinema 녹화 시나리오 대본.
+- 면도 미니게임이 시작 단계에 따라 난이도 변주 (bushy 6 / rugged 8 / hermit 10회) + 단계별 클로징 멘트.
+- 면도 마일스톤 멘트 (1·10·50·100번째 기념).
+- `status`에 최근 7일 미니 요약 (평균 단계 · 면도 횟수 · 추세).
+- Buddy 표정 강화 (단계별 이모지 추가).
+- 의미 기반 컬러 팔레트 (`src/ui/theme.ts`)로 색상 통일.
+- `promptfuzz --info` (= `info`) — 진단용 환경/상태/hook/활동 요약.
+- `promptfuzz stats` — 회고용 통계 (활성일·면도 간격·완료율·추세, `--days`/`--json`).
+- `CONTRIBUTING.md` — 기여자 가이드.
 - JSONL 토큰 파서 — `~/.claude/projects/**/*.jsonl`의 `usage` 필드만 추출하며 프롬프트/응답 본문은 메모리에 올리지 않음 (content-blind).
 - 수염 5단계와 프로필 기반(medium 기본: 50K / 300K / 1.5M / 5M) 상태 엔진.
-- CLI 명령 8종: `install`, `uninstall`, `status`, `shave`, `tick`, `config`, `log`, `reset`.
+- CLI 명령 10종: `install`, `uninstall`, `status`, `shave`, `tick`, `config`, `log`, `reset`, `info`, `stats`.
 - Claude Code Stop hook 비파괴 설치 — 기존 설정 보존, 백업 파일 생성, `uninstall`로 완전 복구 가능.
 - 영속 상태 저장: `~/.promptfuzz/state.json` (권한 0600).
 - 스트레칭 카드 5장 — 거북목 / 허리 / 손목 / 어깨 / 눈.
