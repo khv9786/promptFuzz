@@ -8,11 +8,19 @@ import { tickCommand } from './commands/tick.js';
 import { configCommand } from './commands/config.js';
 import { logCommand } from './commands/log.js';
 import { resetCommand } from './commands/reset.js';
+import { infoCommand } from './commands/info.js';
+import { statsCommand } from './commands/stats.js';
 
 // 인자 없이 'promptfuzz'만 실행된 경우 환영 메시지 후 종료.
 // --help / -h / 서브커맨드는 commander에 그대로 위임.
 if (process.argv.length === 2) {
   printWelcome();
+  process.exit(0);
+}
+
+// `--info`를 전역 플래그로도 지원 (info 서브커맨드와 동일).
+if (process.argv.includes('--info')) {
+  await infoCommand();
   process.exit(0);
 }
 
@@ -80,6 +88,18 @@ program
   .description('모든 데이터 + hook을 완전히 초기화합니다')
   .option('-y, --yes', '확인 없이 진행 (비대화형/자동화용)')
   .action((opts) => resetCommand(opts));
+
+program
+  .command('info')
+  .description('진단용 환경 정보를 출력합니다 (--info 와 동일)')
+  .action(infoCommand);
+
+program
+  .command('stats')
+  .description('회고용 통계 요약을 봅니다')
+  .option('--days <n>', '분석 기간 (최대 90)')
+  .option('--json', 'JSON으로 출력')
+  .action((opts) => statsCommand(opts));
 
 program.parseAsync().catch((err) => {
   console.error('Unexpected error:', err);
