@@ -5,6 +5,8 @@ import { uninstallCommand } from './commands/uninstall.js';
 import { statusCommand } from './commands/status.js';
 import { shaveCommand } from './commands/shave.js';
 import { tickCommand } from './commands/tick.js';
+import { configCommand } from './commands/config.js';
+import { logCommand } from './commands/log.js';
 
 // 인자 없이 'promptfuzz'만 실행된 경우 환영 메시지 후 종료.
 // --help / -h / 서브커맨드는 commander에 그대로 위임.
@@ -58,6 +60,19 @@ program
   .command('tick')
   .description('[내부 전용] Hook이 호출하는 갱신 명령')
   .action(tickCommand);
+
+program
+  .command('config')
+  .description('임계치 프로필을 보거나 변경합니다')
+  .option('--threshold [profile]', '프로필 변경 (light|medium|heavy)')
+  .action((opts) => configCommand(opts));
+
+program
+  .command('log')
+  .description('일자별 활동 로그를 잔디로 봅니다')
+  .option('--days <n>', '최근 N일 (최대 90)')
+  .option('--json', 'JSON으로 출력')
+  .action((opts) => logCommand(opts));
 
 program.parseAsync().catch((err) => {
   console.error('Unexpected error:', err);
