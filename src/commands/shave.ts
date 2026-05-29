@@ -3,6 +3,7 @@ import { performShave, recordStretchCard } from '../state/index.js';
 import { randomStretchCard } from '../data/stretches.js';
 import { loadState } from '../state/storage.js';
 import { getStage } from '../state/stages.js';
+import { getCompletionMessage } from '../ui/completionMessage.js';
 import type { PromptFuzzState } from '../types/index.js';
 
 export interface ShaveOptions {
@@ -72,10 +73,15 @@ async function runInteractive(before: PromptFuzzState): Promise<void> {
   console.log(chalk.dim(`  ${before.cumulativeTokens.toLocaleString()} 토큰만큼 자랐던 수염을 정리합니다.`));
   console.log();
 
+  // 완료 멘트는 면도 *후* 횟수(현재 history + 1)와 면도 직전 단계로 결정.
+  const projectedShaveCount = before.shaveHistory.length + 1;
+  const completionMessage = getCompletionMessage(projectedShaveCount, before.currentStage);
+
   const result = await new Promise<'completed' | 'aborted'>((resolve) => {
     const app = ink.render(
       React.createElement(ShaveGame, {
         currentStage: getStage(before.currentStage),
+        completionMessage,
         onShaved: () => {
           void performShave();
         },
