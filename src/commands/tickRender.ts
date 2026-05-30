@@ -21,21 +21,25 @@ export interface RenderInput {
   stage: StageInfo;
   previousStage: BeardStage;
   compact: boolean;
+  /** 표시할 멘트. 미지정 시 동결 멘트(messages[0]) — 렌더를 순수/결정적으로 유지. */
+  message?: string;
 }
 
 /**
  * 단계 변화 알림의 *순수 텍스트 줄 배열*을 만든다 (색상 없음).
  * 색칠은 tickCommand가 담당. 테스트는 이 텍스트로 검증.
+ * 랜덤 멘트는 호출자(tick)가 골라 message로 주입 → 이 함수는 순수.
  */
-export function renderStageChange({ stage, previousStage, compact }: RenderInput): string[] {
+export function renderStageChange({ stage, previousStage, compact, message }: RenderInput): string[] {
   const from = stageLabel(previousStage);
   const to = stageLabel(stage.id);
   const emoji = HEADER_EMOJI[stage.id];
+  const msg = message ?? stage.messages[0] ?? '';
 
   if (compact) {
     // 1줄: 🌳 ① 매끈 → ④ 따갑따갑: "멘트" → promptfuzz shave
     const hint = stage.id !== 'stubble' ? ' → promptfuzz shave' : '';
-    return [`${emoji} ${from} → ${to}: "${stage.message}"${hint}`];
+    return [`${emoji} ${from} → ${to}: "${msg}"${hint}`];
   }
 
   const rule = '━'.repeat(50);
@@ -45,7 +49,7 @@ export function renderStageChange({ stage, previousStage, compact }: RenderInput
     `${emoji} 수염이 자랐어요  ${from} → ${to}`,
     rule,
     '',
-    `    ${stage.buddyFace}  "${stage.message}"`,
+    `    ${stage.buddyFace}  "${msg}"`,
   ];
   if (stage.id !== 'stubble') {
     lines.push('');

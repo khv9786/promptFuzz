@@ -4,6 +4,7 @@ import { loadState } from '../state/storage.js';
 import { stagePaint } from '../ui/theme.js';
 import { isQuietNow } from '../state/quietHours.js';
 import { renderStageChange } from './tickRender.js';
+import { randomMessage } from '../state/stages.js';
 
 /**
  * Hook이 호출하는 명령. 100ms 이내 종료 목표.
@@ -27,6 +28,7 @@ export async function tickCommand(): Promise<void> {
       stage: result.stage,
       previousStage: result.previousStage,
       compact,
+      message: randomMessage(result.stage),
     });
 
     if (compact) {

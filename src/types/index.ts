@@ -10,7 +10,7 @@ export interface StageInfo {
   beardArt: string;
   buddyFace: string;
   interaction: string;
-  message: string;
+  messages: string[]; // [0] = 기존 동결 멘트, 나머지는 랜덤 후보
 }
 
 export interface ShaveRecord {

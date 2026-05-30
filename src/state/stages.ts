@@ -11,46 +11,66 @@ export const STAGES: StageInfo[] = [
     id: 'smooth',
     nameKr: '매끈',
     color: 'green',
-    beardArt: '\\_‿_/',
+    beardArt: '\\___/',
     buddyFace: '(◕ᴗ◕)✨',
     interaction: '💕',
-    message: '오늘도 잘 부탁해요 아빠!',
+    messages: [
+      '오늘도 잘 부탁해요 아빠!', // 기존(동결) — 항상 [0]
+      '오늘은 턱이 매끈하네요 ✨',
+      '기분 좋은 출발이에요!',
+    ],
   },
   {
     id: 'stubble',
     nameKr: '까끌까끌',
     color: 'green',
-    beardArt: '\\.\'.\'./',
+    beardArt: '\\,,,/',
     buddyFace: '(•_• )?',
     interaction: '~',
-    message: '아빠 오늘 좀 까끌까끌해...',
+    messages: [
+      '아빠 오늘 좀 까끌까끌해...', // 기존(동결)
+      '어, 수염 살짝 돋았네요?',
+      '아직은 귀여운 까끌이에요',
+    ],
   },
   {
     id: 'bushy',
     nameKr: '북슬북슬',
     color: 'yellow',
-    beardArt: '\\▒▒▒/',
+    beardArt: '\\vvvv/',
     buddyFace: '(>﹏<;)',
     interaction: '⚡',
-    message: '아... 따가워요... 잠깐 쉬어가요?',
+    messages: [
+      '아... 따가워요... 잠깐 쉬어가요?', // 기존(동결)
+      '아빠 수염이 북슬해졌어요',
+      '슬슬 정리할 때 아닐까요?',
+    ],
   },
   {
     id: 'rugged',
     nameKr: '따갑따갑',
     color: 'red',
-    beardArt: '\\▓▓▓/',
+    beardArt: '\\WWWWW/',
     buddyFace: '(╥﹏╥)💧',
     interaction: '💢',
-    message: '아빠 무서워요... 면도하고 와요...',
+    messages: [
+      '아빠 무서워요... 면도하고 와요...', // 기존(동결)
+      '따가워서 못 안기겠어요...',
+      '면도... 생각 있으세요?',
+    ],
   },
   {
     id: 'hermit',
     nameKr: '고슴도치',
     color: 'red',
-    beardArt: '\\███/',
+    beardArt: '\\MWMWMWM/',
     buddyFace: '(;﹏;)🆘',
     interaction: '💔',
-    message: '이제 안아주기 힘들어요... 푹 쉬다 와요',
+    messages: [
+      '이제 안아주기 힘들어요... 푹 쉬다 와요', // 기존(동결)
+      '아빠 고슴도치 됐어요...',
+      '꼭 안고 싶은데 너무 따가워요',
+    ],
   },
 ];
 
@@ -75,6 +95,18 @@ export function getStage(id: BeardStage): StageInfo {
   const stage = STAGES.find((s) => s.id === id);
   if (!stage) throw new Error(`Unknown stage: ${id}`);
   return stage;
+}
+
+/**
+ * 단계 멘트를 무작위로 하나 고른다 (Claude → 아빠 톤).
+ * 기존 동결 멘트는 messages[0]로 보존되어 항상 후보에 포함된다.
+ * rand 주입으로 단위 테스트 가능 (기본 Math.random).
+ */
+export function randomMessage(stage: StageInfo, rand: () => number = Math.random): string {
+  const list = stage.messages;
+  if (!list || list.length === 0) return '';
+  const i = Math.floor(rand() * list.length);
+  return list[Math.min(Math.max(i, 0), list.length - 1)] ?? list[0]!;
 }
 
 /** 두 단계 중 더 높은 단계를 반환 (peakStage 갱신용). */
