@@ -2,11 +2,12 @@ import chalk from 'chalk';
 import { getCurrentState, incrementStatusView } from '../state/index.js';
 import { isInstalled } from '../hooks/manager.js';
 import { tick } from '../state/index.js';
-import { getStage, STAGE_ORDER } from '../state/stages.js';
+import { getStage, STAGE_ORDER, randomMessage } from '../state/stages.js';
 import { stagePaint } from '../ui/theme.js';
 import { computeWeeklySummary, trendArrow } from '../state/weeklySummary.js';
 import { educationHint } from '../ui/educationHint.js';
 import { formatStatusLine } from './statusLine.js';
+import { timeOfDayGreeting } from '../ui/greeting.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
 
@@ -68,6 +69,8 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
 
   const lines: string[] = [];
   lines.push(chalk.bold('  PromptFuzz ─ 오늘의 수염'));
+  const greeting = timeOfDayGreeting(new Date().getHours());
+  if (greeting) lines.push('  ' + chalk.dim(greeting));
   lines.push('');
   for (let i = 0; i < 4; i++) {
     const left = pad(dev[i] ?? '', 18);
@@ -76,7 +79,7 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
     lines.push('  ' + colorFn(left) + mid + colorFn(right));
   }
   lines.push('');
-  lines.push('  ' + colorFn(`"${stage.message}"`));
+  lines.push('  ' + colorFn(`"${randomMessage(stage)}"`));
   lines.push('');
   lines.push(
     '  ' +

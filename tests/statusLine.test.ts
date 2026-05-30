@@ -69,24 +69,29 @@ describe('formatCompactTokens', () => {
 });
 
 describe('formatStatusLine', () => {
-  it('① 매끈 — 면도 힌트 없음', () => {
-    expect(formatStatusLine(0, getStage('smooth'))).toBe('🧔 ① 매끈 · 0');
+  it('① 매끈 — 수염 글리프 포함, 면도 힌트 없음', () => {
+    const s = getStage('smooth');
+    expect(formatStatusLine(0, s)).toBe(`🧔 ${s.beardArt} ① 매끈 · 0`);
   });
   it('② 까끌까끌 — 면도 힌트 없음', () => {
-    const line = formatStatusLine(175_000, getStage('stubble'));
-    expect(line).toBe('🧔 ② 까끌까끌 · 175K');
+    const s = getStage('stubble');
+    const line = formatStatusLine(175_000, s);
+    expect(line).toBe(`🧔 ${s.beardArt} ② 까끌까끌 · 175K`);
     expect(line).not.toContain('🪒');
   });
   it('③ 북슬북슬 — 면도 힌트 있음', () => {
-    expect(formatStatusLine(900_000, getStage('bushy'))).toBe('🧔 ③ 북슬북슬 · 900K · 🪒 shave');
+    const s = getStage('bushy');
+    expect(formatStatusLine(900_000, s)).toBe(`🧔 ${s.beardArt} ③ 북슬북슬 · 900K · 🪒 shave`);
   });
-  it('④ 따갑따갑 — 면도 힌트 있음', () => {
+  it('④ 따갑따갑 — 수염 + 면도 힌트', () => {
     const line = formatStatusLine(3_250_000, getStage('rugged'));
+    expect(line).toContain(getStage('rugged').beardArt);
     expect(line).toContain('④ 따갑따갑');
     expect(line).toContain('🪒 shave');
   });
-  it('⑤ 고슴도치 — 면도 힌트 있음', () => {
+  it('⑤ 고슴도치 — 수염 + 면도 힌트', () => {
     const line = formatStatusLine(6_500_000, getStage('hermit'));
+    expect(line).toContain(getStage('hermit').beardArt);
     expect(line).toContain('⑤ 고슴도치');
     expect(line).toContain('🪒 shave');
   });
