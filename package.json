@@ -22,7 +22,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "perf": "node scripts/perf-check.mjs",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm test && npm run build"
   },
   "keywords": [
     "claude",
