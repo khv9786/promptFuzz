@@ -5,9 +5,10 @@ import { loadState, STATE_FILE } from '../state/storage.js';
 import { isInstalled, CLAUDE_SETTINGS } from '../hooks/manager.js';
 import { STAGE_ORDER, stageFromTokens } from '../state/stages.js';
 import { getProfile } from '../state/profiles.js';
+import { LOGO } from '../ui/logo.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
-const VERSION = '0.1.2';
+const VERSION = '0.1.3';
 
 function numeralFor(id: string): string {
   const i = STAGE_ORDER.indexOf(id as never);
@@ -21,6 +22,8 @@ function fmtBytes(n: number): string {
 
 export async function infoCommand(): Promise<void> {
   const lines: string[] = [];
+  lines.push(chalk.cyan(LOGO));
+  lines.push('');
   lines.push(chalk.bold(`PromptFuzz v${VERSION}`));
   lines.push('');
 
