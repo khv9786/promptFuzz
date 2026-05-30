@@ -72,4 +72,4 @@ publish는 *돌이키기 어렵다*. 이상 발견 시:
 
 - 72시간 내: `npm unpublish promptfuzz@0.1.0` 가능
 - 그 이후: `npm deprecate promptfuzz@0.1.0 "이유"` 로 deprecate
-- 핫픽스: `0.1.1`로 새 버전 publish 권장
+- 핫픽스: 다음 패치 버전(예: `0.1.x`)으로 새로 publish 권장

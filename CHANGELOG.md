@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-05-30
+
+### Changed
+
+- 당신(개발자)의 수염 ASCII를 털 텍스처로 재설계 — 단계별 질감/길이 차이를 명확히 해 ④/⑤ 구분을 개선 (기존 블록 `▒▓█`은 단계 변별이 약하고 폭도 모호). 순수 ASCII로 `\,,,/`·`\vvvv/`·`\WWWWW/`·`\MWMWMWM/`. 수염은 *당신*에게만 — Claude는 매끈한 턱(`\___/`) 유지.
+- 단계별 Claude 멘트를 2~3개 중 무작위 표시로 다양화 (기존 동결 멘트는 `messages[0]`로 보존).
+- statusline에 단계별 *당신 수염*(ASCII)을 함께 표시 (예: `🧔 \WWWWW/ ④ 따갑따갑 · 3.2M · 🪒 shave`).
+
+### Added
+
+- 시간대별 인사 (아침/낮/저녁/새벽) — `new Date().getHours()`만 읽음 (content-blind).
+- ASCII 로고 (README 상단 + `promptfuzz --info` 헤더).
+- 면도 완료 시 before/after 시각 연출 (당신 수염이 사라짐, 아빠 얼굴 ASCII).
+- 면도 마일스톤(1/10/50/100) 축하 박스 (왼쪽 레일, 폭 안전).
+
 ## [0.1.2] - 2026-05-30
 
 ### Fixed
@@ -69,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 첫 푸시에서 `package-lock.json`이 누락돼 CI(`npm ci`)가 실패하던 문제를 lockfile 추가로 해결.
 - `.gitattributes`로 줄끝을 LF로 명시 고정해, Windows 환경에서 매 커밋마다 발생하던 CRLF 경고를 해소.
 
-[Unreleased]: https://github.com/khv9786/promptFuzz/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/khv9786/promptFuzz/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/khv9786/promptFuzz/releases/tag/v0.1.3
 [0.1.2]: https://github.com/khv9786/promptFuzz/releases/tag/v0.1.2
 [0.1.0]: https://github.com/khv9786/promptFuzz/releases/tag/v0.1.0
