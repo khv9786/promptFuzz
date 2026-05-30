@@ -11,7 +11,7 @@ Claude Code로 코딩하다 보면 시간 가는 줄 모르죠. PromptFuzz는 �
      당신                   Claude
 ```
 
-<!-- TODO: asciinema or animated GIF here -->
+![PromptFuzz Demo](https://raw.githubusercontent.com/khv9786/promptFuzz/main/docs/demo.gif)
 
 ## 설치
 
@@ -22,11 +22,68 @@ promptfuzz install
 
 `install` 명령은 `~/.claude/settings.json`에 Stop hook을 추가합니다. 기존 hook은 그대로 보존되고, 백업 파일(`settings.json.promptfuzz.bak`)도 자동 생성됩니다.
 
+## 플랫폼 지원
+
+PromptFuzz는 Node.js 기반 크로스 플랫폼 도구입니다.
+
+| 플랫폼 | 상태 |
+|--------|------|
+| Windows | ✅ 검증 완료 |
+| Linux | ✅ CI 통과 (Node 18 & 20) |
+| macOS | 🧪 실험적 (작동 예상, 검증 환영) |
+
+### Windows 사용자
+
+PowerShell에서 `promptfuzz` 명령이 실행 정책으로 막히면:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+(npm 글로벌 CLI 공통 사항입니다. 한 번만 설정하면 됩니다.)
+
 ## 핵심 컨셉
 
 - **수염** — Claude Code 토큰 누적량 (`~/.claude/projects/**/*.jsonl`의 `usage` 필드만 합산. 본문은 메모리에 안 올립니다.)
 - **면도** — `promptfuzz shave` 명령으로 누적을 0으로 리셋 + 스트레칭 카드 1장.
 - **캐릭터** — 개발자(아빠)와 Claude Buddy(아이). 수염이 길어질수록 Buddy가 따가워합니다.
+
+## 사용 흐름 — 확인과 면도
+
+PromptFuzz는 두 가지 표면으로 작동합니다:
+
+- **확인 (수동적)**: 상태바에 수염이 항상 표시됩니다. 아무것도 칠 필요 없습니다.
+- **면도 (능동적)**: 텁수룩해지면 별도 터미널에서 `promptfuzz shave`를 실행하세요. 면도 미니게임과 스트레칭 카드가 휴식을 안내합니다.
+
+> ⚠️ **주의**: Claude Code 세션 *안에서* `promptfuzz` 명령을 직접 입력하지 마세요. Claude가 명령을 실행하면서 토큰을 소모합니다. 확인은 상태바(자동), 면도는 별도 터미널을 사용하세요.
+
+### 이 숫자는 무엇인가요?
+
+상태바와 `status`에 표시되는 토큰은 **Claude Code 누적 사용량**입니다 (input + 캐시 + output). PromptFuzz 자체는 토큰을 쓰지 않으며, Claude Code를 사용할 때 백그라운드 hook이 자동 추적합니다.
+
+## Claude Code 상태바에 수염 띄우기 (권장)
+
+Claude Code 하단 상태바에 수염을 항상 표시할 수 있습니다. **토큰을 전혀 쓰지 않고**, 세션 중 늘 보입니다.
+
+`~/.claude/settings.json`에 `statusLine`을 추가하세요:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "promptfuzz status --line",
+    "padding": 0
+  }
+}
+```
+
+> ⚠️ **이미 statusLine을 쓰고 있다면**, 기존 설정을 백업하고 신중히 병합하세요. `statusLine`은 단일 값이라 덮어쓰면 기존 설정이 사라집니다.
+
+Claude Code를 재시작하면 하단에 표시됩니다:
+
+```
+🧔 ④ 따갑따갑 · 3.2M · 🪒 shave
+```
 
 ## 수염 5단계
 
@@ -128,7 +185,7 @@ promptfuzz log --json       # 기계 판독용
 준비되시면 아무 키나 누르세요.
 ```
 
-`←` 또는 `→` 키를 6번 누르면 면도 완료. `q`로 언제든 중단(이 경우 토큰 카운터는 그대로). 비대화형 환경(Claude Code hook, CI)에서는 자동으로 면도가 완료되고 스트레칭 카드만 한 장 출력됩니다.
+`←` 또는 `→` 키를 6번(수염이 길수록 8~10번) 누르면 면도 완료. `q`로 언제든 중단(이 경우 토큰 카운터는 그대로). 비대화형 환경(Claude Code hook, CI)에서는 자동으로 면도가 완료되고 스트레칭 카드만 한 장 출력됩니다.
 
 ### 스트레칭 카드
 
@@ -152,7 +209,7 @@ promptfuzz log --json       # 기계 판독용
 
 ## 첫 설치 후 — 온보딩 면도
 
-이미 한참 Claude Code를 써온 분에게도 친절하게: 첫 `install` 직후 기존 JSONL 히스토리를 한 번 훑어 누적이 ② 임계치(10K)를 넘으면 짧은 충격 화면과 함께 선택지가 나타납니다.
+이미 한참 Claude Code를 써온 분에게도 친절하게: 첫 `install` 직후 기존 JSONL 히스토리를 한 번 훑어 누적이 ② 임계치(50K)를 넘으면 짧은 충격 화면과 함께 선택지가 나타납니다.
 
 ```
 당신의 Claude Code 토큰 히스토리를 발견했어요.
@@ -167,7 +224,7 @@ promptfuzz log --json       # 기계 판독용
   [s]     이대로 두고 시작 (현실 직시 모드)
 ```
 
-10K 미만이면 충격 화면 없이 조용히 넘어갑니다. 비대화형 환경에서는 자동으로 면도(=새 출발)를 선택합니다.
+50K 미만이면 충격 화면 없이 조용히 넘어갑니다. 비대화형 환경에서는 자동으로 면도(=새 출발)를 선택합니다.
 
 ## 프라이버시 / 신뢰
 
