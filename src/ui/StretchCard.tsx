@@ -60,7 +60,7 @@ export function StretchCard({ initialCard, pickNext, onComplete, onAbort }: Stre
   const timeUp = remaining <= 0;
 
   return (
-    <Box flexDirection="column" borderStyle="round" paddingX={2}>
+    <Box flexDirection="column" borderStyle="round" borderTop={false} borderBottom={false} borderRight={false} paddingX={2}>
       <Text bold>🧘 {card.title}</Text>
       <Text> </Text>
       {card.steps.map((step, i) => (
