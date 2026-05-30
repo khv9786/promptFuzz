@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.1] - 2026-05-30
+## [0.1.2] - 2026-05-30
 
 ### Fixed
 
 - log 잔디 격자 정렬 깨짐 수정 — 요일 헤더(한글 2칸)와 데이터 셀(1칸)의 폭 불일치, 행 레이블('4w 전'/'이번주')의 시각 폭 제각각으로 세로 정렬이 어긋나던 문제. 격자 영역을 1칸 폭 ASCII(`M T W T F S S`, `4w`/`now`)로 통일 (string-width 의존성 없이 해결).
 - 스트레칭 카드 정렬 깨짐 수정 — 이모지/한글 폭으로 오른쪽 테두리가 어긋나던 문제. 박스를 왼쪽 레일(│)만 남겨 폭 의존을 제거.
+- 잔디 '없음' 셀을 `·`(U+00B7, East Asian Ambiguous 폭)에서 ASCII `.`(U+002E)로 변경 — 일부 CJK-우선 폰트에서 `·`가 2칸으로 그려져 미세하게 어긋날 여지를 제거, 격자 정렬을 100% 보장.
 
 ## [0.1.0] - 2026-05-30
 
@@ -68,6 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 첫 푸시에서 `package-lock.json`이 누락돼 CI(`npm ci`)가 실패하던 문제를 lockfile 추가로 해결.
 - `.gitattributes`로 줄끝을 LF로 명시 고정해, Windows 환경에서 매 커밋마다 발생하던 CRLF 경고를 해소.
 
-[Unreleased]: https://github.com/khv9786/promptFuzz/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/khv9786/promptFuzz/releases/tag/v0.1.1
+[Unreleased]: https://github.com/khv9786/promptFuzz/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/khv9786/promptFuzz/releases/tag/v0.1.2
 [0.1.0]: https://github.com/khv9786/promptFuzz/releases/tag/v0.1.0
