@@ -63,7 +63,7 @@ export function ShaveGame({
         <Text bold color="cyan">🪒 면도 시작</Text>
         <Text> </Text>
         <Text>    .---.</Text>
-        <Text>   ( o o )</Text>
+        <Text>{`   ${currentStage.devFace}`}</Text>
         <Text>    {currentStage.beardArt}</Text>
         <Text>     당신</Text>
         <Text> </Text>
@@ -87,7 +87,7 @@ export function ShaveGame({
         <Text color="cyan">{RULE}</Text>
         <Text> </Text>
         <Text>    .---.</Text>
-        <Text>   ( o o )</Text>
+        <Text>{`   ${currentStage.devFace}`}</Text>
         <Text>    {`\\${beard}/`}</Text>
         <Text> </Text>
         <Text>{`[${filled}${empty}] ${state.progress}/${requiredKeys}`}</Text>
@@ -102,10 +102,10 @@ export function ShaveGame({
     <Box flexDirection="column">
       <Text> </Text>
       <Text dimColor>  면도 전</Text>
-      <Text>{`    (>_<)  ${currentStage.beardArt}`}</Text>
+      <Text>{`    ${currentStage.devFace}  ${currentStage.beardArt}`}</Text>
       <Text dimColor>{'      🪒  슥-삭...'}</Text>
       <Text color="green">  면도 후</Text>
-      <Text color="green">{`    (^_^)  ${smooth.beardArt}`}</Text>
+      <Text color="green">{`    ${smooth.devFace}  ${smooth.beardArt}`}</Text>
       <Text> </Text>
       <Text bold color="green">{completionMessage}</Text>
       {milestone ? (

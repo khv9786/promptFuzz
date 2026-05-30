@@ -98,3 +98,28 @@ describe('단계 멘트(messages) + randomMessage', () => {
     expect(randomMessage(s, () => 0)).toBe(s.messages[0]);
   });
 });
+
+describe('당신 표정(devFace) — ASCII + 단계별 + 수염 폭', () => {
+  it('모든 devFace가 순수 ASCII', () => {
+    for (const s of STAGES) {
+      for (const ch of s.devFace) {
+        expect(ch.charCodeAt(0)).toBeGreaterThanOrEqual(0x20);
+        expect(ch.charCodeAt(0)).toBeLessThanOrEqual(0x7e);
+      }
+    }
+  });
+  it('5단계 표정이 모두 다름', () => {
+    expect(new Set(STAGES.map((s) => s.devFace)).size).toBe(5);
+  });
+  it('수염 폭이 얼굴(표정) 폭을 넘지 않음 (얼굴 밖 삐짐 방지)', () => {
+    for (const s of STAGES) {
+      expect(s.beardArt.length).toBeLessThanOrEqual(s.devFace.length);
+    }
+  });
+  it('기대 표정 매핑 (여유 → 코믹 지침)', () => {
+    expect(getStage('smooth').devFace).toBe('( ^_^ )');
+    expect(getStage('bushy').devFace).toBe('( -_- )');
+    expect(getStage('rugged').devFace).toBe('( >_< )');
+    expect(getStage('hermit').devFace).toBe('( x_x )');
+  });
+});

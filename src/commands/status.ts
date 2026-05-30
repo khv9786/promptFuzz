@@ -64,7 +64,7 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
 
   const colorFn = stagePaint(chalk, stage.id);
 
-  const dev = ['  .---.', ' ( o o )', `  ${stage.beardArt}`, '   당신'];
+  const dev = ['  .---.', ` ${stage.devFace}`, `  ${stage.beardArt}`, '   당신'];
   const buddy = ['  .---.', `  ${stage.buddyFace}`, '  \\___/', '  Claude'];
 
   const lines: string[] = [];

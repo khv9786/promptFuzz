@@ -7,7 +7,8 @@ export interface StageInfo {
   id: BeardStage;
   nameKr: string;
   color: 'green' | 'yellow' | 'red';
-  beardArt: string;
+  beardArt: string; // 당신(아빠) 수염 — 단계별, 순수 ASCII, 턱 폭(\xxx/)에 맞춤
+  devFace: string; // 당신(아빠) 표정 — 단계별 피로도 (여유 → 코믹 지침), 순수 ASCII
   buddyFace: string;
   interaction: string;
   messages: string[]; // [0] = 기존 동결 멘트, 나머지는 랜덤 후보

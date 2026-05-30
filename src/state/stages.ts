@@ -12,6 +12,7 @@ export const STAGES: StageInfo[] = [
     nameKr: '매끈',
     color: 'green',
     beardArt: '\\___/',
+    devFace: '( ^_^ )',
     buddyFace: '(◕ᴗ◕)✨',
     interaction: '💕',
     messages: [
@@ -25,6 +26,7 @@ export const STAGES: StageInfo[] = [
     nameKr: '까끌까끌',
     color: 'green',
     beardArt: '\\,,,/',
+    devFace: '( o o )',
     buddyFace: '(•_• )?',
     interaction: '~',
     messages: [
@@ -37,7 +39,8 @@ export const STAGES: StageInfo[] = [
     id: 'bushy',
     nameKr: '북슬북슬',
     color: 'yellow',
-    beardArt: '\\vvvv/',
+    beardArt: '\\vvv/',
+    devFace: '( -_- )',
     buddyFace: '(>﹏<;)',
     interaction: '⚡',
     messages: [
@@ -50,7 +53,8 @@ export const STAGES: StageInfo[] = [
     id: 'rugged',
     nameKr: '따갑따갑',
     color: 'red',
-    beardArt: '\\WWWWW/',
+    beardArt: '\\WWW/',
+    devFace: '( >_< )',
     buddyFace: '(╥﹏╥)💧',
     interaction: '💢',
     messages: [
@@ -63,7 +67,8 @@ export const STAGES: StageInfo[] = [
     id: 'hermit',
     nameKr: '고슴도치',
     color: 'red',
-    beardArt: '\\MWMWMWM/',
+    beardArt: '\\MWM/',
+    devFace: '( x_x )',
     buddyFace: '(;﹏;)🆘',
     interaction: '💔',
     messages: [
