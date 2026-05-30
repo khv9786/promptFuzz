@@ -59,6 +59,7 @@ program
   .command('status')
   .description('현재 수염 상태를 보여줍니다')
   .option('--json', 'JSON으로 출력')
+  .option('--line', '[조사용] statusline용 한 줄 출력')
   .action((opts) => statusCommand(opts));
 
 program

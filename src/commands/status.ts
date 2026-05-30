@@ -6,6 +6,7 @@ import { getStage, STAGE_ORDER } from '../state/stages.js';
 import { stagePaint } from '../ui/theme.js';
 import { computeWeeklySummary, trendArrow } from '../state/weeklySummary.js';
 import { educationHint } from '../ui/educationHint.js';
+import { formatStatusLine } from './statusLine.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
 
@@ -14,11 +15,26 @@ function numeralFor(id: string): string {
   return NUMERAL[i] ?? '';
 }
 
+/** statusline용 한 줄 출력. 평문(ANSI 없음), tick 미호출(순수 읽기). */
+async function renderLine(): Promise<void> {
+  const { state, stage } = await getCurrentState();
+  console.log(formatStatusLine(state.cumulativeTokens, stage));
+}
+
 export interface StatusOptions {
   json?: boolean;
+  line?: boolean;
 }
 
 export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
+  // --line: Claude Code 상태바(statusLine)용 경량 한 줄 출력.
+  // tick()을 호출하지 않음 → JSONL 스캔/상태 변경 없는 순수 읽기.
+  // (Stop hook이 이미 state를 최신으로 유지하므로 상태바는 읽기만 하면 됨.)
+  if (opts.line) {
+    await renderLine();
+    return;
+  }
+
   await tick();
 
   const { state, stage } = await getCurrentState();
