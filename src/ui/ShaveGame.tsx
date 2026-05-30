@@ -16,6 +16,8 @@ export interface ShaveGameProps {
   currentStage: StageInfo;
   /** 완료 화면에 표시할 멘트 (마일스톤/단계별 — shave.ts가 결정). */
   completionMessage: string;
+  /** 마일스톤(1/10/50/100) 축하 라벨. 없으면 박스 미표시. */
+  milestone?: string | null;
   onShaved: () => void; // 마지막 키 직후, performShave 호출 시점
   onCompleted: () => void; // 단계 3 표시 후 1초, 부모는 unmount + 전환
   onAbort: () => void; // q 또는 Ctrl+C
@@ -24,6 +26,7 @@ export interface ShaveGameProps {
 export function ShaveGame({
   currentStage,
   completionMessage,
+  milestone,
   onShaved,
   onCompleted,
   onAbort,
@@ -60,7 +63,7 @@ export function ShaveGame({
         <Text bold color="cyan">🪒 면도 시작</Text>
         <Text> </Text>
         <Text>    .---.</Text>
-        <Text>   {currentStage.buddyFace}</Text>
+        <Text>   ( o o )</Text>
         <Text>    {currentStage.beardArt}</Text>
         <Text>     당신</Text>
         <Text> </Text>
@@ -73,7 +76,7 @@ export function ShaveGame({
 
   if (state.phase === 'shaving') {
     const remaining = requiredKeys - state.progress;
-    const beard = '▓'.repeat(remaining) + ' '.repeat(state.progress);
+    const beard = 'W'.repeat(remaining) + ' '.repeat(state.progress);
     const filled = '█'.repeat(state.progress);
     const empty = '░'.repeat(requiredKeys - state.progress);
 
@@ -94,15 +97,25 @@ export function ShaveGame({
     );
   }
 
-  // phase === 'done'
+  // phase === 'done' — before/after 대비 (수염 = 당신). 아빠 얼굴은 ASCII.
   return (
     <Box flexDirection="column">
       <Text> </Text>
-      <Text>    .---.</Text>
-      <Text color="green">   {smooth.buddyFace}</Text>
-      <Text color="green">    {smooth.beardArt}</Text>
+      <Text dimColor>  면도 전</Text>
+      <Text>{`    (>_<)  ${currentStage.beardArt}`}</Text>
+      <Text dimColor>{'      🪒  슥-삭...'}</Text>
+      <Text color="green">  면도 후</Text>
+      <Text color="green">{`    (^_^)  ${smooth.beardArt}`}</Text>
       <Text> </Text>
       <Text bold color="green">{completionMessage}</Text>
+      {milestone ? (
+        <>
+          <Text> </Text>
+          <Text color="yellow">{'  +' + '-'.repeat(22)}</Text>
+          <Text color="yellow">{`  |  ${milestone}  축하해요!`}</Text>
+          <Text color="yellow">{'  +' + '-'.repeat(22)}</Text>
+        </>
+      ) : null}
       <Text> </Text>
       <Text dimColor>→ 곧 스트레칭 카드를 띄울게요...</Text>
     </Box>

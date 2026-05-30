@@ -3,7 +3,7 @@ import { performShave, recordStretchCard } from '../state/index.js';
 import { randomStretchCard } from '../data/stretches.js';
 import { loadState } from '../state/storage.js';
 import { getStage } from '../state/stages.js';
-import { getCompletionMessage } from '../ui/completionMessage.js';
+import { getCompletionMessage, milestoneLabel } from '../ui/completionMessage.js';
 import type { PromptFuzzState } from '../types/index.js';
 
 export interface ShaveOptions {
@@ -82,6 +82,7 @@ async function runInteractive(before: PromptFuzzState): Promise<void> {
       React.createElement(ShaveGame, {
         currentStage: getStage(before.currentStage),
         completionMessage,
+        milestone: milestoneLabel(projectedShaveCount),
         onShaved: () => {
           void performShave();
         },

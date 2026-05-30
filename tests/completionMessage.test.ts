@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getCompletionMessage, stageCompletionMessage } from '../src/ui/completionMessage.js';
+import { getCompletionMessage, stageCompletionMessage, milestoneLabel } from '../src/ui/completionMessage.js';
 
 describe('getCompletionMessage 마일스톤', () => {
   it('1번째 → 첫 면도 멘트', () => {
@@ -50,5 +50,20 @@ describe('stageCompletionMessage', () => {
   it('smooth/bushy → 기본 시원 멘트', () => {
     expect(stageCompletionMessage('smooth')).toContain('시원');
     expect(stageCompletionMessage('bushy')).toContain('시원');
+  });
+});
+
+describe('milestoneLabel (축하 박스 표시 판단)', () => {
+  it('마일스톤(1/10/50/100) → 라벨 반환', () => {
+    expect(milestoneLabel(1)).toContain('첫 면도');
+    expect(milestoneLabel(10)).toContain('10번째');
+    expect(milestoneLabel(50)).toContain('50번째');
+    expect(milestoneLabel(100)).toContain('100번째');
+  });
+  it('비마일스톤 → null', () => {
+    expect(milestoneLabel(0)).toBeNull();
+    expect(milestoneLabel(2)).toBeNull();
+    expect(milestoneLabel(11)).toBeNull();
+    expect(milestoneLabel(99)).toBeNull();
   });
 });

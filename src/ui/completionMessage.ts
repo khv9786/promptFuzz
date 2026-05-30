@@ -22,6 +22,25 @@ export function getCompletionMessage(shaveCount: number, stageBeforeShave: Beard
   }
 }
 
+/**
+ * 마일스톤(1/10/50/100)이면 축하 라벨, 아니면 null.
+ * 면도 완료 화면의 축하 박스 표시 여부 판단용. (멘트와 별개의 시각 요소.)
+ */
+export function milestoneLabel(shaveCount: number): string | null {
+  switch (shaveCount) {
+    case 1:
+      return '🎉 첫 면도!';
+    case 10:
+      return '🎉 10번째 면도!';
+    case 50:
+      return '🏆 50번째 면도!';
+    case 100:
+      return '👑 100번째 면도!';
+    default:
+      return null;
+  }
+}
+
 /** 단계별 클로징 멘트 (마일스톤이 아닐 때 fallback). */
 export function stageCompletionMessage(stageBeforeShave: BeardStage): string {
   switch (stageBeforeShave) {
