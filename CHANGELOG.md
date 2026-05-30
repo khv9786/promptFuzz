@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-05-28
+## [0.1.0] - 2026-05-30
 
 ### Added
 
+- `status --line` — Claude Code 상태바(statusLine) 통합용 한 줄 출력 (토큰 0, 상시 표시). `tick` 미호출 순수 읽기.
 - 인터랙티브 면도 미니게임 (Ink) — 진입 화면 → ←/→ 키 6회 → 매끈 완료의 3단계 의식. q 또는 Ctrl+C로 중단 가능. 비대화형 환경(CI / Claude Code hook)에서는 자동으로 면도 진행 후 종료.
 - 스트레칭 카드 모달 (Ink) — 카운트다운 표시(자동 종료 X), Enter 완료 / s 다른 카드 / q 닫기.
 - 단계 상승 알림에 구분선, 단계 번호(①~⑤), Buddy 표정과 인용 멘트, 권장 안내(③ 이상)를 더해 *사건감*을 살림.
