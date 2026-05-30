@@ -7,6 +7,7 @@ import {
   gridLabelField,
   weekLabel,
   GRID_CELL_SEP,
+  GRASS_GLYPH,
 } from '../src/commands/logView.js';
 import { PROFILES } from '../src/state/profiles.js';
 import type { DailyEntry } from '../src/types/index.js';
@@ -96,13 +97,18 @@ describe('잔디 격자 레이아웃 (정렬)', () => {
   });
 
   it('데이터 행의 시각 폭이 헤더와 동일', () => {
-    const row = gridLabelField('now') + Array(7).fill('·').join(GRID_CELL_SEP);
+    const row = gridLabelField('now') + Array(7).fill('.').join(GRID_CELL_SEP);
     expect(row).toHaveLength(gridHeaderLine().length);
   });
 
   it('부분 주(앞쪽 공백 셀)도 동일 폭 유지', () => {
-    const cells = [' ', ' ', '·', '·', '·', '·', '·'];
+    const cells = [' ', ' ', '.', '.', '.', '.', '.'];
     const row = gridLabelField('4w') + cells.join(GRID_CELL_SEP);
     expect(row).toHaveLength(gridHeaderLine().length);
+  });
+
+  it("'없음' 셀은 ASCII '.' (U+002E) — CJK 폰트 폭 안전", () => {
+    expect(GRASS_GLYPH.none).toBe('.');
+    expect(GRASS_GLYPH.none.charCodeAt(0)).toBe(0x2e);
   });
 });

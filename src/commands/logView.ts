@@ -5,7 +5,7 @@ import { getLocalDateString } from '../state/dailyLog.js';
 export type GrassLevel = 'none' | 'light' | 'medium' | 'heavy' | 'extreme' | 'future';
 
 export const GRASS_GLYPH: Record<GrassLevel, string> = {
-  none: '·',
+  none: '.',
   light: '░',
   medium: '▒',
   heavy: '▓',
