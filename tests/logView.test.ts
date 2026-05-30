@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { grassLevel, summarize, listDates } from '../src/commands/logView.js';
+import {
+  grassLevel,
+  summarize,
+  listDates,
+  gridHeaderLine,
+  gridLabelField,
+  weekLabel,
+  GRID_CELL_SEP,
+} from '../src/commands/logView.js';
 import { PROFILES } from '../src/state/profiles.js';
 import type { DailyEntry } from '../src/types/index.js';
 
@@ -67,5 +75,34 @@ describe('summarize', () => {
     const s = summarize(log, 7, 'medium', now);
     expect(s.totalShaves).toBe(1); // 1월 entry 제외
     expect(s.peakStage).toBe('smooth');
+  });
+});
+
+describe('잔디 격자 레이아웃 (정렬)', () => {
+  it('헤더 = 7칸 라벨 영역 + 영문 요일(M T W T F S S)', () => {
+    expect(gridHeaderLine()).toBe('       M  T  W  T  F  S  S');
+  });
+
+  it('weekLabel: 가장 오래된 주는 Nw, 이번주(1)는 now', () => {
+    expect(weekLabel(5)).toBe('4w');
+    expect(weekLabel(2)).toBe('1w');
+    expect(weekLabel(1)).toBe('now');
+  });
+
+  it('라벨 영역은 항상 7칸 (ASCII라 글자수 = 시각 폭)', () => {
+    expect(gridLabelField('')).toHaveLength(7);
+    expect(gridLabelField('4w')).toHaveLength(7);
+    expect(gridLabelField('now')).toHaveLength(7);
+  });
+
+  it('데이터 행의 시각 폭이 헤더와 동일', () => {
+    const row = gridLabelField('now') + Array(7).fill('·').join(GRID_CELL_SEP);
+    expect(row).toHaveLength(gridHeaderLine().length);
+  });
+
+  it('부분 주(앞쪽 공백 셀)도 동일 폭 유지', () => {
+    const cells = [' ', ' ', '·', '·', '·', '·', '·'];
+    const row = gridLabelField('4w') + cells.join(GRID_CELL_SEP);
+    expect(row).toHaveLength(gridHeaderLine().length);
   });
 });

@@ -7,6 +7,10 @@ import {
   grassLevel,
   GRASS_GLYPH,
   listDates,
+  gridHeaderLine,
+  gridLabelField,
+  weekLabel,
+  GRID_CELL_SEP,
   type GrassLevel,
 } from './logView.js';
 import { getLocalDateString } from '../state/dailyLog.js';
@@ -53,7 +57,7 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
   const lines: string[] = [];
   lines.push(chalk.bold(`📅 PromptFuzz log — 최근 ${days}일`));
   lines.push('');
-  lines.push(chalk.dim('         월 화 수 목 금 토 일'));
+  lines.push(chalk.dim(gridHeaderLine()));
 
   // 주 단위 행으로 분할. 첫 날의 요일에 맞춰 앞쪽 공백 채움.
   const cells = dates.map((d) => {
@@ -72,11 +76,9 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
   let weekNum = Math.ceil(padded.length / 7);
   for (let i = 0; i < padded.length; i += 7) {
     const week = padded.slice(i, i + 7);
-    const label = (weekNum > 1 ? `${weekNum - 1}w 전` : '이번주').padStart(6);
-    const rendered = week
-      .map((c) => (c === null ? '  ' : colorize(c.glyph, c.level) + ' '))
-      .join('');
-    lines.push(chalk.dim(label) + ' ' + rendered);
+    // 각 셀은 1칸 폭(글리프 또는 공백). GRID_CELL_SEP로 이어 헤더 칸과 정확히 맞춘다.
+    const cells = week.map((c) => (c === null ? ' ' : colorize(c.glyph, c.level)));
+    lines.push(chalk.dim(gridLabelField(weekLabel(weekNum))) + cells.join(GRID_CELL_SEP));
     weekNum--;
   }
 
