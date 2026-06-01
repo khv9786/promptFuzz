@@ -54,7 +54,7 @@ export const STAGES: StageInfo[] = [
     nameKr: '따갑따갑',
     color: 'red',
     beardArt: '\\WWW/',
-    devFace: '( >_< )',
+    devFace: '( =_= )',
     buddyFace: '(╥﹏╥)💧',
     interaction: '💢',
     messages: [

@@ -119,7 +119,7 @@ describe('당신 표정(devFace) — ASCII + 단계별 + 수염 폭', () => {
   it('기대 표정 매핑 (여유 → 코믹 지침)', () => {
     expect(getStage('smooth').devFace).toBe('( ^_^ )');
     expect(getStage('bushy').devFace).toBe('( -_- )');
-    expect(getStage('rugged').devFace).toBe('( >_< )');
+    expect(getStage('rugged').devFace).toBe('( =_= )'); // v0.1.6: >_< (귀여움) → =_= (지침)
     expect(getStage('hermit').devFace).toBe('( x_x )');
   });
 });
