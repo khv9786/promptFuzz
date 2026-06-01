@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-05-30
+
+### Fixed
+
+- 면도 진행 화면의 수염이 구버전 모양(긴 `W` 반복)으로 표시되던 버그 수정 — v0.1.3 비율 교정을 반영해 단계 수염이 진행률에 따라 깎이도록 변경.
+- `settings.json` 쓰기를 원자적(temp→rename + fsync)으로 변경하여 쓰기 중단 시 손상 방지. `uninstall`에도 수정 전 백업 추가 (`reset`은 `uninstall` 경유로 적용).
+- state 마이그레이션에 숫자/배열/단계 타입 가드 추가 — `cumulativeTokens`(null/문자열/음수→0), `shaveHistory`·`stretchCardsShown`(배열 아니면 [])·`lastJsonlOffset`(객체 아니면 {})·`currentStage`(유효 단계 아니면 smooth). 손상된 상태 파일로 인한 크래시 방지.
+
+### Changed
+
+- (문서) 프라이버시 섹션에 경로 노출 주의(`state.json`·`--info`) 추가, content-blind 설명을 "파싱 순간 메모리 경유"까지 정직하게 정밀화.
+
 ## [0.1.3] - 2026-05-30
 
 ### Changed
