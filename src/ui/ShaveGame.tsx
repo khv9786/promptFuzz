@@ -6,6 +6,7 @@ import {
   INITIAL_SHAVE_STATE,
   reduceShave,
   requiredKeyCount,
+  shavedBeard,
   type ShaveAction,
   type ShaveStateInternal,
 } from './shaveReducer.js';
@@ -75,8 +76,9 @@ export function ShaveGame({
   }
 
   if (state.phase === 'shaving') {
-    const remaining = requiredKeys - state.progress;
-    const beard = 'W'.repeat(remaining) + ' '.repeat(state.progress);
+    // v0.1.3 비율 교정 반영: 면도 중 수염은 시작 단계의 교정된 수염(beardArt 가운데
+    // 3자)을 기반으로, 진행률에 따라 왼쪽부터 깎여 공백이 된다. 완료 시 smooth로 전환.
+    const beard = shavedBeard(currentStage.beardArt, state.progress, requiredKeys);
     const filled = '█'.repeat(state.progress);
     const empty = '░'.repeat(requiredKeys - state.progress);
 
@@ -88,7 +90,7 @@ export function ShaveGame({
         <Text> </Text>
         <Text>    .---.</Text>
         <Text>{`   ${currentStage.devFace}`}</Text>
-        <Text>    {`\\${beard}/`}</Text>
+        <Text>{`    ${beard}`}</Text>
         <Text> </Text>
         <Text>{`[${filled}${empty}] ${state.progress}/${requiredKeys}`}</Text>
         <Text> </Text>

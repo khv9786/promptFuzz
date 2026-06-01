@@ -20,6 +20,7 @@ import { shaveCommand } from '../src/commands/shave.js';
 import {
   reduceShave,
   requiredKeyCount,
+  shavedBeard,
   INITIAL_SHAVE_STATE,
   TOTAL_SHAVE_STEPS,
   type ShaveStateInternal,
@@ -166,5 +167,33 @@ describe('reduceShave 가변 키 횟수', () => {
     r = reduceShave(r.state, { type: 'arrow' }, 10);
     expect(r.state.phase).toBe('done'); // 10
     expect(r.effect).toBe('shaved');
+  });
+});
+
+describe('shavedBeard (면도 진행 중 수염, v0.1.3 비율)', () => {
+  it('시작(progress 0)은 교정된 수염 그대로', () => {
+    // hermit 수염 \MWM/ → 3자 코어
+    expect(shavedBeard('\\MWM/', 0, 10)).toBe('\\MWM/');
+  });
+
+  it('옛날 긴 수염(W 10칸)을 만들지 않는다', () => {
+    const mid = shavedBeard('\\WWW/', 5, 10);
+    // 코어는 항상 3자(공백+남은 수염), 전체 5자 — 절대 10칸 아님
+    expect(mid.length).toBe(5);
+    expect(mid).not.toContain('WWWWWWWWWW');
+  });
+
+  it('진행할수록 왼쪽부터 깎여 공백', () => {
+    // 3자 코어, ratio=progress/required
+    expect(shavedBeard('\\MWM/', 4, 10)).toBe('\\ WM/'); // floor(3*0.4)=1 깎임
+    expect(shavedBeard('\\MWM/', 7, 10)).toBe('\\  M/'); // floor(3*0.7)=2 깎임
+  });
+
+  it('완료(progress=required)면 전부 공백', () => {
+    expect(shavedBeard('\\MWM/', 10, 10)).toBe('\\   /');
+  });
+
+  it('형식이 다른 입력은 안전하게 그대로', () => {
+    expect(shavedBeard('weird', 1, 6)).toBe('weird');
   });
 });

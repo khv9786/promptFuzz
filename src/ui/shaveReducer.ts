@@ -80,3 +80,24 @@ export function reduceShave(
   // 'done' 단계에서 q 외 모든 키 무시. shaving 단계에서 arrow 외 키 무시.
   return { state, effect: null };
 }
+
+/**
+ * 면도 진행 중 수염 ASCII. 단계의 교정된 beardArt(`\XXX/` 형식)에서
+ * 가운데 글자를 진행률에 비례해 왼쪽부터 공백으로 깎는다.
+ *
+ * @param beardArt 단계 수염 (예: '\\MWM/'). `\` + 코어 + `/` 형식 가정.
+ * @param progress 현재까지 키 입력 횟수
+ * @param required 이 면도에 필요한 총 횟수
+ */
+export function shavedBeard(beardArt: string, progress: number, required: number): string {
+  // 형식이 예상과 다르면 안전하게 그대로 반환.
+  if (beardArt.length < 2 || !beardArt.startsWith('\\') || !beardArt.endsWith('/')) {
+    return beardArt;
+  }
+  const core = beardArt.slice(1, -1);
+  const len = core.length;
+  const ratio = required > 0 ? Math.min(1, Math.max(0, progress / required)) : 1;
+  const shaved = Math.min(len, Math.floor(len * ratio));
+  const cleared = ' '.repeat(shaved) + core.slice(shaved);
+  return `\\${cleared}/`;
+}
