@@ -1,4 +1,4 @@
-import { readFile, writeFile, copyFile, mkdir } from 'node:fs/promises';
+import { readFile, copyFile, mkdir, rename, open } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
@@ -34,9 +34,25 @@ async function readSettings(): Promise<ClaudeSettings> {
   }
 }
 
+/**
+ * 원자적 쓰기: temp 파일에 쓰고 fsync 후 rename.
+ * rename은 OS 레벨 원자적이라 쓰기가 중단돼도 원본 또는 완성본만 남는다
+ * (잘린 파일이 생기지 않음). *남의* Claude 설정이라 손상 방지가 중요.
+ */
 async function writeSettings(settings: ClaudeSettings): Promise<void> {
   await mkdir(dirname(CLAUDE_SETTINGS), { recursive: true });
-  await writeFile(CLAUDE_SETTINGS, JSON.stringify(settings, null, 2));
+  const tmp = `${CLAUDE_SETTINGS}.promptfuzz.tmp`;
+  const data = JSON.stringify(settings, null, 2);
+
+  const handle = await open(tmp, 'w');
+  try {
+    await handle.writeFile(data, 'utf-8');
+    await handle.sync(); // 디스크 플러시 (best-effort)
+  } finally {
+    await handle.close();
+  }
+
+  await rename(tmp, CLAUDE_SETTINGS);
 }
 
 async function backupSettings(): Promise<void> {
@@ -76,6 +92,9 @@ export async function uninstallHook(): Promise<{ removed: boolean }> {
 
   const settings = await readSettings();
   if (!settings.hooks?.Stop) return { removed: false };
+
+  // 수정 전 백업 (install과 동일 정책 — 남의 설정이므로 안전망).
+  await backupSettings();
 
   let removed = false;
   const filtered: HookMatcher[] = [];
