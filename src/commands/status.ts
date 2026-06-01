@@ -8,6 +8,7 @@ import { computeWeeklySummary, trendArrow } from '../state/weeklySummary.js';
 import { educationHint } from '../ui/educationHint.js';
 import { formatStatusLine } from './statusLine.js';
 import { timeOfDayGreeting } from '../ui/greeting.js';
+import { renderDuo } from '../ui/duo.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
 
@@ -64,19 +65,15 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
 
   const colorFn = stagePaint(chalk, stage.id);
 
-  const dev = ['  .---.', ` ${stage.devFace}`, `  ${stage.beardArt}`, '   당신'];
-  const buddy = ['  .---.', `  ${stage.buddyFace}`, '  \\___/', '  Claude'];
-
   const lines: string[] = [];
   lines.push(chalk.bold('  PromptFuzz ─ 오늘의 수염'));
   const greeting = timeOfDayGreeting(new Date().getHours());
   if (greeting) lines.push('  ' + chalk.dim(greeting));
   lines.push('');
-  for (let i = 0; i < 4; i++) {
-    const left = pad(dev[i] ?? '', 18);
-    const right = buddy[i] ?? '';
-    const mid = i === 1 ? colorFn(`  ${stage.interaction}  `) : '     ';
-    lines.push('  ' + colorFn(left) + mid + colorFn(right));
+  // 당신(고정) ↔ Claude(단계별로 멀어짐 + 고개 돌림). renderDuo가 평문 4줄을 만들고
+  // 여기서 단계 색을 입힌다.
+  for (const row of renderDuo(stage)) {
+    lines.push('  ' + colorFn(row));
   }
   lines.push('');
   lines.push('  ' + colorFn(`"${randomMessage(stage)}"`));
@@ -125,9 +122,4 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
   }
 
   console.log(lines.join('\n'));
-}
-
-function pad(s: string, len: number): string {
-  if (s.length >= len) return s;
-  return s + ' '.repeat(len - s.length);
 }
