@@ -2,9 +2,11 @@ import { mkdir, readFile, writeFile, chmod } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
-import type { PromptFuzzState } from '../types/index.js';
+import type { BeardStage, PromptFuzzState } from '../types/index.js';
 import { isValidProfileId, DEFAULT_PROFILE } from './profiles.js';
 import { isValidQuietHours } from './quietHours.js';
+
+const VALID_STAGES: readonly BeardStage[] = ['smooth', 'stubble', 'bushy', 'rugged', 'hermit'];
 
 export const PROMPTFUZZ_DIR = join(homedir(), '.promptfuzz');
 export const STATE_FILE = join(PROMPTFUZZ_DIR, 'state.json');
@@ -85,6 +87,24 @@ function migrate(state: PromptFuzzState): PromptFuzzState {
   }
   if (!isValidQuietHours(merged.quietHours)) {
     merged.quietHours = null;
+  }
+
+  // 숫자/배열/단계 필드 가드 — null/문자열/음수로 인한 런타임 크래시 방지.
+  // (예: cumulativeTokens가 null이면 .toLocaleString()에서 터짐)
+  if (typeof merged.cumulativeTokens !== 'number' || !Number.isFinite(merged.cumulativeTokens) || merged.cumulativeTokens < 0) {
+    merged.cumulativeTokens = 0;
+  }
+  if (!Array.isArray(merged.shaveHistory)) {
+    merged.shaveHistory = [];
+  }
+  if (!Array.isArray(merged.stretchCardsShown)) {
+    merged.stretchCardsShown = [];
+  }
+  if (typeof merged.lastJsonlOffset !== 'object' || merged.lastJsonlOffset === null || Array.isArray(merged.lastJsonlOffset)) {
+    merged.lastJsonlOffset = {};
+  }
+  if (!VALID_STAGES.includes(merged.currentStage)) {
+    merged.currentStage = 'smooth';
   }
 
   return merged;
