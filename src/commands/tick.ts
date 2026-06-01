@@ -1,7 +1,6 @@
-import chalk from 'chalk';
 import { tick } from '../state/index.js';
 import { loadState } from '../state/storage.js';
-import { stagePaint } from '../ui/theme.js';
+import { stageColor } from '../ui/theme.js';
 import { isQuietNow } from '../state/quietHours.js';
 import { renderStageChange } from './tickRender.js';
 import { randomMessage } from '../state/stages.js';
@@ -23,7 +22,7 @@ export async function tickCommand(): Promise<void> {
     if (isQuietNow(state.quietHours, new Date().getHours())) return;
 
     const compact = process.env.PROMPTFUZZ_COMPACT === '1';
-    const colorFn = stagePaint(chalk, result.stage.id);
+    const colorFn = stageColor(result.stage.id);
     const lines = renderStageChange({
       stage: result.stage,
       previousStage: result.previousStage,

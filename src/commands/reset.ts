@@ -3,9 +3,9 @@ import { existsSync } from 'node:fs';
 import { resolve, join, sep } from 'node:path';
 import { homedir } from 'node:os';
 import { createInterface } from 'node:readline/promises';
-import chalk from 'chalk';
 import { uninstallHook } from '../hooks/manager.js';
 import { PROMPTFUZZ_DIR } from '../state/storage.js';
+import { theme } from '../ui/theme.js';
 
 export interface ResetOptions {
   yes?: boolean;
@@ -46,10 +46,10 @@ export async function resetCommand(opts: ResetOptions = {}): Promise<void> {
   // 대화형 확인 (--yes면 생략).
   if (!opts.yes) {
     output.write('\n');
-    output.write(chalk.yellow('⚠ PromptFuzz의 모든 데이터를 영구히 삭제합니다:') + '\n\n');
+    output.write(theme.warning('⚠ PromptFuzz의 모든 데이터를 영구히 삭제합니다:') + '\n\n');
     output.write('  • ~/.promptfuzz/ (누적 토큰, 면도 이력, dailyLog, 프로필)\n');
     output.write('  • Claude Code Stop hook 제거 (settings.json 복원)\n\n');
-    output.write(chalk.dim('이 작업은 되돌릴 수 없습니다.') + '\n');
+    output.write(theme.dim('이 작업은 되돌릴 수 없습니다.') + '\n');
 
     const rl = createInterface({ input, output });
     let answer: string;
@@ -74,15 +74,15 @@ export async function resetCommand(opts: ResetOptions = {}): Promise<void> {
         await rm(PROMPTFUZZ_DIR, { recursive: true, force: true });
       }
     } else {
-      output.write(chalk.red('경로 안전 검증 실패 — 삭제를 건너뜁니다.') + '\n');
+      output.write(theme.danger('경로 안전 검증 실패 — 삭제를 건너뜁니다.') + '\n');
       process.exitCode = 1;
       return;
     }
 
-    output.write('\n' + chalk.green('✓ 초기화 완료.') + '\n\n');
-    output.write('다시 시작하려면 ' + chalk.cyan('promptfuzz install') + '.\n');
+    output.write('\n' + theme.success('✓ 초기화 완료.') + '\n\n');
+    output.write('다시 시작하려면 ' + theme.info('promptfuzz install') + '.\n');
   } catch (err) {
-    output.write(chalk.red('초기화 실패: ') + (err instanceof Error ? err.message : String(err)) + '\n');
+    output.write(theme.danger('초기화 실패: ') + (err instanceof Error ? err.message : String(err)) + '\n');
     process.exitCode = 1;
   }
 }

@@ -1,9 +1,8 @@
-import chalk from 'chalk';
 import { getCurrentState, incrementStatusView } from '../state/index.js';
 import { isInstalled } from '../hooks/manager.js';
 import { tick } from '../state/index.js';
 import { getStage, STAGE_ORDER, randomMessage } from '../state/stages.js';
-import { stagePaint } from '../ui/theme.js';
+import { stageColor, theme } from '../ui/theme.js';
 import { computeWeeklySummary, trendArrow } from '../state/weeklySummary.js';
 import { educationHint } from '../ui/educationHint.js';
 import { formatStatusLine } from './statusLine.js';
@@ -63,12 +62,12 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
     return;
   }
 
-  const colorFn = stagePaint(chalk, stage.id);
+  const colorFn = stageColor(stage.id);
 
   const lines: string[] = [];
-  lines.push(chalk.bold('  PromptFuzz ─ 오늘의 수염'));
+  lines.push(theme.bold('  PromptFuzz ─ 오늘의 수염'));
   const greeting = timeOfDayGreeting(new Date().getHours());
-  if (greeting) lines.push('  ' + chalk.dim(greeting));
+  if (greeting) lines.push('  ' + theme.dim(greeting));
   lines.push('');
   // 당신(고정) ↔ Claude(단계별로 멀어짐 + 고개 돌림). renderDuo가 평문 4줄을 만들고
   // 여기서 단계 색을 입힌다.
@@ -80,28 +79,28 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
   lines.push('');
   lines.push(
     '  ' +
-      chalk.dim('누적: ') +
-      chalk.bold(state.cumulativeTokens.toLocaleString()) +
-      chalk.dim(' 토큰  ·  단계: ') +
+      theme.dim('누적: ') +
+      theme.bold(state.cumulativeTokens.toLocaleString()) +
+      theme.dim(' 토큰  ·  단계: ') +
       colorFn(`${numeralFor(stage.id)} ${stage.nameKr}`) +
-      chalk.dim('  ·  면도 이력: ') +
-      chalk.bold(state.shaveHistory.length.toString())
+      theme.dim('  ·  면도 이력: ') +
+      theme.bold(state.shaveHistory.length.toString())
   );
   lines.push(
-    '  ' + chalk.dim('프로필: ') + chalk.bold(state.thresholdProfile) +
-      chalk.dim('  ·  promptfuzz config 로 변경')
+    '  ' + theme.dim('프로필: ') + theme.bold(state.thresholdProfile) +
+      theme.dim('  ·  promptfuzz config 로 변경')
   );
 
   const summary = computeWeeklySummary(state.dailyLog);
   if (summary) {
     const avg = getStage(summary.avgStage);
     const parts = [
-      chalk.dim('최근 7일: ') +
-        chalk.dim('평균 ') + chalk.bold(`${numeralFor(summary.avgStage)} ${avg.nameKr}`) +
-        chalk.dim(' · 면도 ') + chalk.bold(`${summary.shaveCount}회`),
+      theme.dim('최근 7일: ') +
+        theme.dim('평균 ') + theme.bold(`${numeralFor(summary.avgStage)} ${avg.nameKr}`) +
+        theme.dim(' · 면도 ') + theme.bold(`${summary.shaveCount}회`),
     ];
     if (summary.trend) {
-      parts.push(chalk.dim(' · 추세 ') + chalk.bold(trendArrow(summary.trend)));
+      parts.push(theme.dim(' · 추세 ') + theme.bold(trendArrow(summary.trend)));
     }
     lines.push('  ' + parts.join(''));
   }
@@ -109,16 +108,16 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
   lines.push('');
 
   if (!installed) {
-    lines.push('  ' + chalk.yellow('⚠ ') + chalk.dim('Hook이 설치되지 않았어요. ') + chalk.cyan('promptfuzz install'));
+    lines.push('  ' + theme.warning('⚠ ') + theme.dim('Hook이 설치되지 않았어요. ') + theme.info('promptfuzz install'));
   } else if (stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit') {
-    lines.push('  ' + chalk.dim("💡 " + chalk.cyan('promptfuzz shave') + ' 로 면도 + 스트레칭'));
+    lines.push('  ' + theme.dim("💡 " + theme.info('promptfuzz shave') + ' 로 면도 + 스트레칭'));
   }
 
   // 첫 5회 교육 멘트 (count 증가는 사람용 출력에서만).
   const viewCount = await incrementStatusView();
   const hint = educationHint(viewCount);
   if (hint) {
-    lines.push('  ' + chalk.dim(hint));
+    lines.push('  ' + theme.dim(hint));
   }
 
   console.log(lines.join('\n'));

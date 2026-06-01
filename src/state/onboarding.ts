@@ -2,7 +2,7 @@ import { stat, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline/promises';
-import chalk from 'chalk';
+import { theme } from '../ui/theme.js';
 import { loadState, saveState } from './storage.js';
 import { scanAllSessions, CLAUDE_PROJECTS_DIR } from '../parser/index.js';
 import { stageFromTokens } from './stages.js';
@@ -75,7 +75,7 @@ export async function runOnboardingShave(
   const input = deps.input ?? process.stdin;
   const isTTY = deps.isTTY ?? Boolean((process.stdin as NodeJS.ReadStream).isTTY);
 
-  output.write(chalk.dim('  당신의 토큰 히스토리를 확인 중...\n'));
+  output.write(theme.dim('  당신의 토큰 히스토리를 확인 중...\n'));
 
   const { totalDelta, updatedOffsets } = await scanAllSessions(state.lastJsonlOffset);
   const cumulative = state.cumulativeTokens + totalDelta.total;
@@ -117,8 +117,8 @@ export async function runOnboardingShave(
       currentStage: 'smooth',
     };
     await saveState(shaved);
-    output.write('\n' + chalk.green('  🪒 매끈! 새 출발입니다.') + '\n');
-    output.write(chalk.dim(`  프로필: ${chosenProfile}\n\n`));
+    output.write('\n' + theme.success('  🪒 매끈! 새 출발입니다.') + '\n');
+    output.write(theme.dim(`  프로필: ${chosenProfile}\n\n`));
     return { choice: 'shave', tokens: 0, stage: stageFromTokens(0, getProfile(chosenProfile)), profile: chosenProfile };
   }
 
@@ -130,8 +130,8 @@ export async function runOnboardingShave(
     currentStage: keptStage.id,
   };
   await saveState(kept);
-  output.write('\n' + chalk.yellow('  🦔 좋아요. 진짜를 직시하세요.') + '\n');
-  output.write(chalk.dim(`  프로필: ${chosenProfile}\n\n`));
+  output.write('\n' + theme.warning('  🦔 좋아요. 진짜를 직시하세요.') + '\n');
+  output.write(theme.dim(`  프로필: ${chosenProfile}\n\n`));
   return { choice: 'keep', tokens: cumulative, stage: keptStage, profile: chosenProfile };
 }
 
@@ -142,21 +142,21 @@ function renderShockScreen(
 ): void {
   const colorFn =
     stage.color === 'green'
-      ? chalk.green
+      ? theme.success
       : stage.color === 'yellow'
-        ? chalk.yellow
-        : chalk.red;
+        ? theme.warning
+        : theme.danger;
 
   output.write('\n');
-  output.write('  ' + chalk.bold('당신의 Claude Code 토큰 히스토리를 발견했어요.') + '\n\n');
+  output.write('  ' + theme.bold('당신의 Claude Code 토큰 히스토리를 발견했어요.') + '\n\n');
   output.write('    ' + colorFn(stage.buddyFace) + '\n');
   output.write('    ' + colorFn(stage.beardArt) + '\n\n');
   output.write(
     '  ' + colorFn(`"아빠... ${tokens.toLocaleString()} 토큰의 수염을 가지고 계셨네요..."`) + '\n\n'
   );
   output.write('  이제부터 새로 시작할까요?\n');
-  output.write('    ' + chalk.cyan('[Enter]') + ' 면도하고 시작 ' + chalk.dim('(권장)') + '\n');
-  output.write('    ' + chalk.cyan('[s]') + '     이대로 두고 시작 ' + chalk.dim('(현실 직시 모드)') + '\n');
+  output.write('    ' + theme.info('[Enter]') + ' 면도하고 시작 ' + theme.dim('(권장)') + '\n');
+  output.write('    ' + theme.info('[s]') + '     이대로 두고 시작 ' + theme.dim('(현실 직시 모드)') + '\n');
 }
 
 async function promptShaveChoice(
@@ -179,10 +179,10 @@ async function promptProfileChoice(
 ): Promise<ProfileId> {
   output.write('\n');
   output.write('  마지막으로, 사용 패턴을 알려주세요:\n');
-  output.write('    ' + chalk.cyan('[1]') + ' 가볍게 — Sonnet 위주, Pro 플랜\n');
-  output.write('    ' + chalk.cyan('[2]') + ' 균형 — 평균 (기본, 잘 모르겠으면 이것)\n');
-  output.write('    ' + chalk.cyan('[3]') + ' 무겁게 — Opus + Agent Teams, Max 플랜\n');
-  output.write('    ' + chalk.cyan('[4]') + ' 극단적 — Agent Teams 풀가동\n');
+  output.write('    ' + theme.info('[1]') + ' 가볍게 — Sonnet 위주, Pro 플랜\n');
+  output.write('    ' + theme.info('[2]') + ' 균형 — 평균 (기본, 잘 모르겠으면 이것)\n');
+  output.write('    ' + theme.info('[3]') + ' 무겁게 — Opus + Agent Teams, Max 플랜\n');
+  output.write('    ' + theme.info('[4]') + ' 극단적 — Agent Teams 풀가동\n');
   const rl = createInterface({ input, output });
   try {
     const answer = (await rl.question('  선택 (Enter = 균형 권장): ')).trim();

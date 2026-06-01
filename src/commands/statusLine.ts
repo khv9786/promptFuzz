@@ -1,5 +1,5 @@
 import { createInterface } from 'node:readline/promises';
-import chalk from 'chalk';
+import { theme } from '../ui/theme.js';
 import type { StageInfo } from '../types/index.js';
 import { stageLabel } from './tickRender.js';
 import {
@@ -75,7 +75,7 @@ export async function statuslineInstall(opts: StatuslineOptions = {}): Promise<v
   const kind = classifyStatusLine(settings);
 
   if (kind === 'ours') {
-    output.write(chalk.green('✓ 이미 PromptFuzz 상태바가 설정되어 있어요.') + '\n');
+    output.write(theme.success('✓ 이미 PromptFuzz 상태바가 설정되어 있어요.') + '\n');
     return;
   }
 
@@ -89,10 +89,10 @@ export async function statuslineInstall(opts: StatuslineOptions = {}): Promise<v
       return;
     }
     if (isTTY && !opts.yes) {
-      output.write('\n' + chalk.yellow('⚠️ 이미 statusLine 설정이 있습니다:') + '\n\n');
+      output.write('\n' + theme.warning('⚠️ 이미 statusLine 설정이 있습니다:') + '\n\n');
       output.write(`  command: ${existing}\n\n`);
       output.write('PromptFuzz 수염으로 덮어쓰시겠어요?\n');
-      output.write(chalk.dim('기존 설정은 ~/.claude/settings.json.promptfuzz.bak에 백업됩니다.') + ' [y/N]: ');
+      output.write(theme.dim('기존 설정은 ~/.claude/settings.json.promptfuzz.bak에 백업됩니다.') + ' [y/N]: ');
       const rl = createInterface({ input, output });
       let answer: string;
       try {
@@ -111,8 +111,8 @@ export async function statuslineInstall(opts: StatuslineOptions = {}): Promise<v
 
   await writeSettings({ ...settings, statusLine: { ...OUR_STATUSLINE } });
 
-  output.write(chalk.green('✓ Claude Code 상태바에 수염을 추가했습니다.') + '\n');
-  output.write(chalk.dim('  Claude Code를 재시작하면 하단에 표시됩니다:') + '\n\n');
+  output.write(theme.success('✓ Claude Code 상태바에 수염을 추가했습니다.') + '\n');
+  output.write(theme.dim('  Claude Code를 재시작하면 하단에 표시됩니다:') + '\n\n');
   output.write('  🧔 ④ 따갑따갑 · 3.2M · 🪒 shave\n');
 }
 
@@ -136,7 +136,7 @@ export async function statuslineUninstall(opts: StatuslineOptions = {}): Promise
   delete next.statusLine;
   await writeSettings(next);
 
-  output.write(chalk.green('✓ 상태바에서 PromptFuzz 수염을 제거했습니다.') + '\n');
+  output.write(theme.success('✓ 상태바에서 PromptFuzz 수염을 제거했습니다.') + '\n');
 }
 
 export async function statuslineShow(opts: StatuslineOptions = {}): Promise<void> {
@@ -151,5 +151,5 @@ export async function statuslineShow(opts: StatuslineOptions = {}): Promise<void
   } else {
     output.write('현재 statusLine: 설정되지 않음\n');
   }
-  output.write('\n' + chalk.dim('설치: ') + chalk.cyan('promptfuzz statusline install') + '\n');
+  output.write('\n' + theme.dim('설치: ') + theme.info('promptfuzz statusline install') + '\n');
 }
