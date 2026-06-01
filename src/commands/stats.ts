@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { theme } from '../ui/theme.js';
 import { loadState } from '../state/storage.js';
 import { computeStats } from '../state/stats.js';
 import { getStage, STAGE_ORDER } from '../state/stages.js';
@@ -41,17 +41,17 @@ export async function statsCommand(opts: StatsOptions = {}): Promise<void> {
 
   const hasActivity = Object.keys(state.dailyLog).length > 0;
   if (!hasActivity) {
-    console.log(chalk.bold('📊 PromptFuzz 통계'));
+    console.log(theme.bold('📊 PromptFuzz 통계'));
     console.log();
-    console.log(chalk.dim('아직 데이터가 없어요. Claude Code를 사용하면 자동으로 기록됩니다.'));
+    console.log(theme.dim('아직 통계가 없어요. 며칠 사용하면 회고를 보여드릴게요 🌱'));
     return;
   }
 
   const lines: string[] = [];
-  lines.push(chalk.bold(`📊 PromptFuzz 통계 (최근 ${days}일)`));
+  lines.push(theme.bold(`📊 PromptFuzz 통계 (최근 ${days}일)`));
   lines.push('');
 
-  lines.push(chalk.cyan('활동:'));
+  lines.push(theme.info('활동:'));
   lines.push(`  활성 일수:        ${stats.activeDays} / ${days}`);
   lines.push(`  총 사용 토큰:     ${stats.totalTokens.toLocaleString()}`);
   lines.push(`  일 평균:          ~${stats.dailyAverage.toLocaleString()}`);
@@ -60,9 +60,9 @@ export async function statsCommand(opts: StatsOptions = {}): Promise<void> {
   }
   lines.push('');
 
-  lines.push(chalk.cyan('면도:'));
+  lines.push(theme.info('면도:'));
   if (stats.totalShaves === 0) {
-    lines.push(chalk.dim('  아직 면도 기록이 없어요. promptfuzz shave 한 번 어떠세요?'));
+    lines.push(theme.dim('  아직 면도 기록이 없어요. 수염이 자라면 promptfuzz shave 해보세요'));
   } else {
     lines.push(`  총 면도:          ${stats.totalShaves}회`);
     if (stats.avgShaveIntervalDays !== null) {
@@ -79,18 +79,18 @@ export async function statsCommand(opts: StatsOptions = {}): Promise<void> {
   }
   lines.push('');
 
-  lines.push(chalk.cyan('스트레칭:'));
+  lines.push(theme.info('스트레칭:'));
   lines.push(`  완료:             ${stats.totalStretches}회`);
   if (stats.completionRate !== null) {
     lines.push(`  완료율:           ${stats.completionRate}% (면도 대비)`);
   }
   if (stats.mostSeenCard) {
-    lines.push(`  가장 자주 본 카드: ${cardTitle(stats.mostSeenCard.id)} (${stats.mostSeenCard.count}회)`);
+    lines.push(`  가장 자주 본 카드: ${cardTitle(stats.mostSeenCard.id)} · ${stats.mostSeenCard.count}회`);
   }
   lines.push('');
 
   if (stats.tokenTrend || stats.shaveTrend) {
-    lines.push(chalk.cyan('추세 (지난 7일 vs 그 전 7일):'));
+    lines.push(theme.info('추세 (지난 7일 vs 그 전 7일):'));
     if (stats.tokenTrend) {
       lines.push(`  토큰 사용량:      ${trendArrow(stats.tokenTrend)}`);
     }
@@ -98,7 +98,7 @@ export async function statsCommand(opts: StatsOptions = {}): Promise<void> {
       lines.push(`  면도 빈도:        ${trendArrow(stats.shaveTrend)}`);
     }
   } else {
-    lines.push(chalk.dim('추세는 14일치 데이터가 모이면 보여드려요.'));
+    lines.push(theme.dim('추세는 14일치 데이터가 모이면 보여드려요.'));
   }
 
   console.log(lines.join('\n'));
