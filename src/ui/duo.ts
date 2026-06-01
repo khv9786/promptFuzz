@@ -25,16 +25,43 @@ export function buddyFacing(stage: StageInfo): string {
   return turned ? `${stage.buddyFace} ›` : stage.buddyFace;
 }
 
-function pad(s: string, len: number): string {
-  return s.length >= len ? s : s + ' '.repeat(len - s.length);
+/**
+ * 시각 폭(터미널 칸 수). ASCII(<0x80)는 1칸, 그 외(이모지/기호/CJK)는 2칸으로 본다.
+ * 주류 터미널의 동아시아 폭(wide) 규칙 근사 — string-width 의존성 없이.
+ */
+export function visualWidth(s: string): number {
+  let w = 0;
+  for (const ch of s) w += (ch.codePointAt(0) ?? 0) < 0x80 ? 1 : 2;
+  return w;
 }
 
-const DEV_COL = 18; // 당신 블록 고정 폭 (얼굴/수염/라벨 정렬)
+/** 시각 폭 기준 우측 공백 패딩. */
+function padVisual(s: string, targetWidth: number): string {
+  const w = visualWidth(s);
+  return w >= targetWidth ? s : s + ' '.repeat(targetWidth - w);
+}
+
+const DEV_VW = 18; // 당신 블록 시각 폭 (얼굴/수염/라벨 정렬)
+const ICON_CELL = 2; // 상호작용 글리프 자리 — 항상 2칸으로 고정
+
+/**
+ * 상호작용 영역을 *고정 시각 폭(6칸)*으로 렌더.
+ * 글리프 폭이 단계마다 달라(💕💢💔⚡=2칸, ~=1칸) Claude 블록이 흔들리던 문제를,
+ * 글리프 자리를 2칸으로 통일(1칸 글리프는 뒤에 공백 보충)해 해소한다.
+ */
+function midZone(glyph: string | null): string {
+  if (glyph === null) return ' '.repeat(2 + ICON_CELL + 2); // 빈 줄도 동일 폭
+  const pad = Math.max(0, ICON_CELL - visualWidth(glyph));
+  return '  ' + glyph + ' '.repeat(pad) + '  ';
+}
 
 /**
  * 당신(왼쪽 고정) ↔ Claude(단계별로 멀어짐) 두 캐릭터를 평문 4줄로.
  * 색은 호출자(status)가 입힌다 — 이 함수는 순수/결정적.
  * 상호작용(하트 등)은 당신 옆에 두어, "당신은 다가가려는데 Claude가 물러난" 구도.
+ *
+ * 정렬: dev 블록은 시각 폭 DEV_VW로, 상호작용은 midZone 고정 폭으로 패딩해
+ * 단계가 바뀌어도 Claude 머리/얼굴/몸 시작 열이 흔들리지 않는다.
  */
 export function renderDuo(stage: StageInfo): string[] {
   const gap = ' '.repeat(CLAUDE_GAP[stage.id]);
@@ -43,8 +70,8 @@ export function renderDuo(stage: StageInfo): string[] {
 
   const out: string[] = [];
   for (let i = 0; i < 4; i++) {
-    const left = pad(dev[i] ?? '', DEV_COL);
-    const mid = i === 1 ? `  ${stage.interaction}  ` : '     ';
+    const left = padVisual(dev[i] ?? '', DEV_VW);
+    const mid = midZone(i === 1 ? stage.interaction : null);
     out.push(left + mid + gap + (buddy[i] ?? ''));
   }
   return out;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CLAUDE_GAP, buddyFacing, renderDuo } from '../src/ui/duo.js';
+import { CLAUDE_GAP, buddyFacing, renderDuo, visualWidth } from '../src/ui/duo.js';
 import { getStage, STAGE_ORDER } from '../src/state/stages.js';
 
 describe('CLAUDE_GAP (거리두기)', () => {
@@ -60,5 +60,38 @@ describe('renderDuo', () => {
     const smoothLen = renderDuo(getStage('smooth'))[1]!.length;
     const hermitLen = renderDuo(getStage('hermit'))[1]!.length;
     expect(hermitLen).toBeGreaterThan(smoothLen);
+  });
+
+  // dev 블록(18) + mid(6) = 24글자 고정. 그 뒤 gap + buddy.
+  const PREFIX = 24;
+
+  it('단계 내 정렬: 머리/몸의 Claude 블록이 PREFIX+gap 동일 위치(글자 인덱스)에서 시작', () => {
+    // 머리/몸 줄은 dev가 ASCII라 글자수=시각폭=18. (라벨 줄 당신은 한글이라
+    // 글자수<시각폭 — 시각 정렬은 맞지만 글자 인덱스 검증에선 제외.)
+    for (const id of STAGE_ORDER) {
+      const rows = renderDuo(getStage(id));
+      const at = PREFIX + CLAUDE_GAP[id];
+      expect(rows[0]!.slice(at)).toBe('.---.'); // buddy 머리
+      expect(rows[2]!.slice(at)).toBe('\\___/'); // buddy 몸
+    }
+  });
+
+  it('상호작용 글리프 폭과 무관하게 mid 영역 고정 — ~(1칸)도 이모지(2칸)도 정렬', () => {
+    // stubble(~, 1칸)과 smooth(💕, 2칸) 모두 buddy가 동일 PREFIX+gap에서 시작
+    for (const id of ['stubble', 'smooth'] as const) {
+      const rows = renderDuo(getStage(id));
+      const at = PREFIX + CLAUDE_GAP[id];
+      expect(rows[0]!.slice(at)).toBe('.---.');
+      expect(rows[2]!.slice(at)).toBe('\\___/');
+    }
+  });
+});
+
+describe('visualWidth', () => {
+  it('ASCII는 1칸, 이모지/한글은 2칸', () => {
+    expect(visualWidth('abc')).toBe(3);
+    expect(visualWidth('~')).toBe(1);
+    expect(visualWidth('당신')).toBe(4);
+    expect(visualWidth('💕')).toBe(2);
   });
 });
