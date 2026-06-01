@@ -44,7 +44,7 @@ const program = new Command();
 program
   .name('promptfuzz')
   .description('토큰을 수염으로, 휴식을 면도로 — Claude Code 사용 시간 관리 토이')
-  .version('0.1.6');
+  .version('0.1.7');
 
 program
   .command('install')
@@ -97,7 +97,8 @@ program
 program
   .command('info')
   .description('진단용 환경 정보를 출력합니다 (--info 와 동일)')
-  .action(infoCommand);
+  .option('--json', 'JSON으로 출력 (경로 제외, 공유 안전)')
+  .action((opts) => infoCommand(opts));
 
 program
   .command('stats')
