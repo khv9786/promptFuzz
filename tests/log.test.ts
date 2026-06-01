@@ -58,7 +58,7 @@ describe('logCommand', () => {
     hoisted.state.current = baseState({ dailyLog: {} });
     await logCommand({});
     const out = logs.join('\n');
-    expect(out).toContain('아직 기록이 없어요');
+    expect(out).toContain('아직 활동 기록이 없어요');
   });
 
   it('기록 있으면 잔디 헤더 출력', async () => {

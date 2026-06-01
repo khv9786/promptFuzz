@@ -1,7 +1,7 @@
-import chalk from 'chalk';
 import { loadState } from '../state/storage.js';
 import { getProfile } from '../state/profiles.js';
 import { getStage } from '../state/stages.js';
+import { theme } from '../ui/theme.js';
 import {
   summarize,
   grassLevel,
@@ -43,10 +43,9 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
   }
 
   if (!hasAny) {
-    console.log(chalk.bold('📅 PromptFuzz log'));
+    console.log(theme.bold('📅 PromptFuzz log'));
     console.log();
-    console.log(chalk.dim('아직 기록이 없어요. promptfuzz tick이 발동하면 자동으로 기록됩니다.'));
-    console.log(chalk.dim('(Claude Code를 사용하면 자동으로 발동)'));
+    console.log(theme.dim('아직 활동 기록이 없어요. 코딩을 시작하면 여기에 잔디가 자라요 🌱'));
     return;
   }
 
@@ -55,9 +54,9 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
   const dates = listDates(days);
 
   const lines: string[] = [];
-  lines.push(chalk.bold(`📅 PromptFuzz log — 최근 ${days}일`));
+  lines.push(theme.bold(`📅 PromptFuzz log — 최근 ${days}일`));
   lines.push('');
-  lines.push(chalk.dim(gridHeaderLine()));
+  lines.push(theme.dim(gridHeaderLine()));
 
   // 주 단위 행으로 분할. 첫 날의 요일에 맞춰 앞쪽 공백 채움.
   const cells = dates.map((d) => {
@@ -78,13 +77,13 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
     const week = padded.slice(i, i + 7);
     // 각 셀은 1칸 폭(글리프 또는 공백). GRID_CELL_SEP로 이어 헤더 칸과 정확히 맞춘다.
     const cells = week.map((c) => (c === null ? ' ' : colorize(c.glyph, c.level)));
-    lines.push(chalk.dim(gridLabelField(weekLabel(weekNum))) + cells.join(GRID_CELL_SEP));
+    lines.push(theme.dim(gridLabelField(weekLabel(weekNum))) + cells.join(GRID_CELL_SEP));
     weekNum--;
   }
 
   lines.push('');
   lines.push(
-    chalk.dim('활동:  ') +
+    theme.dim('활동:  ') +
       `${GRASS_GLYPH.none} 없음  ` +
       colorize(GRASS_GLYPH.light, 'light') + ' 가벼움  ' +
       colorize(GRASS_GLYPH.medium, 'medium') + ' 보통  ' +
@@ -92,14 +91,14 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
       colorize(GRASS_GLYPH.extreme, 'extreme') + ' 무거움'
   );
   lines.push(
-    `🪒 면도: ${chalk.bold(summary.totalShaves)}회   🧘 스트레칭: ${chalk.bold(summary.totalStretches)}회`
+    `🪒 면도: ${theme.bold(String(summary.totalShaves))}회   🧘 스트레칭: ${theme.bold(String(summary.totalStretches))}회`
   );
   if (summary.peakDate) {
     const idx = ['smooth', 'stubble', 'bushy', 'rugged', 'hermit'].indexOf(summary.peakStage);
     const numeral = ['①', '②', '③', '④', '⑤'][idx] ?? '';
     lines.push(
-      chalk.dim('최고 도달: ') + `${numeral} ${getStage(summary.peakStage).nameKr} ` +
-        chalk.dim(`(${summary.peakDate})`)
+      theme.dim('최고 도달: ') + `${numeral} ${getStage(summary.peakStage).nameKr} ` +
+        theme.dim(`(${summary.peakDate})`)
     );
   }
 
@@ -109,17 +108,17 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
 function colorize(glyph: string, level: GrassLevel): string {
   switch (level) {
     case 'none':
-      return chalk.dim(glyph);
+      return theme.dim(glyph);
     case 'light':
-      return chalk.green(glyph);
+      return theme.success(glyph);
     case 'medium':
-      return chalk.yellow(glyph);
+      return theme.warning(glyph);
     case 'heavy':
-      return chalk.red(glyph);
+      return theme.danger(glyph);
     case 'extreme':
-      return chalk.redBright(glyph);
+      return theme.critical(glyph);
     default:
-      return chalk.dim(glyph);
+      return theme.dim(glyph);
   }
 }
 
