@@ -44,7 +44,7 @@ const program = new Command();
 program
   .name('promptfuzz')
   .description('토큰을 수염으로, 휴식을 면도로 — Claude Code 사용 시간 관리 토이')
-  .version('0.1.5');
+  .version('0.1.6');
 
 program
   .command('install')
