@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-06-01
+
+### Changed
+
+- 의미색 테마(`theme.ts`)를 모든 명령에 전면 적용 — `theme.success/info/warning/danger/critical/dim`로 색을 의미 단위로 통일 (기존 2/12 → 전 명령). `cli.ts` 환영 화면만 진입점 특수 케이스로 chalk 유지.
+- ② 까끌까끌 단계 표정을 `( o_o )`로 통일 (표정 시퀀스 일관성: ^_^ → o_o → -_- → =_= → x_x).
+- 빈 상태 안내 문구 톤 통일 (log/stats/면도 기록 — 따뜻한 안내 + 🌱).
+
+### Fixed
+
+- status 상호작용 영역의 단계별 1칸 정렬 흔들림 수정 — 시각 폭 인지 패딩으로 mid 영역을 고정폭화 (이모지 2칸 vs `~` 1칸 차이 해소). dev 블록도 시각폭 기준 정렬.
+- stats "가장 자주 본 카드"의 괄호 중복 표기 수정 (`(30초) (2회)` → `(30초) · 2회`).
+- install 안심(🔒) 메시지 색상 일관성 (theme 적용).
+- info의 Locale 표시 폴백 (LANG 미설정 시 Intl 로케일 사용, unknown 방지).
+
+### Added
+
+- `info --json` 옵션 — 경로(사용자명/프로젝트명) 제외해 공유 안전.
+
 ## [0.1.6] - 2026-06-01
 
 ### Changed
