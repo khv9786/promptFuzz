@@ -1,5 +1,14 @@
+import { createInterface } from 'node:readline/promises';
+import chalk from 'chalk';
 import type { StageInfo } from '../types/index.js';
 import { stageLabel } from './tickRender.js';
+import {
+  readSettings,
+  writeSettings,
+  backupSettings,
+  type ClaudeSettings,
+  type StatusLineConfig,
+} from '../hooks/manager.js';
 
 /**
  * 누적 토큰을 상태바용으로 압축한다.
@@ -27,4 +36,120 @@ export function formatStatusLine(cumulativeTokens: number, stage: StageInfo): st
     parts.push('🪒 shave');
   }
   return parts.join(' · ');
+}
+
+// ── statusline install/uninstall 명령 ──────────────────────────────────
+
+/** 우리가 설치하는 statusLine 명령 문자열 (식별 기준). */
+export const PROMPTFUZZ_STATUSLINE_COMMAND = 'promptfuzz status --line';
+
+const OUR_STATUSLINE: StatusLineConfig = {
+  type: 'command',
+  command: PROMPTFUZZ_STATUSLINE_COMMAND,
+  padding: 0,
+};
+
+export type StatusLineKind = 'none' | 'ours' | 'other';
+
+/** 현재 settings의 statusLine이 어떤 종류인지 분류 (순수 함수). */
+export function classifyStatusLine(settings: ClaudeSettings): StatusLineKind {
+  const sl = settings.statusLine;
+  if (!sl || typeof sl !== 'object') return 'none';
+  if (sl.command === PROMPTFUZZ_STATUSLINE_COMMAND) return 'ours';
+  return 'other';
+}
+
+export interface StatuslineOptions {
+  yes?: boolean;
+  isTTY?: boolean;
+  input?: NodeJS.ReadableStream;
+  output?: NodeJS.WritableStream;
+}
+
+export async function statuslineInstall(opts: StatuslineOptions = {}): Promise<void> {
+  const output = opts.output ?? process.stdout;
+  const input = opts.input ?? process.stdin;
+  const isTTY = opts.isTTY ?? Boolean((process.stdin as NodeJS.ReadStream).isTTY);
+
+  const settings = await readSettings();
+  const kind = classifyStatusLine(settings);
+
+  if (kind === 'ours') {
+    output.write(chalk.green('✓ 이미 PromptFuzz 상태바가 설정되어 있어요.') + '\n');
+    return;
+  }
+
+  if (kind === 'other') {
+    // 비파괴: 남의 statusLine은 확인 없이 안 덮어씀.
+    const existing = settings.statusLine?.command ?? '(알 수 없음)';
+    if (!isTTY && !opts.yes) {
+      output.write('이미 다른 statusLine 설정이 있습니다.\n');
+      output.write('덮어쓰려면 --yes를 사용하세요 (기존 설정은 백업됩니다).\n');
+      process.exitCode = 1;
+      return;
+    }
+    if (isTTY && !opts.yes) {
+      output.write('\n' + chalk.yellow('⚠️ 이미 statusLine 설정이 있습니다:') + '\n\n');
+      output.write(`  command: ${existing}\n\n`);
+      output.write('PromptFuzz 수염으로 덮어쓰시겠어요?\n');
+      output.write(chalk.dim('기존 설정은 ~/.claude/settings.json.promptfuzz.bak에 백업됩니다.') + ' [y/N]: ');
+      const rl = createInterface({ input, output });
+      let answer: string;
+      try {
+        answer = (await rl.question('')).trim().toLowerCase();
+      } finally {
+        rl.close();
+      }
+      if (answer !== 'y' && answer !== 'yes') {
+        output.write('취소되었습니다.\n');
+        return;
+      }
+    }
+    // 덮어쓰기 전 백업.
+    await backupSettings();
+  }
+
+  await writeSettings({ ...settings, statusLine: { ...OUR_STATUSLINE } });
+
+  output.write(chalk.green('✓ Claude Code 상태바에 수염을 추가했습니다.') + '\n');
+  output.write(chalk.dim('  Claude Code를 재시작하면 하단에 표시됩니다:') + '\n\n');
+  output.write('  🧔 ④ 따갑따갑 · 3.2M · 🪒 shave\n');
+}
+
+export async function statuslineUninstall(opts: StatuslineOptions = {}): Promise<void> {
+  const output = opts.output ?? process.stdout;
+  const settings = await readSettings();
+  const kind = classifyStatusLine(settings);
+
+  if (kind === 'none') {
+    output.write('설정된 statusLine이 없습니다.\n');
+    return;
+  }
+  if (kind === 'other') {
+    output.write('PromptFuzz statusLine이 아닙니다. 건드리지 않았어요.\n');
+    return;
+  }
+
+  // 우리 것 → 백업 후 제거.
+  await backupSettings();
+  const next: ClaudeSettings = { ...settings };
+  delete next.statusLine;
+  await writeSettings(next);
+
+  output.write(chalk.green('✓ 상태바에서 PromptFuzz 수염을 제거했습니다.') + '\n');
+}
+
+export async function statuslineShow(opts: StatuslineOptions = {}): Promise<void> {
+  const output = opts.output ?? process.stdout;
+  const settings = await readSettings();
+  const kind = classifyStatusLine(settings);
+
+  if (kind === 'ours') {
+    output.write(`현재 statusLine: ${PROMPTFUZZ_STATUSLINE_COMMAND} (PromptFuzz)\n`);
+  } else if (kind === 'other') {
+    output.write(`현재 statusLine: ${settings.statusLine?.command ?? '(알 수 없음)'} (PromptFuzz 아님)\n`);
+  } else {
+    output.write('현재 statusLine: 설정되지 않음\n');
+  }
+  output.write('\n' + chalk.dim('설치: ') + chalk.cyan('promptfuzz statusline install') + '\n');
 }

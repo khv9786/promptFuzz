@@ -10,6 +10,7 @@ import { logCommand } from './commands/log.js';
 import { resetCommand } from './commands/reset.js';
 import { infoCommand } from './commands/info.js';
 import { statsCommand } from './commands/stats.js';
+import { statuslineInstall, statuslineUninstall, statuslineShow } from './commands/statusLine.js';
 
 // 인자 없이 'promptfuzz'만 실행된 경우 환영 메시지 후 종료.
 // --help / -h / 서브커맨드는 commander에 그대로 위임.
@@ -43,7 +44,7 @@ const program = new Command();
 program
   .name('promptfuzz')
   .description('토큰을 수염으로, 휴식을 면도로 — Claude Code 사용 시간 관리 토이')
-  .version('0.1.4');
+  .version('0.1.5');
 
 program
   .command('install')
@@ -104,6 +105,22 @@ program
   .option('--days <n>', '분석 기간 (최대 90)')
   .option('--json', 'JSON으로 출력')
   .action((opts) => statsCommand(opts));
+
+const statusline = program
+  .command('statusline')
+  .description('Claude Code 상태바 설정을 보거나 변경합니다')
+  .action(() => statuslineShow());
+
+statusline
+  .command('install')
+  .description('상태바에 PromptFuzz 수염을 추가합니다 (기존 설정은 확인 후 백업)')
+  .option('-y, --yes', '확인 없이 진행 (비대화형/자동화용)')
+  .action((opts) => statuslineInstall(opts));
+
+statusline
+  .command('uninstall')
+  .description('상태바에서 PromptFuzz 수염을 제거합니다')
+  .action(() => statuslineUninstall());
 
 program.parseAsync().catch((err) => {
   console.error('Unexpected error:', err);

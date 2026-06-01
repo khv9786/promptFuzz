@@ -16,15 +16,23 @@ interface HookMatcher {
   hooks?: HookEntry[];
 }
 
-interface ClaudeSettings {
+export interface StatusLineConfig {
+  type?: string;
+  command?: string;
+  padding?: number;
+  [key: string]: unknown;
+}
+
+export interface ClaudeSettings {
   hooks?: {
     Stop?: HookMatcher[];
     [key: string]: HookMatcher[] | undefined;
   };
+  statusLine?: StatusLineConfig;
   [key: string]: unknown;
 }
 
-async function readSettings(): Promise<ClaudeSettings> {
+export async function readSettings(): Promise<ClaudeSettings> {
   if (!existsSync(CLAUDE_SETTINGS)) return {};
   try {
     const raw = await readFile(CLAUDE_SETTINGS, 'utf-8');
@@ -39,7 +47,7 @@ async function readSettings(): Promise<ClaudeSettings> {
  * rename은 OS 레벨 원자적이라 쓰기가 중단돼도 원본 또는 완성본만 남는다
  * (잘린 파일이 생기지 않음). *남의* Claude 설정이라 손상 방지가 중요.
  */
-async function writeSettings(settings: ClaudeSettings): Promise<void> {
+export async function writeSettings(settings: ClaudeSettings): Promise<void> {
   await mkdir(dirname(CLAUDE_SETTINGS), { recursive: true });
   const tmp = `${CLAUDE_SETTINGS}.promptfuzz.tmp`;
   const data = JSON.stringify(settings, null, 2);
@@ -55,7 +63,7 @@ async function writeSettings(settings: ClaudeSettings): Promise<void> {
   await rename(tmp, CLAUDE_SETTINGS);
 }
 
-async function backupSettings(): Promise<void> {
+export async function backupSettings(): Promise<void> {
   if (!existsSync(CLAUDE_SETTINGS)) return;
   const backup = `${CLAUDE_SETTINGS}.promptfuzz.bak`;
   await copyFile(CLAUDE_SETTINGS, backup);
