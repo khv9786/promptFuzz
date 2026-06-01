@@ -75,7 +75,17 @@ PromptFuzz는 두 가지 표면으로 작동합니다:
 
 Claude Code 하단 상태바에 수염을 항상 표시할 수 있습니다. **토큰을 전혀 쓰지 않고**, 세션 중 늘 보입니다.
 
-`~/.claude/settings.json`에 `statusLine`을 추가하세요:
+가장 쉬운 방법:
+
+```bash
+promptfuzz statusline install
+```
+
+Claude Code를 재시작하면 하단에 수염이 표시됩니다. 이미 다른 statusLine을 쓰고 있다면 확인을 거쳐 백업 후 적용합니다(비파괴). 되돌리려면 `promptfuzz statusline uninstall`.
+
+### 수동 설정 (선택)
+
+직접 설정하려면 `~/.claude/settings.json`에:
 
 ```json
 {
@@ -87,7 +97,7 @@ Claude Code 하단 상태바에 수염을 항상 표시할 수 있습니다. **�
 }
 ```
 
-> ⚠️ **이미 statusLine을 쓰고 있다면**, 기존 설정을 백업하고 신중히 병합하세요. `statusLine`은 단일 값이라 덮어쓰면 기존 설정이 사라집니다.
+> ⚠️ `statusLine`은 단일 값이라 수동 편집 시 기존 설정을 덮어쓸 수 있습니다. `promptfuzz statusline install`은 이를 자동으로 백업·확인합니다.
 
 Claude Code를 재시작하면 하단에 표시됩니다:
 
