@@ -251,11 +251,15 @@ promptfuzz log --json       # 기계 판독용
 ## 프라이버시 / 신뢰
 
 - **외부 통신 0** — 네트워크 호출, 텔레메트리, 분석 도구 일체 없음.
-- **본문 무시** — JSONL의 user/assistant 메시지 본문은 *읽지 않습니다*. `usage` 필드만 스트리밍 파싱으로 추출.
+- **본문 비저장·비전송** — JSONL의 `usage`(토큰 수치) 필드만 추출·저장하며, 대화 본문은 저장하거나 외부로 전송하지 않습니다. (JSON 파싱 과정에서 한 줄이 잠깐 메모리를 거치지만, `usage` 외에는 보존·전송·기록하지 않습니다.)
 - **로컬 저장** — `~/.promptfuzz/state.json` (권한 0600).
 - **일자별 로그** — `dailyLog`는 토큰 수치·단계 정보만 저장하며 90일 후 자동 정리됩니다. 시간 단위 데이터나 메시지 내용은 일절 기록하지 않습니다.
-- **비파괴 hook 설치** — 기존 `~/.claude/settings.json` 보존 + 백업. `uninstall`로 완전 복구.
+- **비파괴 hook 설치** — 기존 `~/.claude/settings.json` 보존 + 수정 전 백업, 원자적 쓰기(temp→rename)로 손상 방지. `uninstall`로 완전 복구.
 - **dogfooding 패치** — v0.1.0 직전 실환경 사용에서 StretchCard 진행률 바의 race condition을 발견해 즉시 핫픽스했습니다. 우리도 매일 씁니다.
+
+### 공유 시 주의
+
+`~/.promptfuzz/state.json`과 `promptfuzz --info` 출력에는 로컬 경로(사용자명, 프로젝트 디렉토리명)가 포함됩니다. 버그 리포트 등에 붙여넣을 때는 이 부분을 가려주세요. (`promptfuzz status --json`, `log --json`, `stats --json`에는 경로가 없어 안전합니다.)
 
 ## 의존성 정책 (요약)
 
