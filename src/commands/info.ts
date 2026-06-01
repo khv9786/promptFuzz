@@ -8,7 +8,7 @@ import { getProfile } from '../state/profiles.js';
 import { LOGO } from '../ui/logo.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
-const VERSION = '0.1.4';
+const VERSION = '0.1.5';
 
 function numeralFor(id: string): string {
   const i = STAGE_ORDER.indexOf(id as never);

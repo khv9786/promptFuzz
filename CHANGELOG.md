@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-06-01
+
+### Added
+
+- `promptfuzz statusline install` / `uninstall` / (인자 없이) 상태 표시 — Claude Code 상태바 설정을 자동화. 기존 statusLine이 있으면 확인 후 백업하고 적용(비파괴, `--yes`로 자동화).
+
+### Fixed
+
+- package.json `bin` 필드를 표준 형식(`./dist/cli.js`)으로 확인·정리 (publish 경고 방지).
+
 ## [0.1.4] - 2026-05-30
 
 ### Fixed
