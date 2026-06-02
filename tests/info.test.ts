@@ -71,7 +71,7 @@ describe('infoCommand', () => {
   it('모든 섹션 출력', async () => {
     await infoCommand();
     const out = logs.join('\n');
-    expect(out).toContain('PromptFuzz v0.1.7');
+    expect(out).toContain('PromptFuzz v0.1.8');
     expect(out).toContain('Environment:');
     expect(out).toContain('Node:');
     expect(out).toContain('State:');

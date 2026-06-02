@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-06-02
+
+### Changed
+
+- Claude Buddy의 고개 방향 표현 추가 — 낮은 단계에선 당신을 바라보고, 따가워질수록 고개를 돌립니다 (괄호 내 정렬 활용). 면도하면 다시 바라봅니다.
+
+### Fixed
+
+- package.json bin 필드 형식 정리 (publish 경고 제거).
+
 ## [0.1.7] - 2026-06-01
 
 ### Changed
