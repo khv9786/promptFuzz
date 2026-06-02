@@ -14,15 +14,17 @@ export const CLAUDE_GAP: Record<BeardStage, number> = {
 };
 
 /**
- * 멀어질수록 Claude가 당신 반대쪽(오른쪽)으로 고개를 돌린다.
- * buddyFace는 stages가 정한 표정 그대로 두고, *바라보는 방향*만 덧붙인다.
- * - 가까울 때(①②): 정면 — 방향 표시 없음
- * - 멀 때(③④⑤): 오른쪽(바깥)을 향해 돌아봄 — 얼굴 뒤에 시선 꼬리 ' ›'
- *   (등 돌림이 아니라 "살짝 돌아보는" 정도 — 톤: 삐짐 X, 따가워 물러남)
+ * 고개 방향 = 친밀도. 시선은 두 신호가 함께 만든다:
+ *   (1) 괄호 *내부* 공백 위치 (stages.buddyFace가 정함) —
+ *       ①② 공백 왼쪽 `( ◕ᴗ◕)` → 얼굴 우측 = 당신(왼쪽)을 봄,
+ *       ③④⑤ 공백 오른쪽 `(◕_◕ )` → 얼굴 좌측 = 바깥(오른쪽)을 봄(외면).
+ *   (2) 시선 꼬리 `›` — 외면 단계(③④⑤)에만 얼굴 뒤에 붙인다.
+ * 머리(.---.)·몸(\___/)은 고정이고 괄호 안 공백만 좌우로 옮기므로,
+ * "몸 회전"이 아니라 *고개만* 돌린 느낌이 된다. (얼굴 총 폭은 불변)
  */
 export function buddyFacing(stage: StageInfo): string {
   const turned = stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit';
-  return turned ? `${stage.buddyFace} ›` : stage.buddyFace;
+  return turned ? `${stage.buddyFace}›` : stage.buddyFace;
 }
 
 /**

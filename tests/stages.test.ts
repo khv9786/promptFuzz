@@ -51,12 +51,35 @@ describe('stages', () => {
     expect(higherStage('stubble', 'stubble')).toBe('stubble');
   });
 
-  it('강화된 buddyFace (이모지 포함)', () => {
-    expect(getStage('smooth').buddyFace).toBe('(◕ᴗ◕)✨');
-    expect(getStage('stubble').buddyFace).toBe('(•_• )?');
-    expect(getStage('bushy').buddyFace).toBe('(>﹏<;)');
-    expect(getStage('rugged').buddyFace).toBe('(╥﹏╥)💧');
-    expect(getStage('hermit').buddyFace).toBe('(;﹏;)🆘');
+  it('고개 방향 buddyFace (괄호 내 공백 위치로 시선 표현)', () => {
+    expect(getStage('smooth').buddyFace).toBe('( ◕ᴗ◕)✨');
+    expect(getStage('stubble').buddyFace).toBe('( ◕．◕)');
+    expect(getStage('bushy').buddyFace).toBe('(◕_◕ )');
+    expect(getStage('rugged').buddyFace).toBe('(╥_╥ )');
+    expect(getStage('hermit').buddyFace).toBe('(；_； )');
+  });
+
+  it('시선 정렬: ①②는 공백 왼쪽(우측 얼굴=당신 봄), ③④⑤는 공백 오른쪽(좌측 얼굴=외면)', () => {
+    // 당신을 보는 단계: ( 바로 뒤에 공백
+    for (const id of ['smooth', 'stubble'] as const) {
+      const f = getStage(id).buddyFace;
+      expect(f.startsWith('( ')).toBe(true);
+      expect(f).not.toMatch(/ \)/); // 우측엔 공백 없음
+    }
+    // 외면하는 단계: ) 바로 앞에 공백
+    for (const id of ['bushy', 'rugged', 'hermit'] as const) {
+      const f = getStage(id).buddyFace;
+      expect(f).toMatch(/ \)$/); // ' )'로 끝남
+      expect(f.startsWith('( ')).toBe(false); // 좌측엔 공백 없음
+    }
+  });
+
+  it('얼굴 총 폭 불변: 괄호 안 공백은 정확히 1칸 (늘리지 않고 좌↔우만 이동)', () => {
+    for (const s of STAGES) {
+      const inner = s.buddyFace.replace(/^\(/, '').replace(/\)[^)]*$/, '');
+      // 괄호 안 내부 문자열에 공백은 단 한 개 (좌측 또는 우측)
+      expect((inner.match(/ /g) ?? []).length).toBe(1);
+    }
   });
 });
 

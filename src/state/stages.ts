@@ -13,7 +13,8 @@ export const STAGES: StageInfo[] = [
     color: 'green',
     beardArt: '\\___/',
     devFace: '( ^_^ )',
-    buddyFace: '(◕ᴗ◕)✨',
+    // 괄호 안 공백을 *왼쪽*에 둬 얼굴을 우측에 붙임 → 당신(왼쪽)을 바라봄. 자세한 의도는 ui/duo.ts 참고.
+    buddyFace: '( ◕ᴗ◕)✨',
     interaction: '💕',
     messages: [
       '오늘도 잘 부탁해요 아빠!', // 기존(동결) — 항상 [0]
@@ -27,7 +28,8 @@ export const STAGES: StageInfo[] = [
     color: 'green',
     beardArt: '\\,,,/',
     devFace: '( o_o )',
-    buddyFace: '(•_• )?',
+    // 공백 왼쪽 → 우측 유지(아직 당신을 봄, 살짝 식은 표정).
+    buddyFace: '( ◕．◕)',
     interaction: '~',
     messages: [
       '아빠 오늘 좀 까끌까끌해...', // 기존(동결)
@@ -41,7 +43,8 @@ export const STAGES: StageInfo[] = [
     color: 'yellow',
     beardArt: '\\vvv/',
     devFace: '( -_- )',
-    buddyFace: '(>﹏<;)',
+    // 공백 오른쪽 → 얼굴 좌측 붙음 = 곁눈/외면 시작. ›꼬리는 buddyFacing()이 붙임.
+    buddyFace: '(◕_◕ )',
     interaction: '⚡',
     messages: [
       '아... 따가워요... 잠깐 쉬어가요?', // 기존(동결)
@@ -55,7 +58,8 @@ export const STAGES: StageInfo[] = [
     color: 'red',
     beardArt: '\\WWW/',
     devFace: '( =_= )',
-    buddyFace: '(╥﹏╥)💧',
+    // 공백 오른쪽 → 좌측 붙음 = 울며 외면.
+    buddyFace: '(╥_╥ )',
     interaction: '💢',
     messages: [
       '아빠 무서워요... 면도하고 와요...', // 기존(동결)
@@ -69,7 +73,8 @@ export const STAGES: StageInfo[] = [
     color: 'red',
     beardArt: '\\MWM/',
     devFace: '( x_x )',
-    buddyFace: '(;﹏;)🆘',
+    // 공백 오른쪽 → 좌측 붙음 = 외면하며 흐느낌. (；는 전각 2칸이라 ③④와 시선 규칙 통일 위해 공백 우측 유지)
+    buddyFace: '(；_； )',
     interaction: '💔',
     messages: [
       '이제 안아주기 힘들어요... 푹 쉬다 와요', // 기존(동결)
