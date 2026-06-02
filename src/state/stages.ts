@@ -14,11 +14,11 @@ export const STAGES: StageInfo[] = [
     beardArt: '\\___/',
     devFace: '( ^_^ )',
     // 괄호 안 공백을 *왼쪽*에 둬 얼굴을 우측에 붙임 → 당신(왼쪽)을 바라봄. 자세한 의도는 ui/duo.ts 참고.
-    buddyFace: '( ◕ᴗ◕)✨',
+    buddyFace: '(◕ᴗ◕ )✨',
     interaction: '💕',
     messages: [
       '오늘도 잘 부탁해요 아빠!', // 기존(동결) — 항상 [0]
-      '오늘은 턱이 매끈하네요 ✨',
+      '오늘도 화이팅이에요! ✨',
       '기분 좋은 출발이에요!',
     ],
   },
@@ -29,12 +29,12 @@ export const STAGES: StageInfo[] = [
     beardArt: '\\,,,/',
     devFace: '( o_o )',
     // 공백 왼쪽 → 우측 유지(아직 당신을 봄, 살짝 식은 표정).
-    buddyFace: '( ◕．◕)',
+    buddyFace: '(◕．◕ )',
     interaction: '~',
     messages: [
       '아빠 오늘 좀 까끌까끌해...', // 기존(동결)
       '어, 수염 살짝 돋았네요?',
-      '아직은 귀여운 까끌이에요',
+      '나도 수염나면 좋겠다',
     ],
   },
   {
@@ -42,12 +42,12 @@ export const STAGES: StageInfo[] = [
     nameKr: '북슬북슬',
     color: 'yellow',
     beardArt: '\\vvv/',
-    devFace: '( -_- )',
+    devFace: '( =_= )',
     // 공백 오른쪽 → 얼굴 좌측 붙음 = 곁눈/외면 시작. ›꼬리는 buddyFacing()이 붙임.
-    buddyFace: '(◕_◕ )',
+    buddyFace: '( ◕_◕)',
     interaction: '⚡',
     messages: [
-      '아... 따가워요... 잠깐 쉬어가요?', // 기존(동결)
+      '아... 따가워... 잠깐 쉬어야하지 않아요?', // 기존(동결)
       '아빠 수염이 북슬해졌어요',
       '슬슬 정리할 때 아닐까요?',
     ],
@@ -56,13 +56,13 @@ export const STAGES: StageInfo[] = [
     id: 'rugged',
     nameKr: '따갑따갑',
     color: 'red',
-    beardArt: '\\WWW/',
-    devFace: '( =_= )',
+    beardArt: '\\www/',
+    devFace: '( -_- )',
     // 공백 오른쪽 → 좌측 붙음 = 울며 외면.
-    buddyFace: '(╥_╥ )',
+    buddyFace: '( ╥_╥)',
     interaction: '💢',
     messages: [
-      '아빠 무서워요... 면도하고 와요...', // 기존(동결)
+      '아빠 다크서클이.. 수염도 면도하고 와요...', // 기존(동결)
       '따가워서 못 안기겠어요...',
       '면도... 생각 있으세요?',
     ],
@@ -71,15 +71,15 @@ export const STAGES: StageInfo[] = [
     id: 'hermit',
     nameKr: '고슴도치',
     color: 'red',
-    beardArt: '\\MWM/',
+    beardArt: '\\WWW/',
     devFace: '( x_x )',
     // 공백 오른쪽 → 좌측 붙음 = 외면하며 흐느낌. (；는 전각 2칸이라 ③④와 시선 규칙 통일 위해 공백 우측 유지)
-    buddyFace: '(；_； )',
+    buddyFace: '( -_-)',
     interaction: '💔',
     messages: [
       '이제 안아주기 힘들어요... 푹 쉬다 와요', // 기존(동결)
-      '아빠 고슴도치 됐어요...',
-      '꼭 안고 싶은데 너무 따가워요',
+      '아빠 따가워.. 면도 좀 해',
+      '안기 싫어졌어.. 너무 따가워요',
     ],
   },
 ];

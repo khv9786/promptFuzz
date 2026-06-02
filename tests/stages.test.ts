@@ -52,25 +52,25 @@ describe('stages', () => {
   });
 
   it('고개 방향 buddyFace (괄호 내 공백 위치로 시선 표현)', () => {
-    expect(getStage('smooth').buddyFace).toBe('( ◕ᴗ◕)✨');
-    expect(getStage('stubble').buddyFace).toBe('( ◕．◕)');
-    expect(getStage('bushy').buddyFace).toBe('(◕_◕ )');
-    expect(getStage('rugged').buddyFace).toBe('(╥_╥ )');
-    expect(getStage('hermit').buddyFace).toBe('(；_； )');
+    expect(getStage('smooth').buddyFace).toBe('(◕ᴗ◕ )✨');
+    expect(getStage('stubble').buddyFace).toBe('(◕．◕ )');
+    expect(getStage('bushy').buddyFace).toBe('( ◕_◕)');
+    expect(getStage('rugged').buddyFace).toBe('( ╥_╥)');
+    expect(getStage('hermit').buddyFace).toBe('( -_-)');
   });
 
-  it('시선 정렬: ①②는 공백 왼쪽(우측 얼굴=당신 봄), ③④⑤는 공백 오른쪽(좌측 얼굴=외면)', () => {
-    // 당신을 보는 단계: ( 바로 뒤에 공백
+  it('시선 정렬: ①②는 공백 오른쪽(눈이 왼쪽=당신 봄), ③④⑤는 공백 왼쪽(눈이 오른쪽=외면)', () => {
+    // 당신을 보는 단계: ) 바로 앞에 공백 (눈이 왼쪽=당신 쪽)
     for (const id of ['smooth', 'stubble'] as const) {
+      const f = getStage(id).buddyFace;
+      expect(f).toMatch(/ \)/); // ' )' 포함 (꼬리/이모지 suffix 허용)
+      expect(f.startsWith('( ')).toBe(false); // 좌측엔 공백 없음
+    }
+    // 외면하는 단계: ( 바로 뒤에 공백 (눈이 오른쪽=바깥)
+    for (const id of ['bushy', 'rugged', 'hermit'] as const) {
       const f = getStage(id).buddyFace;
       expect(f.startsWith('( ')).toBe(true);
       expect(f).not.toMatch(/ \)/); // 우측엔 공백 없음
-    }
-    // 외면하는 단계: ) 바로 앞에 공백
-    for (const id of ['bushy', 'rugged', 'hermit'] as const) {
-      const f = getStage(id).buddyFace;
-      expect(f).toMatch(/ \)$/); // ' )'로 끝남
-      expect(f.startsWith('( ')).toBe(false); // 좌측엔 공백 없음
     }
   });
 
@@ -106,8 +106,8 @@ describe('단계 멘트(messages) + randomMessage', () => {
   it('기존(동결) 멘트가 messages[0]로 보존', () => {
     expect(getStage('smooth').messages[0]).toBe('오늘도 잘 부탁해요 아빠!');
     expect(getStage('stubble').messages[0]).toBe('아빠 오늘 좀 까끌까끌해...');
-    expect(getStage('bushy').messages[0]).toBe('아... 따가워요... 잠깐 쉬어가요?');
-    expect(getStage('rugged').messages[0]).toBe('아빠 무서워요... 면도하고 와요...');
+    expect(getStage('bushy').messages[0]).toBe('아... 따가워... 잠깐 쉬어야하지 않아요?');
+    expect(getStage('rugged').messages[0]).toBe('아빠 다크서클이.. 수염도 면도하고 와요...');
     expect(getStage('hermit').messages[0]).toBe('이제 안아주기 힘들어요... 푹 쉬다 와요');
   });
   it('randomMessage는 항상 배열 안의 멘트를 반환 (rand 주입)', () => {
@@ -142,8 +142,8 @@ describe('당신 표정(devFace) — ASCII + 단계별 + 수염 폭', () => {
   it('기대 표정 매핑 (여유 → 코믹 지침)', () => {
     expect(getStage('smooth').devFace).toBe('( ^_^ )');
     expect(getStage('stubble').devFace).toBe('( o_o )'); // v0.1.7: o o (공백) → o_o (시퀀스 통일)
-    expect(getStage('bushy').devFace).toBe('( -_- )');
-    expect(getStage('rugged').devFace).toBe('( =_= )'); // v0.1.6: >_< (귀여움) → =_= (지침)
+    expect(getStage('bushy').devFace).toBe('( =_= )');
+    expect(getStage('rugged').devFace).toBe('( -_- )');
     expect(getStage('hermit').devFace).toBe('( x_x )');
   });
 });
