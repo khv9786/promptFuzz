@@ -12,10 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Claude Buddy의 고개 방향 표현 추가 — 낮은 단계에선 당신을 바라보고, 따가워질수록 고개를 돌립니다 (괄호 내 정렬 활용). 면도하면 다시 바라봅니다.
+- Claude Buddy 멘트를 존댓말로 통일 (캐릭터 일관성).
+- ⑤ 고슴도치 단계 표정을 더 깊은 감정(흐느낌)으로 조정.
+
+### Added
+
+- 면도 마일스톤에 5회·30회 추가 (기존 1·10·50·100).
 
 ### Fixed
 
 - package.json bin 필드 형식 정리 (publish 경고 제거).
+- 문장부호·맞춤법 정리(.. → ..., 거에요 → 거예요 등), 시선 방향 주석 정정.
 
 ## [0.1.7] - 2026-06-01
 
