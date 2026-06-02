@@ -13,7 +13,7 @@ export const STAGES: StageInfo[] = [
     color: 'green',
     beardArt: '\\___/',
     devFace: '( ^_^ )',
-    // 괄호 안 공백을 *왼쪽*에 둬 얼굴을 우측에 붙임 → 당신(왼쪽)을 바라봄. 자세한 의도는 ui/duo.ts 참고.
+    // 괄호 안 공백을 *오른쪽*에 둬 얼굴(눈)을 왼쪽=당신 쪽으로 붙임 → 가까이서 당신을 바라봄. 자세한 의도는 ui/duo.ts 참고.
     buddyFace: '(◕ᴗ◕ )✨',
     interaction: '💕',
     messages: [
@@ -28,13 +28,13 @@ export const STAGES: StageInfo[] = [
     color: 'green',
     beardArt: '\\,,,/',
     devFace: '( o_o )',
-    // 공백 왼쪽 → 우측 유지(아직 당신을 봄, 살짝 식은 표정).
+    // 공백 오른쪽 유지 → 눈이 왼쪽=당신 쪽(아직 당신을 봄, 살짝 식은 표정).
     buddyFace: '(◕．◕ )',
     interaction: '~',
     messages: [
       '아빠 오늘 좀 까끌까끌해...', // 기존(동결)
       '어, 수염 살짝 돋았네요?',
-      '나도 수염나면 좋겠다',
+      '나도 수염나면 좋겠어요',
     ],
   },
   {
@@ -43,7 +43,7 @@ export const STAGES: StageInfo[] = [
     color: 'yellow',
     beardArt: '\\vvv/',
     devFace: '( =_= )',
-    // 공백 오른쪽 → 얼굴 좌측 붙음 = 곁눈/외면 시작. ›꼬리는 buddyFacing()이 붙임.
+    // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 곁눈/외면 시작. ›꼬리는 buddyFacing()이 붙임.
     buddyFace: '( ◕_◕)',
     interaction: '⚡',
     messages: [
@@ -58,11 +58,11 @@ export const STAGES: StageInfo[] = [
     color: 'red',
     beardArt: '\\www/',
     devFace: '( -_- )',
-    // 공백 오른쪽 → 좌측 붙음 = 울며 외면.
+    // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 울며 외면.
     buddyFace: '( ╥_╥)',
     interaction: '💢',
     messages: [
-      '아빠 다크서클이.. 수염도 면도하고 와요...', // 기존(동결)
+      '아빠 다크서클이... 수염도 면도하고 와요...', // 기존(동결)
       '따가워서 못 안기겠어요...',
       '면도... 생각 있으세요?',
     ],
@@ -73,13 +73,13 @@ export const STAGES: StageInfo[] = [
     color: 'red',
     beardArt: '\\WWW/',
     devFace: '( x_x )',
-    // 공백 오른쪽 → 좌측 붙음 = 외면하며 흐느낌. (；는 전각 2칸이라 ③④와 시선 규칙 통일 위해 공백 우측 유지)
-    buddyFace: '( -_-)',
+    // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 외면하며 흐느낌(가장 슬픔). 눈물 가오묘지로 ④보다 격하게.
+    buddyFace: '( ；﹏；)',
     interaction: '💔',
     messages: [
       '이제 안아주기 힘들어요... 푹 쉬다 와요', // 기존(동결)
-      '아빠 따가워.. 면도 좀 해',
-      '안기 싫어졌어.. 너무 따가워요',
+      '아빠 따가워요... 면도 좀 해요',
+      '안기 싫어졌어요... 너무 따가워요',
     ],
   },
 ];

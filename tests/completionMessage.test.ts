@@ -5,8 +5,14 @@ describe('getCompletionMessage 마일스톤', () => {
   it('1번째 → 첫 면도 멘트', () => {
     expect(getCompletionMessage(1, 'bushy')).toContain('첫 면도');
   });
+  it('5번째 → 마일스톤', () => {
+    expect(getCompletionMessage(5, 'bushy')).toContain('5번째');
+  });
   it('10번째 → 베테랑', () => {
     expect(getCompletionMessage(10, 'bushy')).toContain('10번째');
+  });
+  it('30번째 → 마일스톤', () => {
+    expect(getCompletionMessage(30, 'bushy')).toContain('30번째');
   });
   it('50번째 → 헌신', () => {
     expect(getCompletionMessage(50, 'rugged')).toContain('50번째');
@@ -54,9 +60,11 @@ describe('stageCompletionMessage', () => {
 });
 
 describe('milestoneLabel (축하 박스 표시 판단)', () => {
-  it('마일스톤(1/10/50/100) → 라벨 반환', () => {
+  it('마일스톤(1/5/10/30/50/100) → 라벨 반환', () => {
     expect(milestoneLabel(1)).toContain('첫 면도');
+    expect(milestoneLabel(5)).toContain('5번째');
     expect(milestoneLabel(10)).toContain('10번째');
+    expect(milestoneLabel(30)).toContain('30번째');
     expect(milestoneLabel(50)).toContain('50번째');
     expect(milestoneLabel(100)).toContain('100번째');
   });

@@ -56,7 +56,7 @@ describe('stages', () => {
     expect(getStage('stubble').buddyFace).toBe('(◕．◕ )');
     expect(getStage('bushy').buddyFace).toBe('( ◕_◕)');
     expect(getStage('rugged').buddyFace).toBe('( ╥_╥)');
-    expect(getStage('hermit').buddyFace).toBe('( -_-)');
+    expect(getStage('hermit').buddyFace).toBe('( ；﹏；)');
   });
 
   it('시선 정렬: ①②는 공백 오른쪽(눈이 왼쪽=당신 봄), ③④⑤는 공백 왼쪽(눈이 오른쪽=외면)', () => {
@@ -107,7 +107,7 @@ describe('단계 멘트(messages) + randomMessage', () => {
     expect(getStage('smooth').messages[0]).toBe('오늘도 잘 부탁해요 아빠!');
     expect(getStage('stubble').messages[0]).toBe('아빠 오늘 좀 까끌까끌해...');
     expect(getStage('bushy').messages[0]).toBe('아... 따가워... 잠깐 쉬어야하지 않아요?');
-    expect(getStage('rugged').messages[0]).toBe('아빠 다크서클이.. 수염도 면도하고 와요...');
+    expect(getStage('rugged').messages[0]).toBe('아빠 다크서클이... 수염도 면도하고 와요...');
     expect(getStage('hermit').messages[0]).toBe('이제 안아주기 힘들어요... 푹 쉬다 와요');
   });
   it('randomMessage는 항상 배열 안의 멘트를 반환 (rand 주입)', () => {
