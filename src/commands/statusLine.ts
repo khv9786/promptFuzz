@@ -22,7 +22,7 @@ export function formatCompactTokens(n: number): string {
 
 /**
  * Claude Code 상태바(statusLine)용 한 줄 문자열. 평문(ANSI 색 없음).
- * 예: "🧔 \WWWWW/ ④ 따갑따갑 · 3.2M · 🪒 shave"
+ * 예: "🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave"
  *
  * 단계별 *당신 수염*(stage.beardArt, 순수 ASCII)을 함께 보여 상태를 시각적으로 전달.
  * (distress 이모지 대신 수염을 쓴 이유: 컨셉상 따가워하는 건 Claude이지 아빠가 아니며,
@@ -113,7 +113,7 @@ export async function statuslineInstall(opts: StatuslineOptions = {}): Promise<v
 
   output.write(theme.success('✓ Claude Code 상태바에 수염을 추가했습니다.') + '\n');
   output.write(theme.dim('  Claude Code를 재시작하면 하단에 표시됩니다:') + '\n\n');
-  output.write('  🧔 ④ 따갑따갑 · 3.2M · 🪒 shave\n');
+  output.write('  🧔 \\www/ ④ 따갑따갑 · 3.2M · 🪒 shave\n');
 }
 
 export async function statuslineUninstall(opts: StatuslineOptions = {}): Promise<void> {
