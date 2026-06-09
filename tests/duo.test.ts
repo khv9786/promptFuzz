@@ -62,7 +62,7 @@ describe('renderDuo', () => {
     expect(hermitLen).toBeGreaterThan(smoothLen);
   });
 
-  // dev 블록(18) + mid(6) = 24글자 고정. 그 뒤 gap + buddy.
+  // dev 블록(18) + MID(6) = 24글자 고정. 그 뒤 gap + buddy.
   const PREFIX = 24;
 
   it('단계 내 정렬: 머리/몸의 Claude 블록이 PREFIX+gap 동일 위치(글자 인덱스)에서 시작', () => {
@@ -76,13 +76,17 @@ describe('renderDuo', () => {
     }
   });
 
-  it('상호작용 글리프 폭과 무관하게 mid 영역 고정 — ~(1칸)도 이모지(2칸)도 정렬', () => {
-    // stubble(~, 1칸)과 smooth(💕, 2칸) 모두 buddy가 동일 PREFIX+gap에서 시작
-    for (const id of ['stubble', 'smooth'] as const) {
-      const rows = renderDuo(getStage(id));
+  it('상호작용(하트)은 Claude *뒤*(얼굴 줄 끝)에 — 얼굴 줄 Claude도 머리/몸과 동일 열', () => {
+    for (const id of STAGE_ORDER) {
+      const stage = getStage(id);
+      const rows = renderDuo(stage);
       const at = PREFIX + CLAUDE_GAP[id];
-      expect(rows[0]!.slice(at)).toBe('.---.');
-      expect(rows[2]!.slice(at)).toBe('\\___/');
+      // 얼굴 줄 Claude(버디 얼굴)가 머리/몸과 같은 인덱스에서 시작
+      expect(rows[1]!.slice(at).startsWith(buddyFacing(stage))).toBe(true);
+      // Claude 앞엔 가변폭 글리프 없음 — 순수 ASCII (cmd 포함 정렬 안정성 보장)
+      expect(/^[\x00-\x7f]*$/.test(rows[1]!.slice(0, at))).toBe(true);
+      // 상호작용 글리프는 줄 끝(Claude 뒤)에 존재 (제거되지 않음)
+      expect(rows[1]!.endsWith(` ${stage.interaction}`)).toBe(true);
     }
   });
 });
