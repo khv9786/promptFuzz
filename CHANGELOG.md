@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-06-02
+
+### Fixed
+
+- status 화면에서 상호작용 이모지(하트) 폭 때문에 Claude 머리/몸이 어긋나던 정렬 수정 — 하트를 얼굴 줄 *맨 끝*(Claude 뒤)으로 옮겨 Claude 앞을 순수 ASCII로 고정 (레거시 cmd 포함 모든 터미널 정렬).
+
+### Changed
+
+- statusLine에 PromptFuzz 이름 표시 (예: `PromptFuzz 🧔 \WWW/ ⑤ 고슴도치 · 3.2M · 🪒 shave`).
+
 ## [0.1.8] - 2026-06-02
 
 ### Changed
