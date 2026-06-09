@@ -104,7 +104,7 @@ Claude Code를 재시작하면 하단에 수염이 표시됩니다. 이미 다�
 Claude Code를 재시작하면 하단에 표시됩니다:
 
 ```
-🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave
+PromptFuzz 🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave
 ```
 
 ## 수염 5단계

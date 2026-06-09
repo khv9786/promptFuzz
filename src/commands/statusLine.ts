@@ -22,7 +22,8 @@ export function formatCompactTokens(n: number): string {
 
 /**
  * Claude Code 상태바(statusLine)용 한 줄 문자열. 평문(ANSI 색 없음).
- * 예: "🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave"
+ * 예: "PromptFuzz 🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave"
+ * (도구 정체성 위해 맨 앞에 PromptFuzz 이름 표시.)
  *
  * 단계별 *당신 수염*(stage.beardArt, 순수 ASCII)을 함께 보여 상태를 시각적으로 전달.
  * (distress 이모지 대신 수염을 쓴 이유: 컨셉상 따가워하는 건 Claude이지 아빠가 아니며,
@@ -31,7 +32,7 @@ export function formatCompactTokens(n: number): string {
  * 순수 함수: state를 읽지 않고 인자만으로 결정 → 단위 테스트 가능.
  */
 export function formatStatusLine(cumulativeTokens: number, stage: StageInfo): string {
-  const parts = [`🧔 ${stage.beardArt} ${stageLabel(stage.id)}`, formatCompactTokens(cumulativeTokens)];
+  const parts = [`PromptFuzz 🧔 ${stage.beardArt} ${stageLabel(stage.id)}`, formatCompactTokens(cumulativeTokens)];
   if (stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit') {
     parts.push('🪒 shave');
   }
@@ -113,7 +114,7 @@ export async function statuslineInstall(opts: StatuslineOptions = {}): Promise<v
 
   output.write(theme.success('✓ Claude Code 상태바에 수염을 추가했습니다.') + '\n');
   output.write(theme.dim('  Claude Code를 재시작하면 하단에 표시됩니다:') + '\n\n');
-  output.write('  🧔 \\www/ ④ 따갑따갑 · 3.2M · 🪒 shave\n');
+  output.write('  PromptFuzz 🧔 \\www/ ④ 따갑따갑 · 3.2M · 🪒 shave\n');
 }
 
 export async function statuslineUninstall(opts: StatuslineOptions = {}): Promise<void> {

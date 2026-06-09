@@ -69,19 +69,23 @@ describe('formatCompactTokens', () => {
 });
 
 describe('formatStatusLine', () => {
+  it('PromptFuzz 이름이 맨 앞에 표시된다', () => {
+    expect(formatStatusLine(0, getStage('smooth')).startsWith('PromptFuzz ')).toBe(true);
+    expect(formatStatusLine(6_500_000, getStage('hermit'))).toContain('PromptFuzz');
+  });
   it('① 매끈 — 수염 글리프 포함, 면도 힌트 없음', () => {
     const s = getStage('smooth');
-    expect(formatStatusLine(0, s)).toBe(`🧔 ${s.beardArt} ① 매끈 · 0`);
+    expect(formatStatusLine(0, s)).toBe(`PromptFuzz 🧔 ${s.beardArt} ① 매끈 · 0`);
   });
   it('② 까끌까끌 — 면도 힌트 없음', () => {
     const s = getStage('stubble');
     const line = formatStatusLine(175_000, s);
-    expect(line).toBe(`🧔 ${s.beardArt} ② 까끌까끌 · 175K`);
+    expect(line).toBe(`PromptFuzz 🧔 ${s.beardArt} ② 까끌까끌 · 175K`);
     expect(line).not.toContain('🪒');
   });
   it('③ 북슬북슬 — 면도 힌트 있음', () => {
     const s = getStage('bushy');
-    expect(formatStatusLine(900_000, s)).toBe(`🧔 ${s.beardArt} ③ 북슬북슬 · 900K · 🪒 shave`);
+    expect(formatStatusLine(900_000, s)).toBe(`PromptFuzz 🧔 ${s.beardArt} ③ 북슬북슬 · 900K · 🪒 shave`);
   });
   it('④ 따갑따갑 — 수염 + 면도 힌트', () => {
     const line = formatStatusLine(3_250_000, getStage('rugged'));
