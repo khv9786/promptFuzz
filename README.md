@@ -23,8 +23,6 @@ Claude Code로 코딩하다 보면 시간 가는 줄 모르죠. PromptFuzz는 �
 
 수염 단계가 올라갈수록 Claude는 점점 멀어지고 고개를 돌립니다(따가워서). 시선은 괄호 안 얼굴 위치로 표현돼요 — 낮은 단계엔 당신을 바라보고(`(◕ᴗ◕ )`), 따가워지면 고개를 돌립니다(`( ╥_╥)›`). 면도하면 다시 가까이서 바라봅니다.
 
-![PromptFuzz Demo](https://raw.githubusercontent.com/khv9786/promptFuzz/main/docs/demo.gif)
-
 ## 설치
 
 ```bash
@@ -42,7 +40,7 @@ PromptFuzz는 Node.js 기반 크로스 플랫폼 도구입니다.
 |--------|------|
 | Windows | ✅ 검증 완료 |
 | Linux | ✅ CI 통과 (Node 18 & 20) |
-| macOS | 🧪 실험적 (작동 예상, 검증 환영) |
+| macOS | ✅ 검증 완료 |
 
 ### Windows 사용자
 
@@ -145,6 +143,7 @@ promptfuzz config      # 임계치 프로필 보기/변경
 promptfuzz info        # 진단용 환경 정보 (= --info)
 promptfuzz install     # Claude Code에 hook 등록
 promptfuzz uninstall   # hook 제거 (~/.promptfuzz/는 유지)
+promptfuzz statusline  # 상태바에 수염 표시 (install / uninstall)
 promptfuzz reset       # 모든 데이터 + hook 완전 초기화 (확인 후)
 promptfuzz --help      # 전체 명령 보기
 ```
