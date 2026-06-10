@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- README를 현재 상태에 맞게 정리 — 오래된 데모 GIF 제거, `promptfuzz statusline`을 사용법 목록에 추가, macOS 지원 상태를 검증 완료(✅)로 갱신.
+- ⑤ 고슴도치 단계 Claude 표정의 세미콜론을 반각(`;`)으로 조정 — 눈매를 오밀조밀하게 (`(  ;﹏;)`).
+- Claude 얼굴 시선 공백을 2칸으로 넓혀 고개 방향(낮은 단계=당신 봄 / 높은 단계=외면)을 또렷하게.
+- 면도 마일스톤 축하 박스의 가로줄(`-`) 길이를 내용 시각폭에 맞춰 조정 (내용이 박스를 삐져나오던 문제 해소).
+- README 정리 — 오래된 데모 GIF 제거, `promptfuzz statusline`을 사용법 목록에 추가, macOS 지원 상태 표기(✅, 수동 검증·CI 미포함).
 
 ## [0.1.9] - 2026-06-02
 
