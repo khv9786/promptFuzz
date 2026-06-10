@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import type { StageInfo } from '../types/index.js';
 import { getStage } from '../state/stages.js';
+import { visualWidth } from './duo.js';
 import {
   INITIAL_SHAVE_STATE,
   reduceShave,
@@ -100,6 +101,9 @@ export function ShaveGame({
   }
 
   // phase === 'done' — before/after 대비 (수염 = 당신). 아빠 얼굴은 ASCII.
+  // 마일스톤 축하 박스: 가로줄(-)을 내용 시각폭에 맞춰 늘린다 (이모지 폭 포함).
+  const milestoneBody = milestone ? `  ${milestone}  축하해요!` : '';
+  const milestoneRule = '  +' + '-'.repeat(visualWidth(milestoneBody));
   return (
     <Box flexDirection="column">
       <Text> </Text>
@@ -113,9 +117,9 @@ export function ShaveGame({
       {milestone ? (
         <>
           <Text> </Text>
-          <Text color="yellow">{'  +' + '-'.repeat(22)}</Text>
-          <Text color="yellow">{`  |  ${milestone}  축하해요!`}</Text>
-          <Text color="yellow">{'  +' + '-'.repeat(22)}</Text>
+          <Text color="yellow">{milestoneRule}</Text>
+          <Text color="yellow">{`  |${milestoneBody}`}</Text>
+          <Text color="yellow">{milestoneRule}</Text>
         </>
       ) : null}
       <Text> </Text>
