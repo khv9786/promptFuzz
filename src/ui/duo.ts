@@ -50,8 +50,9 @@ const MID = ' '.repeat(6); // 당신↔Claude 고정 간격 — 순수 ASCII(가
  * 당신(왼쪽 고정) ↔ Claude(단계별로 멀어짐) 두 캐릭터를 평문 4줄로.
  * 색은 호출자(status)가 입힌다 — 이 함수는 순수/결정적.
  *
- * 정렬: dev 블록을 시각 폭 DEV_VW로 맞추고, 그 뒤엔 MID(고정 ASCII 간격)+거리(gap)만
- * 둬서 Claude 머리/얼굴/몸/라벨이 *모든 줄에서 같은 열*에서 시작한다.
+ * 정렬: dev 블록을 시각 폭 DEV_VW로 맞추고, 그 뒤엔 MID(고정 ASCII 간격)+거리(gap)로
+ * Claude를 배치한다. 머리/몸/라벨은 같은 열, *얼굴 줄만 FACE_PULL칸 왼쪽*으로 당겨
+ * 와이드 눈이 우측으로 번져 보이는 착시를 보정한다.
  * 상호작용 글리프(하트 등)는 이모지라 터미널마다 폭이 달라(특히 레거시 cmd) Claude
  * *앞*에 두면 얼굴 줄만 밀린다 → *얼굴 줄 맨 끝*(Claude 뒤)에 붙여 Claude 앞을
  * 순수 ASCII로 고정한다. (귀여움은 유지, 정렬만 안정화)
@@ -62,11 +63,13 @@ export function renderDuo(stage: StageInfo): string[] {
   const buddy = ['.---.', buddyFacing(stage), '\\___/', 'Claude'];
 
   const out: string[] = [];
+  const FACE_PULL = 1; // 얼굴 줄만 왼쪽으로 당김 (와이드 눈 우측 쏠림 착시 보정)
+
   for (let i = 0; i < 4; i++) {
     const left = padVisual(dev[i] ?? '', DEV_VW);
-    // 상호작용(하트)은 얼굴 줄에만, Claude *뒤*에. (앞에 두면 이모지 폭 때문에 정렬이 깨짐)
     const tail = i === 1 ? ` ${stage.interaction}` : '';
-    out.push(left + MID + gap + (buddy[i] ?? '') + tail);
+    const mid = i === 1 ? MID.slice(FACE_PULL) : MID;   // 얼굴=4칸, 나머지=6칸
+    out.push(left + mid + gap + (buddy[i] ?? '') + tail);
   }
   return out;
 }

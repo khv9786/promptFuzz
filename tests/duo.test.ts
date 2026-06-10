@@ -76,15 +76,15 @@ describe('renderDuo', () => {
     }
   });
 
-  it('상호작용(하트)은 Claude *뒤*(얼굴 줄 끝)에 — 얼굴 줄 Claude도 머리/몸과 동일 열', () => {
+  it('얼굴 줄은 머리/몸보다 1칸 왼쪽 — 하트는 줄 끝, Claude 앞은 순수 ASCII', () => {
     for (const id of STAGE_ORDER) {
       const stage = getStage(id);
       const rows = renderDuo(stage);
       const at = PREFIX + CLAUDE_GAP[id];
-      // 얼굴 줄 Claude(버디 얼굴)가 머리/몸과 같은 인덱스에서 시작
-      expect(rows[1]!.slice(at).startsWith(buddyFacing(stage))).toBe(true);
+      // 얼굴 줄 Claude(버디 얼굴)는 머리/몸(at)보다 1칸 왼쪽(at-1)에서 시작 — 착시 보정
+      expect(rows[1]!.slice(at - 1).startsWith(buddyFacing(stage))).toBe(true);
       // Claude 앞엔 가변폭 글리프 없음 — 순수 ASCII (cmd 포함 정렬 안정성 보장)
-      expect(/^[\x00-\x7f]*$/.test(rows[1]!.slice(0, at))).toBe(true);
+      expect(/^[\x00-\x7f]*$/.test(rows[1]!.slice(0, at - 1))).toBe(true);
       // 상호작용 글리프는 줄 끝(Claude 뒤)에 존재 (제거되지 않음)
       expect(rows[1]!.endsWith(` ${stage.interaction}`)).toBe(true);
     }
