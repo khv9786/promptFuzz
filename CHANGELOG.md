@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-06-02
+
+### Changed
+
+- README를 현재 상태에 맞게 정리 — 오래된 데모 GIF 제거, `promptfuzz statusline`을 사용법 목록에 추가, macOS 지원 상태를 검증 완료(✅)로 갱신.
+
 ## [0.1.9] - 2026-06-02
 
 ### Fixed
