@@ -101,3 +101,81 @@ export function shavedBeard(beardArt: string, progress: number, required: number
   const cleared = ' '.repeat(shaved) + core.slice(shaved);
   return `\\${cleared}/`;
 }
+
+// ── 면도 방식 4종 (v0.1.11) ──────────────────────────────────────────────
+// 진행 메커닉(progress/done)은 reduceShave를 그대로 재사용하고, 방식별 "한 단계
+// 진행 조건"만 다르다. 아래는 그 판정·표시에 쓰는 순수 함수들 (컴포넌트가 타이머·
+// 입력과 합쳐 쓴다). 비대화형(hook/CI)은 방식 선택 없이 자동 면도 — shave.ts 참고.
+
+export type ShaveMethod = 'laser' | 'electric' | 'blade' | 'pluck';
+export type ShaveDir = 'up' | 'down' | 'left' | 'right';
+
+export interface ShaveMethodInfo {
+  id: ShaveMethod;
+  emoji: string;
+  label: string;
+  desc: string;
+}
+
+/** 선택 화면 순서 = 난이도 오름차순(쉬움→어려움). */
+export const SHAVE_METHODS: ShaveMethodInfo[] = [
+  { id: 'laser', emoji: '⚡', label: '레이저', desc: '가만히 있으면 알아서 (5초)' },
+  { id: 'electric', emoji: '🔌', label: '전기면도기', desc: '←/→ 키 연타' },
+  { id: 'blade', emoji: '🔪', label: '날 면도기', desc: '나오는 방향키 맞추기' },
+  { id: 'pluck', emoji: '✋', label: '손으로 뽑기', desc: '빠르게! 1초 안에 입력' },
+];
+
+/** 선택 화면 키('1'~'4') → 방식. 그 외엔 null. */
+export function methodFromKey(input: string): ShaveMethod | null {
+  if (!/^[1-4]$/.test(input)) return null;
+  return SHAVE_METHODS[Number(input) - 1]?.id ?? null;
+}
+
+/** 면도하다 따끔할 때(날/손) 가벼운 코믹 멘트 — 진행은 안 되고 같은 자리 재시도. */
+export const SHAVE_MISS_MESSAGES = ['아 따가워!', '아야!', '쓰읍..', '윽, 살살!', '읏…'];
+
+export function pickMissMessage(rand: () => number = Math.random): string {
+  const list = SHAVE_MISS_MESSAGES;
+  const i = Math.floor(rand() * list.length);
+  return list[Math.min(Math.max(i, 0), list.length - 1)] ?? list[0]!;
+}
+
+export const LR_DIRS: ShaveDir[] = ['left', 'right'];
+export const ALL_DIRS: ShaveDir[] = ['up', 'down', 'left', 'right'];
+
+/** 방향 집합에서 무작위 하나 (rand 주입으로 단위 테스트 가능). */
+export function randomDir(set: ShaveDir[], rand: () => number = Math.random): ShaveDir {
+  const i = Math.floor(rand() * set.length);
+  return set[Math.min(Math.max(i, 0), set.length - 1)] ?? set[0]!;
+}
+
+/** 누른 방향이 목표와 같으면 'hit', 아니면(틀림/없음) 'miss'. */
+export function judgeDirection(target: ShaveDir, pressed: ShaveDir | null): 'hit' | 'miss' {
+  return pressed !== null && pressed === target ? 'hit' : 'miss';
+}
+
+export interface ArrowKeyLike {
+  upArrow?: boolean;
+  downArrow?: boolean;
+  leftArrow?: boolean;
+  rightArrow?: boolean;
+}
+
+/** Ink key 객체 → 방향. 방향키가 아니면 null. (순수 — 테스트 가능) */
+export function keyToDir(key: ArrowKeyLike): ShaveDir | null {
+  if (key.upArrow) return 'up';
+  if (key.downArrow) return 'down';
+  if (key.leftArrow) return 'left';
+  if (key.rightArrow) return 'right';
+  return null;
+}
+
+export const DIR_GLYPH: Record<ShaveDir, string> = {
+  up: '↑',
+  down: '↓',
+  left: '←',
+  right: '→',
+};
+
+/** 손으로 뽑기 제한 시간(ms). Ink 타이머 정확도 고려해 1초. */
+export const PLUCK_WINDOW_MS = 1000;
