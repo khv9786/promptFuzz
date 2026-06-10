@@ -14,7 +14,7 @@ export const STAGES: StageInfo[] = [
     beardArt: '\\___/',
     devFace: '( ^_^ )',
     // 괄호 안 공백을 *오른쪽*에 둬 얼굴(눈)을 왼쪽=당신 쪽으로 붙임 → 가까이서 당신을 바라봄. 자세한 의도는 ui/duo.ts 참고.
-    buddyFace: '(◕ᴗ◕ )✨',
+    buddyFace: '(◕ᴗ◕  )✨',
     interaction: '💕',
     messages: [
       '오늘도 잘 부탁해요 아빠!', // 기존(동결) — 항상 [0]
@@ -29,7 +29,7 @@ export const STAGES: StageInfo[] = [
     beardArt: '\\,,,/',
     devFace: '( o_o )',
     // 공백 오른쪽 유지 → 눈이 왼쪽=당신 쪽(아직 당신을 봄, 살짝 식은 표정).
-    buddyFace: '(◕．◕ )',
+    buddyFace: '(◕．◕  )',
     interaction: '~',
     messages: [
       '아빠 오늘 좀 까끌까끌해...', // 기존(동결)
@@ -44,7 +44,7 @@ export const STAGES: StageInfo[] = [
     beardArt: '\\vvv/',
     devFace: '( =_= )',
     // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 곁눈/외면 시작. ›꼬리는 buddyFacing()이 붙임.
-    buddyFace: '( ◕_◕)',
+    buddyFace: '(  ◕_◕)',
     interaction: '⚡',
     messages: [
       '아... 따가워... 잠깐 쉬어야하지 않아요?', // 기존(동결)
@@ -59,7 +59,7 @@ export const STAGES: StageInfo[] = [
     beardArt: '\\www/',
     devFace: '( -_- )',
     // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 울며 외면.
-    buddyFace: '( ╥_╥)',
+    buddyFace: '(  ╥_╥)',
     interaction: '💢',
     messages: [
       '아빠 다크서클이... 수염도 면도하고 와요...', // 기존(동결)
@@ -74,7 +74,7 @@ export const STAGES: StageInfo[] = [
     beardArt: '\\WWW/',
     devFace: '( x_x )',
     // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 외면하며 흐느낌(가장 슬픔). 눈물 가오묘지로 ④보다 격하게.
-    buddyFace: '( ；﹏；)',
+    buddyFace: '(  ;﹏;)',
     interaction: '💔',
     messages: [
       '이제 안아주기 힘들어요... 푹 쉬다 와요', // 기존(동결)
