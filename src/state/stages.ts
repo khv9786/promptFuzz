@@ -28,8 +28,8 @@ export const STAGES: StageInfo[] = [
     color: 'green',
     beardArt: '\\,,,/',
     devFace: '( o_o )',
-    // 공백 오른쪽 유지 → 눈이 왼쪽=당신 쪽(아직 당신을 봄, 살짝 식은 표정).
-    buddyFace: '(◕．◕  )',
+    // 공백 오른쪽 유지 → 눈이 왼쪽=당신 쪽(아직 당신을 봄, 살짝 식은 표정). ．가 전각이라 1칸으로 균형.
+    buddyFace: '(◕．◕ )',
     interaction: '~',
     messages: [
       '아빠 오늘 좀 까끌까끌해...', // 기존(동결)
@@ -73,8 +73,8 @@ export const STAGES: StageInfo[] = [
     color: 'red',
     beardArt: '\\WWW/',
     devFace: '( x_x )',
-    // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 외면하며 흐느낌(가장 슬픔). 눈물 가오묘지로 ④보다 격하게.
-    buddyFace: '(  ;﹏;)',
+    // 공백 왼쪽 → 눈이 오른쪽=바깥 쪽 = 외면하며 흐느낌(가장 슬픔). ﹏가 전각이라 1칸으로 균형.
+    buddyFace: '( ;﹏;)',
     interaction: '💔',
     messages: [
       '이제 안아주기 힘들어요... 푹 쉬다 와요', // 기존(동결)

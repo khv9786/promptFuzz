@@ -53,10 +53,10 @@ describe('stages', () => {
 
   it('고개 방향 buddyFace (괄호 내 공백 위치로 시선 표현)', () => {
     expect(getStage('smooth').buddyFace).toBe('(◕ᴗ◕  )✨');
-    expect(getStage('stubble').buddyFace).toBe('(◕．◕  )');
+    expect(getStage('stubble').buddyFace).toBe('(◕．◕ )');
     expect(getStage('bushy').buddyFace).toBe('(  ◕_◕)');
     expect(getStage('rugged').buddyFace).toBe('(  ╥_╥)');
-    expect(getStage('hermit').buddyFace).toBe('(  ;﹏;)');
+    expect(getStage('hermit').buddyFace).toBe('( ;﹏;)');
   });
 
   it('시선 정렬: ①②는 공백 오른쪽(눈이 왼쪽=당신 봄), ③④⑤는 공백 왼쪽(눈이 오른쪽=외면)', () => {
@@ -74,11 +74,13 @@ describe('stages', () => {
     }
   });
 
-  it('얼굴 시선 공백: 괄호 안 공백은 정확히 2칸, 한쪽(좌 또는 우)에 몰림 (눈 안 가름)', () => {
+  it('얼굴 시선 공백: 1~2칸이 한쪽(좌 또는 우) 끝에만 몰림 (눈 안 가름)', () => {
     for (const s of STAGES) {
       const inner = s.buddyFace.replace(/^\(/, '').replace(/\)[^)]*$/, '');
-      // 시선 강조용 공백 정확히 2칸 (좌측=외면 / 우측=당신 봄)
-      expect((inner.match(/ /g) ?? []).length).toBe(2);
+      // 시선 강조용 공백 — 글리프 폭에 따라 1~2칸 (전각 ．/﹏ 단계는 1칸으로 균형)
+      const spaces = (inner.match(/ /g) ?? []).length;
+      expect(spaces).toBeGreaterThanOrEqual(1);
+      expect(spaces).toBeLessThanOrEqual(2);
       // 공백은 한쪽 끝에만 — 눈 사이를 가르지 않음 (trim하면 내부 공백 없음)
       expect(inner.trim().includes(' ')).toBe(false);
     }
