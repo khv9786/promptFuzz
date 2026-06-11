@@ -197,7 +197,7 @@ export function ShaveGame({
       <Text>{`    ${currentStage.devFace}  ${currentStage.beardArt}`}</Text>
       <Text dimColor>{'      🪒  슥-삭...'}</Text>
       <Text color="green">  면도 후</Text>
-      <Text color="green">{`    ${smooth.devFace}  ${smooth.beardArt}`}</Text>
+      <Text color="green">{`    ${smooth.devFace}  ${smooth.beardArt} ✨`}</Text>
       <Text> </Text>
       <Text bold color="green">{completionMessage}</Text>
       {milestone ? (
