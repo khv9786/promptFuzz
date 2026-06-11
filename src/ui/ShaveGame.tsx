@@ -75,9 +75,10 @@ export function ShaveGame({
     }
   }
 
-  // 틀림(또는 손뽑기 시간초과) — 진행 안 됨, *새 방향*을 다시 제시.
+  // 틀림(또는 손뽑기 시간초과) — 한 칸 깎이고(게이지 빨강) *새 방향*을 다시 제시.
   function registerMiss(): void {
     setMiss(pickMissMessage());
+    setState((s) => ({ ...s, progress: Math.max(0, s.progress - 1) })); // 한 칸 감소(0 바닥)
     setTarget(randomDir(ALL_DIRS));
     if (method === 'pluck') setPluckRound((r) => r + 1);
   }
@@ -131,11 +132,7 @@ export function ShaveGame({
   // 손으로 뽑기: 목표마다 1초 제한. 초과하면 따끔 + *새 방향* 제시(타이머 재시작).
   useEffect(() => {
     if (method !== 'pluck' || state.phase !== 'shaving') return;
-    const id = setTimeout(() => {
-      setMiss(pickMissMessage());
-      setTarget(randomDir(ALL_DIRS));
-      setPluckRound((r) => r + 1);
-    }, PLUCK_WINDOW_MS);
+    const id = setTimeout(() => registerMiss(), PLUCK_WINDOW_MS); // 시간초과 = 틀림과 동일 처리
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [method, state.phase, state.progress, pluckRound]);
@@ -180,7 +177,7 @@ export function ShaveGame({
         <Text>{`   ${currentStage.devFace}`}</Text>
         <Text>{`    ${beard}`}</Text>
         <Text> </Text>
-        <Text>{`[${filled}${empty}] ${state.progress}/${requiredKeys}`}</Text>
+        <Text color={miss ? 'red' : undefined}>{`[${filled}${empty}] ${state.progress}/${requiredKeys}`}</Text>
         <Text> </Text>
         <Text bold>{prompt}</Text>
         <Text color="yellow">{miss ?? ' '}</Text>
