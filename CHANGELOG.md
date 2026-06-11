@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.13] - 2026-06-11
+
+### Changed
+
+- README 개편 — 소개·시선 설명을 더 친근한 톤으로 다듬고, 면도 미니게임 4방식(레이저/전기면도기/날 면도기/손으로 뽑기) 설명을 본문에 반영. (문서만 변경, 코드 동작 동일)
+
 ## [0.1.12] - 2026-06-11
 
 ### Changed
