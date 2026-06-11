@@ -7,7 +7,6 @@ import {
   randomDir,
   judgeDirection,
   keyToDir,
-  LR_DIRS,
   ALL_DIRS,
   DIR_GLYPH,
   PLUCK_WINDOW_MS,
@@ -59,16 +58,11 @@ describe('pickMissMessage', () => {
 });
 
 describe('randomDir', () => {
-  it('좌우 집합에서만 (날 면도기)', () => {
-    expect(LR_DIRS).toEqual(['left', 'right']);
-    for (const r of [0, 0.5, 0.99]) expect(LR_DIRS).toContain(randomDir(LR_DIRS, () => r));
-  });
-  it('상하좌우 집합에서만 (손으로 뽑기)', () => {
+  it('상하좌우 사방 집합 (날 면도기·손으로 뽑기 공통)', () => {
     expect(ALL_DIRS).toEqual(['up', 'down', 'left', 'right']);
     for (const r of [0, 0.25, 0.5, 0.75, 0.99]) expect(ALL_DIRS).toContain(randomDir(ALL_DIRS, () => r));
   });
   it('rand=0 → 첫 방향', () => {
-    expect(randomDir(LR_DIRS, () => 0)).toBe('left');
     expect(randomDir(ALL_DIRS, () => 0)).toBe('up');
   });
 });

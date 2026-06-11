@@ -140,7 +140,7 @@ export function pickMissMessage(rand: () => number = Math.random): string {
   return list[Math.min(Math.max(i, 0), list.length - 1)] ?? list[0]!;
 }
 
-export const LR_DIRS: ShaveDir[] = ['left', 'right'];
+/** 날 면도기·손으로 뽑기 모두 상하좌우 사방에서 목표를 낸다. */
 export const ALL_DIRS: ShaveDir[] = ['up', 'down', 'left', 'right'];
 
 /** 방향 집합에서 무작위 하나 (rand 주입으로 단위 테스트 가능). */

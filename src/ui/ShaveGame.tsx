@@ -14,7 +14,6 @@ import {
   randomDir,
   judgeDirection,
   keyToDir,
-  LR_DIRS,
   ALL_DIRS,
   DIR_GLYPH,
   PLUCK_WINDOW_MS,
@@ -69,17 +68,17 @@ export function ShaveGame({
       setTimeout(onCompleted, 1000);
       return;
     }
-    // 다음 목표 방향 (날=좌우 / 손=상하좌우). 레이저/전기는 목표 없음.
-    if (method === 'blade') setTarget(randomDir(LR_DIRS));
-    else if (method === 'pluck') {
+    // 다음 목표 방향 (날/손 모두 상하좌우 사방). 레이저/전기는 목표 없음.
+    if (method === 'blade' || method === 'pluck') {
       setTarget(randomDir(ALL_DIRS));
-      setPluckRound((r) => r + 1); // 새 목표 → 1초 타이머 재시작
+      if (method === 'pluck') setPluckRound((r) => r + 1); // 새 목표 → 1초 타이머 재시작
     }
   }
 
-  // 틀림(또는 손뽑기 시간초과) — 진행 안 됨, 같은 목표로 재시도.
+  // 틀림(또는 손뽑기 시간초과) — 진행 안 됨, *새 방향*을 다시 제시.
   function registerMiss(): void {
     setMiss(pickMissMessage());
+    setTarget(randomDir(ALL_DIRS));
     if (method === 'pluck') setPluckRound((r) => r + 1);
   }
 
@@ -96,10 +95,9 @@ export function ShaveGame({
       setMethod(m);
       setState({ phase: 'shaving', progress: 0 });
       setMiss(null);
-      if (m === 'blade') setTarget(randomDir(LR_DIRS));
-      else if (m === 'pluck') {
+      if (m === 'blade' || m === 'pluck') {
         setTarget(randomDir(ALL_DIRS));
-        setPluckRound((r) => r + 1);
+        if (m === 'pluck') setPluckRound((r) => r + 1);
       } else {
         setTarget(null);
       }
@@ -130,11 +128,12 @@ export function ShaveGame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [method, state.phase, state.progress]);
 
-  // 손으로 뽑기: 목표마다 1초 제한. 초과하면 따끔 + 같은 목표 재시도(타이머 재시작).
+  // 손으로 뽑기: 목표마다 1초 제한. 초과하면 따끔 + *새 방향* 제시(타이머 재시작).
   useEffect(() => {
     if (method !== 'pluck' || state.phase !== 'shaving') return;
     const id = setTimeout(() => {
       setMiss(pickMissMessage());
+      setTarget(randomDir(ALL_DIRS));
       setPluckRound((r) => r + 1);
     }, PLUCK_WINDOW_MS);
     return () => clearTimeout(id);
