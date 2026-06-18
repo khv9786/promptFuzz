@@ -1,5 +1,9 @@
 # PromptFuzz 🧔
 
+[![npm downloads](https://img.shields.io/npm/dt/promptfuzz?label=npm%20downloads&color=brightgreen)](https://www.npmjs.com/package/promptfuzz)
+[![npm version](https://img.shields.io/npm/v/promptfuzz)](https://www.npmjs.com/package/promptfuzz)
+[![license](https://img.shields.io/npm/l/promptfuzz)](LICENSE)
+
 ```
    ____                            _   ____
   |  _ \ _ __ ___  _ __ ___  _ __ | |_|  __|   _ ________
