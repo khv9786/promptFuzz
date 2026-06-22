@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeWeeklySummary, computeTrend } from '../src/state/weeklySummary.js';
+import { computeWeeklySummary, computeTrend, weeklyNarrative } from '../src/state/weeklySummary.js';
 import type { DailyEntry } from '../src/types/index.js';
 import { getLocalDateString } from '../src/state/dailyLog.js';
 
@@ -66,5 +66,47 @@ describe('computeTrend (30% 경계)', () => {
   });
   it('previous=0, current=0 → flat', () => {
     expect(computeTrend(0, 0)).toBe('flat');
+  });
+});
+
+describe('weeklyNarrative (이번 주 서사)', () => {
+  it('데이터 없음 → null (생략)', () => {
+    expect(weeklyNarrative({}, NOW)).toBeNull();
+  });
+
+  it('면도 ≥4 → 바빴던 한 주', () => {
+    const log: Record<string, DailyEntry> = {};
+    for (let i = 0; i < 5; i++) {
+      log[ds(i)] = entry({ date: ds(i), tokensAdded: 100_000, peakStage: 'bushy', shaveCount: 1 });
+    }
+    const n = weeklyNarrative(log, NOW)!;
+    expect(n).toContain('바빴던');
+    expect(n).toContain('5번');
+  });
+
+  it('평균 ≤② → 조용한 한 주', () => {
+    const log: Record<string, DailyEntry> = {};
+    for (let i = 0; i < 3; i++) {
+      log[ds(i)] = entry({ date: ds(i), tokensAdded: 30_000, peakStage: 'smooth', shaveCount: 0 });
+    }
+    expect(weeklyNarrative(log, NOW)).toContain('조용한');
+  });
+
+  it('자랐지만 면도 0 → 정리 권유 (압박 아님)', () => {
+    const log: Record<string, DailyEntry> = {};
+    for (let i = 0; i < 3; i++) {
+      log[ds(i)] = entry({ date: ds(i), tokensAdded: 500_000, peakStage: 'bushy', shaveCount: 0 });
+    }
+    expect(weeklyNarrative(log, NOW)).toContain('정리해볼까요');
+  });
+
+  it('일반 (자라고 면도 1~3) → 잘 보냈어요', () => {
+    const log: Record<string, DailyEntry> = {};
+    for (let i = 0; i < 3; i++) {
+      log[ds(i)] = entry({ date: ds(i), tokensAdded: 500_000, peakStage: 'bushy', shaveCount: 1 });
+    }
+    const n = weeklyNarrative(log, NOW)!;
+    expect(n).toContain('잘 보냈어요');
+    expect(n).toContain('3번');
   });
 });

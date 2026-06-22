@@ -2,7 +2,7 @@ import { theme } from '../ui/theme.js';
 import { loadState } from '../state/storage.js';
 import { computeStats } from '../state/stats.js';
 import { getStage, STAGE_ORDER } from '../state/stages.js';
-import { trendArrow } from '../state/weeklySummary.js';
+import { trendArrow, weeklyNarrative } from '../state/weeklySummary.js';
 import { STRETCH_CARDS } from '../data/stretches.js';
 
 const MAX_DAYS = 90;
@@ -50,6 +50,13 @@ export async function statsCommand(opts: StatsOptions = {}): Promise<void> {
   const lines: string[] = [];
   lines.push(theme.bold(`📊 PromptFuzz 통계 (최근 ${days}일)`));
   lines.push('');
+
+  // 이번 주 서사 한 줄 (데이터 부족이면 null → 생략).
+  const narrative = weeklyNarrative(state.dailyLog);
+  if (narrative) {
+    lines.push(theme.dim(`💬 ${narrative}`));
+    lines.push('');
+  }
 
   lines.push(theme.info('활동:'));
   lines.push(`  활성 일수:        ${stats.activeDays} / ${days}`);

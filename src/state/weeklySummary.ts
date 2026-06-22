@@ -1,5 +1,6 @@
 import type { BeardStage, DailyEntry } from '../types/index.js';
 import { getLocalDateString } from './dailyLog.js';
+import { getStage } from './stages.js';
 
 export type Trend = 'up' | 'down' | 'flat';
 
@@ -91,4 +92,40 @@ export function computeTrend(current: number, previous: number): Trend {
 
 export function trendArrow(trend: Trend): string {
   return trend === 'up' ? '↗' : trend === 'down' ? '↘' : '→';
+}
+
+const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
+
+/**
+ * 이번 주(최근 7일)를 이야기체 한 줄로 요약한다. 숫자 나열 대신 '당신의 한 주' 느낌.
+ * 톤: 다정·격려·압박 없음 (CLAUDE.md). 요일별 서사는 조합이 어색해질 수 있어
+ * 의도적으로 뺐다 — 평균 단계 + 면도 횟수만으로 자연스러운 문장을 만든다.
+ *
+ * @returns 서사 문장. 데이터 부족(최근 7일 활동 0 / 기록 없음)이면 null → 호출부가 생략.
+ */
+export function weeklyNarrative(
+  dailyLog: Record<string, DailyEntry>,
+  now: Date = new Date(),
+): string | null {
+  const summary = computeWeeklySummary(dailyLog, now);
+  if (!summary) return null;
+
+  const idx = STAGE_ORDER.indexOf(summary.avgStage);
+  const stageLabel = `${NUMERAL[idx] ?? ''} ${getStage(summary.avgStage).nameKr}`;
+  const shaves = summary.shaveCount;
+
+  // 바쁜 주: 면도가 잦았던 한 주.
+  if (shaves >= 4) {
+    return `바빴던 한 주, 면도 ${shaves}번. 그만큼 열심히셨네요.`;
+  }
+  // 조용한 주: 수염이 크게 자라지 않음 (평균 ① 매끈 ~ ② 까끌까끌).
+  if (idx <= 1) {
+    return `조용한 한 주였어요. 수염도 ${stageLabel}을 넘지 않았네요.`;
+  }
+  // 자랐지만 아직 면도 전: 압박 아닌 가벼운 권유.
+  if (shaves === 0) {
+    return `이번 주는 ${stageLabel}까지 자랐어요. 한 번 정리해볼까요?`;
+  }
+  // 일반: 적당히 자라고 적당히 정리한 한 주.
+  return `이번 주는 주로 ${stageLabel}, 면도 ${shaves}번으로 잘 보냈어요.`;
 }
