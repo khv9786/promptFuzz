@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-06-22
+
+### Changed
+
+- 내부: 버전을 `package.json` 단일 소스에서 읽도록 변경 (cli/info 하드코딩 제거, 유지보수성 개선). 사용자 동작 변화 없음.
+
 ## [0.1.13] - 2026-06-11
 
 ### Changed
