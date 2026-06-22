@@ -50,6 +50,31 @@ export function milestoneLabel(shaveCount: number): string | null {
   }
 }
 
+/**
+ * 면도 직후 Claude Buddy의 한마디 풀. completionMessage(면도 결과)와 별개로
+ * "툭" 던지는 가벼운 케어 한 줄. 톤: 다정·존댓말·압박 없음 (CLAUDE.md 톤 가이드).
+ * 연속기록/압박 멘트는 넣지 않는다 (죄책감 유발 금지).
+ */
+export const POST_SHAVE_ONELINERS: readonly string[] = [
+  '오늘도 고생 많으셨어요.',
+  '한결 가벼워졌죠? 물도 한 잔 어때요?',
+  '수염 정리 완료. 어깨도 한 번 펴봐요.',
+  '개운하죠? 잠깐 창밖도 보고요.',
+  '깔끔해졌어요. 이 김에 좀 쉬어요.',
+  '정리 끝! 기지개 한 번 켜고 가요.',
+  '말끔하네요. 눈도 잠깐 감았다 떠봐요.',
+  '한층 산뜻해졌어요. 숨 한 번 크게 쉬고요.',
+];
+
+/**
+ * 한마디 하나를 고른다 (순수 함수 — rand 주입으로 테스트 가능).
+ * @param rand 0~1 난수 (기본 Math.random)
+ */
+export function pickPostShaveOneLiner(rand: number = Math.random()): string {
+  const i = Math.floor(rand * POST_SHAVE_ONELINERS.length);
+  return POST_SHAVE_ONELINERS[Math.max(0, Math.min(POST_SHAVE_ONELINERS.length - 1, i))]!;
+}
+
 /** 단계별 클로징 멘트 (마일스톤이 아닐 때 fallback). */
 export function stageCompletionMessage(stageBeforeShave: BeardStage): string {
   switch (stageBeforeShave) {

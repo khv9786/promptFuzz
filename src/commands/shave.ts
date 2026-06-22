@@ -2,7 +2,7 @@ import { performShave, recordStretchCard } from '../state/index.js';
 import { randomStretchCard } from '../data/stretches.js';
 import { loadState } from '../state/storage.js';
 import { getStage } from '../state/stages.js';
-import { getCompletionMessage, milestoneLabel } from '../ui/completionMessage.js';
+import { getCompletionMessage, milestoneLabel, pickPostShaveOneLiner } from '../ui/completionMessage.js';
 import { theme } from '../ui/theme.js';
 import type { PromptFuzzState } from '../types/index.js';
 
@@ -37,6 +37,7 @@ async function runNonInteractive(before: PromptFuzzState): Promise<void> {
     console.log();
     await performShave();
     console.log(theme.success('✓ 매끈해졌어요!'));
+    console.log(theme.dim(`  💬 ${pickPostShaveOneLiner()}`));
     console.log();
   }
 
@@ -83,6 +84,7 @@ async function runInteractive(before: PromptFuzzState): Promise<void> {
         currentStage: getStage(before.currentStage),
         completionMessage,
         milestone: milestoneLabel(projectedShaveCount),
+        buddyOneLiner: pickPostShaveOneLiner(),
         onShaved: () => {
           void performShave();
         },

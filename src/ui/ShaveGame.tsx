@@ -30,6 +30,8 @@ export interface ShaveGameProps {
   completionMessage: string;
   /** 마일스톤(1/10/50/100) 축하 라벨. 없으면 박스 미표시. */
   milestone?: string | null;
+  /** 면도 직후 Claude Buddy의 한마디 (shave.ts가 랜덤 선택). 없으면 미표시. */
+  buddyOneLiner?: string | null;
   onShaved: () => void; // 마지막 진행 직후, performShave 호출 시점
   onCompleted: () => void; // done 표시 후 1초, 부모는 unmount + 전환
   onAbort: () => void; // q 또는 Ctrl+C
@@ -45,6 +47,7 @@ export function ShaveGame({
   currentStage,
   completionMessage,
   milestone,
+  buddyOneLiner,
   onShaved,
   onCompleted,
   onAbort,
@@ -200,6 +203,7 @@ export function ShaveGame({
       <Text color="green">{`    ${smooth.devFace}  ${smooth.beardArt} ✨`}</Text>
       <Text> </Text>
       <Text bold color="green">{completionMessage}</Text>
+      {buddyOneLiner ? <Text dimColor>{`  💬 ${buddyOneLiner}`}</Text> : null}
       {milestone ? (
         <>
           <Text> </Text>
