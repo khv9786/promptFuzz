@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.17] - 2026-06-22
+
+### Changed
+
+- `log`의 "최고 도달"이 같은 단계일 때 그날 토큰량이 가장 많았던 날을 가리키도록 개선 (동점 시 날짜가 안 바뀌던 문제 해소). 날짜 옆에 토큰량도 함께 표시.
+
 ## [0.1.16] - 2026-06-22
 
 ### Added
