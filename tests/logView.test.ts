@@ -68,6 +68,37 @@ describe('summarize', () => {
     expect(s.peakDate).toBe('2026-05-28');
   });
 
+  it('같은 단계는 토큰 많은 날이 최고 도달 (tie-break)', () => {
+    const log = {
+      '2026-05-26': entry({ date: '2026-05-26', peakStage: 'hermit', tokensAdded: 2_000_000 }),
+      '2026-05-28': entry({ date: '2026-05-28', peakStage: 'hermit', tokensAdded: 5_000_000 }),
+    };
+    const s = summarize(log, 7, 'medium', now);
+    expect(s.peakStage).toBe('hermit');
+    expect(s.peakDate).toBe('2026-05-28'); // 토큰 더 많은 날
+    expect(s.peakTokens).toBe(5_000_000);
+  });
+
+  it('더 높은 단계는 토큰이 적어도 우선', () => {
+    const log = {
+      '2026-05-26': entry({ date: '2026-05-26', peakStage: 'bushy', tokensAdded: 9_000_000 }),
+      '2026-05-28': entry({ date: '2026-05-28', peakStage: 'hermit', tokensAdded: 100_000 }),
+    };
+    const s = summarize(log, 7, 'medium', now);
+    expect(s.peakStage).toBe('hermit');
+    expect(s.peakDate).toBe('2026-05-28');
+    expect(s.peakTokens).toBe(100_000);
+  });
+
+  it('매끈만 있으면 최고 도달 없음 (peakDate null)', () => {
+    const log = {
+      '2026-05-27': entry({ date: '2026-05-27', peakStage: 'smooth', tokensAdded: 5_000 }),
+      '2026-05-28': entry({ date: '2026-05-28', peakStage: 'smooth', tokensAdded: 9_000 }),
+    };
+    const s = summarize(log, 7, 'medium', now);
+    expect(s.peakDate).toBeNull();
+  });
+
   it('범위 밖(N일 초과) entry는 집계 제외', () => {
     const log = {
       '2026-01-01': entry({ date: '2026-01-01', shaveCount: 99, peakStage: 'hermit' }),

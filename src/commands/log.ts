@@ -13,6 +13,7 @@ import {
   GRID_CELL_SEP,
   type GrassLevel,
 } from './logView.js';
+import { formatCompactTokens } from './statusLine.js';
 import { getLocalDateString } from '../state/dailyLog.js';
 import type { DailyEntry } from '../types/index.js';
 
@@ -96,9 +97,10 @@ export async function logCommand(opts: LogOptions = {}): Promise<void> {
   if (summary.peakDate) {
     const idx = ['smooth', 'stubble', 'bushy', 'rugged', 'hermit'].indexOf(summary.peakStage);
     const numeral = ['①', '②', '③', '④', '⑤'][idx] ?? '';
+    const peakTokenStr = summary.peakTokens > 0 ? ` · ${formatCompactTokens(summary.peakTokens)} 토큰` : '';
     lines.push(
       theme.dim('최고 도달: ') + `${numeral} ${getStage(summary.peakStage).nameKr} ` +
-        theme.dim(`(${summary.peakDate})`)
+        theme.dim(`(${summary.peakDate}${peakTokenStr})`)
     );
   }
 

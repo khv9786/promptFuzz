@@ -33,6 +33,7 @@ export interface LogSummary {
   totalStretches: number;
   peakStage: DailyEntry['peakStage'];
   peakDate: string | null;
+  peakTokens: number; // 최고 도달일의 그날 토큰량 (동단계 tie-break 기준 겸 표시용)
   entries: DailyEntry[];
 }
 
@@ -62,17 +63,26 @@ export function summarize(
   let totalStretches = 0;
   let peakStage: DailyEntry['peakStage'] = 'smooth';
   let peakDate: string | null = null;
+  let peakTokens = 0;
 
   for (const e of entries) {
     totalShaves += e.shaveCount;
     totalStretches += e.stretchCount;
-    if (STAGE_RANK[e.peakStage] > STAGE_RANK[peakStage]) {
+
+    // 매끈(smooth)은 "도달"로 치지 않는다 — 활동 없는 날이 peak로 잡히면 안 됨.
+    if (e.peakStage === 'smooth') continue;
+
+    const rank = STAGE_RANK[e.peakStage];
+    const curRank = peakDate === null ? -1 : STAGE_RANK[peakStage];
+    // 더 높은 단계 우선. 같은 단계면 그날 토큰이 더 많은 날(= 더 심했던 날)로 갱신.
+    if (rank > curRank || (rank === curRank && e.tokensAdded > peakTokens)) {
       peakStage = e.peakStage;
       peakDate = e.date;
+      peakTokens = e.tokensAdded;
     }
   }
 
-  return { profile: profileId, days, totalShaves, totalStretches, peakStage, peakDate, entries };
+  return { profile: profileId, days, totalShaves, totalStretches, peakStage, peakDate, peakTokens, entries };
 }
 
 /** now 기준 과거 days일의 날짜 문자열 배열 (오래된 것부터). */
