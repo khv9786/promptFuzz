@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-06-22
+
+### Added
+
+- 면도 완료 후 Claude Buddy의 한마디 추가 (작은 격려·케어 한 줄, 랜덤).
+- `stats`에 이번 주를 돌아보는 한 줄 서사 추가 (dailyLog 재활용, 압박 없이).
+
 ## [0.1.14] - 2026-06-22
 
 ### Changed
