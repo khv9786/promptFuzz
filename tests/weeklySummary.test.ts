@@ -84,12 +84,26 @@ describe('weeklyNarrative (이번 주 서사)', () => {
     expect(n).toContain('5번');
   });
 
-  it('평균 ≤② → 조용한 한 주', () => {
+  it('평균 ① 매끈 → 동어반복 없이 "거의 안 자랐네요"', () => {
     const log: Record<string, DailyEntry> = {};
     for (let i = 0; i < 3; i++) {
       log[ds(i)] = entry({ date: ds(i), tokensAdded: 30_000, peakStage: 'smooth', shaveCount: 0 });
     }
-    expect(weeklyNarrative(log, NOW)).toContain('조용한');
+    const n = weeklyNarrative(log, NOW)!;
+    expect(n).toContain('조용한');
+    expect(n).toContain('거의 안 자랐');
+    expect(n).not.toContain('넘지 않았'); // ① 매끈은 "매끈을 넘지 않았다" 동어반복 회피
+  });
+
+  it('평균 ② 까끌까끌 → "②를 넘지 않았네요" (현행 유지)', () => {
+    const log: Record<string, DailyEntry> = {};
+    for (let i = 0; i < 3; i++) {
+      log[ds(i)] = entry({ date: ds(i), tokensAdded: 60_000, peakStage: 'stubble', shaveCount: 0 });
+    }
+    const n = weeklyNarrative(log, NOW)!;
+    expect(n).toContain('조용한');
+    expect(n).toContain('까끌까끌');
+    expect(n).toContain('넘지 않았');
   });
 
   it('자랐지만 면도 0 → 정리 권유 (압박 아님)', () => {
