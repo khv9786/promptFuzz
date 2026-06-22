@@ -53,9 +53,10 @@ Claude Code 토큰 사용량을 *가상 수염*으로 시각화하고, 면도(�
 
 ## 버전 / 릴리스
 
-- 버전은 `package.json` **단일 소스** (v0.1.13~).
+- 버전은 `package.json` **단일 소스**. cli/info/test가 그 값을 읽으므로 버전업은 `package.json` 한 곳만 바꾼다.
 - `npm publish`·`git push`는 **사용자(오케스트레이터)만** — Claude Code는 커밋까지만 (헤드리스 인증 불가). `--force` 금지.
 - npm 게시 버전은 덮어쓰기 불가 → 보강은 다음 patch로.
+- **repo·npm에는 PromptFuzz 패키지 파일만 둔다.** 데모/리서치/실험 등 부수물은 `.gitignore` 처리하거나 repo 밖에 둔다.
 
 ## 작업 방식
 

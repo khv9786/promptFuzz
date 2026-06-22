@@ -10,3 +10,9 @@ coverage/
 # Claude Code 로컬 설정 (개인 권한 정책, 커밋 금지)
 .claude/settings.local.json
 .claude/cache/
+
+# 부수물 — PromptFuzz 패키지 외 (데모/리서치/실험). repo·npm에 포함하지 않음.
+/obsidianResearch.md
+/docs/demo.gif
+/docs/demo.tape
+/docs/demo-setup.mjs
