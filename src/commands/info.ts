@@ -6,9 +6,10 @@ import { STAGE_ORDER, stageFromTokens } from '../state/stages.js';
 import { getProfile } from '../state/profiles.js';
 import { LOGO } from '../ui/logo.js';
 import { theme } from '../ui/theme.js';
+import pkg from '../../package.json';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
-const VERSION = '0.1.13';
+const VERSION = pkg.version;
 
 function numeralFor(id: string): string {
   const i = STAGE_ORDER.indexOf(id as never);

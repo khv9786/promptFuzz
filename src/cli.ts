@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
+import pkg from '../package.json';
 import { installCommand } from './commands/install.js';
 import { uninstallCommand } from './commands/uninstall.js';
 import { statusCommand } from './commands/status.js';
@@ -44,7 +45,7 @@ const program = new Command();
 program
   .name('promptfuzz')
   .description('토큰을 수염으로, 휴식을 면도로 — Claude Code 사용 시간 관리 토이')
-  .version('0.1.13');
+  .version(pkg.version);
 
 program
   .command('install')

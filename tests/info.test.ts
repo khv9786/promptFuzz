@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { PromptFuzzState } from '../src/types/index.js';
+import pkg from '../package.json';
 
 const hoisted = vi.hoisted(() => ({
   state: { current: null as PromptFuzzState | null },
@@ -71,7 +72,7 @@ describe('infoCommand', () => {
   it('모든 섹션 출력', async () => {
     await infoCommand();
     const out = logs.join('\n');
-    expect(out).toContain('PromptFuzz v0.1.13');
+    expect(out).toContain(`PromptFuzz v${pkg.version}`); // 단일 소스: package.json version과 일치
     expect(out).toContain('Environment:');
     expect(out).toContain('Node:');
     expect(out).toContain('State:');
