@@ -1,7 +1,8 @@
 import { createInterface } from 'node:readline/promises';
 import { theme } from '../ui/theme.js';
 import type { StageInfo } from '../types/index.js';
-import { stageLabel } from './tickRender.js';
+import { STAGE_ORDER } from '../state/stages.js';
+import { visualWidth } from '../ui/duo.js';
 import {
   readSettings,
   writeSettings,
@@ -20,23 +21,51 @@ export function formatCompactTokens(n: number): string {
   return String(n);
 }
 
+const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
+
+function numeralFor(id: StageInfo['id']): string {
+  return NUMERAL[STAGE_ORDER.indexOf(id)] ?? '';
+}
+
 /**
  * Claude Code 상태바(statusLine)용 한 줄 문자열. 평문(ANSI 색 없음).
- * 예: "PromptFuzz 🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave"
- * (도구 정체성 위해 맨 앞에 PromptFuzz 이름 표시.)
  *
- * 단계별 *당신 수염*(stage.beardArt, 순수 ASCII)을 함께 보여 상태를 시각적으로 전달.
- * (distress 이모지 대신 수염을 쓴 이유: 컨셉상 따가워하는 건 Claude이지 아빠가 아니며,
- *  톤 가이드의 "죄책감 금지"와도 맞다 — 수염은 중립적 신호.)
- * 면도 힌트(🪒 shave)는 ③ 북슬북슬 이상에서만 — status 명령의 힌트 조건과 동일.
+ * **터미널 너비 적응**: columns(=COLUMNS)에 맞는 *가장 풍부한* 버전을 고른다.
+ * Claude Code가 무식하게 뒤를 자르기 전에 우리가 먼저 줄여, 핵심(수염 글리프 +
+ * 단계 + 🪒 면도 신호)을 끝까지 보존한다. 생략 순서: 이름 → "shave" 텍스트 → 단계명.
+ *
+ *   풀:   PromptFuzz 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 🪒 shave
+ *   중간: 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 🪒
+ *   축약: 🧔 \WWW/ ⑤ · 28.8M · 🪒
+ *
+ * 임계값은 하드코딩하지 않고 각 버전의 visualWidth를 columns와 직접 비교한다
+ * (토큰 자릿수 변동까지 자동 반영). columns 없음/NaN/0이면 풀버전 (구버전 호환).
+ * 면도 신호(🪒)는 ③ 북슬북슬 이상에서 *모든 버전*에 유지 — 절대 생략 안 함.
  * 순수 함수: state를 읽지 않고 인자만으로 결정 → 단위 테스트 가능.
  */
-export function formatStatusLine(cumulativeTokens: number, stage: StageInfo): string {
-  const parts = [`PromptFuzz 🧔 ${stage.beardArt} ${stageLabel(stage.id)}`, formatCompactTokens(cumulativeTokens)];
-  if (stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit') {
-    parts.push('🪒 shave');
+export function formatStatusLine(
+  cumulativeTokens: number,
+  stage: StageInfo,
+  columns?: number,
+): string {
+  const hasShave = stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit';
+  const tokens = formatCompactTokens(cumulativeTokens);
+  const num = numeralFor(stage.id);
+  const beard = stage.beardArt;
+
+  const build = (head: string, shave: string | null): string =>
+    [head, tokens, ...(hasShave && shave ? [shave] : [])].join(' · ');
+
+  const full = build(`PromptFuzz 🧔 ${beard} ${num} ${stage.nameKr}`, '🪒 shave');
+  const mid = build(`🧔 ${beard} ${num} ${stage.nameKr}`, '🪒');
+  const short = build(`🧔 ${beard} ${num}`, '🪒');
+
+  if (typeof columns === 'number' && Number.isFinite(columns) && columns > 0) {
+    if (visualWidth(full) <= columns) return full;
+    if (visualWidth(mid) <= columns) return mid;
+    return short;
   }
-  return parts.join(' · ');
+  return full;
 }
 
 // ── statusline install/uninstall 명령 ──────────────────────────────────

@@ -104,6 +104,61 @@ describe('formatStatusLine', () => {
   });
 });
 
+describe('formatStatusLine 반응형 (COLUMNS 적응)', () => {
+  const TOK = 28_800_000; // → 28.8M (실측: 풀 52 / 중간 35 / 축약 26칸)
+  const hermit = getStage('hermit');
+  const line = (cols?: number) => formatStatusLine(TOK, hermit, cols);
+
+  it('넓으면 풀버전 (이름 + shave 텍스트)', () => {
+    expect(line(80)).toContain('PromptFuzz');
+    expect(line(80)).toContain('🪒 shave');
+  });
+
+  it('폭 경계 52 → 풀, 51 → 중간', () => {
+    expect(line(52)).toContain('PromptFuzz');
+    expect(line(51)).not.toContain('PromptFuzz'); // 이름 먼저 생략
+    expect(line(51)).toContain('고슴도치'); // 단계명은 유지
+  });
+
+  it('⭐ 48칸 → 중간버전 (이름 없이 단계명 + 🪒, 잘림 없음)', () => {
+    const s = line(48);
+    expect(s).not.toContain('PromptFuzz');
+    expect(s).toContain('⑤ 고슴도치');
+    expect(s).toContain('🪒');
+    expect(s).not.toContain('…');
+  });
+
+  it('중간 경계 40·35 → 중간, 34 → 축약(단계명 생략)', () => {
+    expect(line(40)).toContain('고슴도치');
+    expect(line(35)).toContain('고슴도치');
+    expect(line(34)).not.toContain('고슴도치'); // 단계명 생략
+    expect(line(34)).toContain('⑤'); // 단계 숫자는 유지 (정체성)
+  });
+
+  it('아주 좁아도 축약버전 — 글리프 + 단계 + 🪒 보존', () => {
+    const s = line(30);
+    expect(s).toContain(hermit.beardArt);
+    expect(s).toContain('⑤');
+    expect(s).toContain('🪒');
+  });
+
+  it('COLUMNS 없음/NaN/0 → 풀버전 fallback', () => {
+    expect(line(undefined)).toContain('PromptFuzz');
+    expect(line(NaN)).toContain('PromptFuzz');
+    expect(line(0)).toContain('PromptFuzz');
+  });
+
+  it('모든 폭에서 🪒(면도 신호)는 유지된다', () => {
+    for (const c of [80, 52, 51, 48, 40, 35, 34, 30, 10, undefined]) {
+      expect(line(c)).toContain('🪒');
+    }
+  });
+
+  it('면도 신호 없는 단계(② 까끌까끌)는 좁아도 🪒 안 생김', () => {
+    expect(formatStatusLine(175_000, getStage('stubble'), 20)).not.toContain('🪒');
+  });
+});
+
 describe('statusCommand({ line: true }) — 순수 읽기', () => {
   let logs: string[];
   let spy: ReturnType<typeof vi.spyOn>;

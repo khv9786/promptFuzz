@@ -16,10 +16,19 @@ function numeralFor(id: string): string {
   return NUMERAL[i] ?? '';
 }
 
+/** COLUMNS 환경변수를 양의 정수로 파싱. 없음/NaN/0 → undefined (풀버전 fallback). */
+function parseColumns(raw: string | undefined): number | undefined {
+  if (!raw) return undefined;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
 /** statusline용 한 줄 출력. 평문(ANSI 없음), tick 미호출(순수 읽기). */
 async function renderLine(): Promise<void> {
   const { state, stage } = await getCurrentState();
-  console.log(formatStatusLine(state.cumulativeTokens, stage));
+  // Claude Code v2.1.153+가 COLUMNS로 상태바 폭을 알려준다. 그 폭에 맞춰 적응.
+  const columns = parseColumns(process.env.COLUMNS);
+  console.log(formatStatusLine(state.cumulativeTokens, stage, columns));
 }
 
 export interface StatusOptions {
