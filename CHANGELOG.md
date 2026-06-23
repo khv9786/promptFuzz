@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.19] - 2026-06-22
+
+### Changed
+
+- statusLine 등록에 `refreshInterval`(2초)을 추가 — 터미널 너비를 바꿔도 상태바가 곧 맞춰집니다 (statusLine은 리사이즈 이벤트로 재호출되지 않아, 주기적 새로고침으로 `COLUMNS` 갱신을 받음). 기존 사용자는 `promptfuzz statusline install`을 다시 실행하면 최신 설정으로 갱신됩니다.
+
 ## [0.1.18] - 2026-06-22
 
 ### Changed
