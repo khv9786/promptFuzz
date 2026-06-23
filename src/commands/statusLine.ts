@@ -73,10 +73,13 @@ export function formatStatusLine(
 /** 우리가 설치하는 statusLine 명령 문자열 (식별 기준). */
 export const PROMPTFUZZ_STATUSLINE_COMMAND = 'promptfuzz status --line';
 
+// refreshInterval: statusLine은 리사이즈 이벤트로는 재호출되지 않는다(메시지/모드 변경만).
+// 2초마다 재실행해 터미널 폭 변화 후 COLUMNS가 갱신되도록 한다 (반응형 줄바꿈의 전제).
 const OUR_STATUSLINE: StatusLineConfig = {
   type: 'command',
   command: PROMPTFUZZ_STATUSLINE_COMMAND,
   padding: 0,
+  refreshInterval: 2,
 };
 
 export type StatusLineKind = 'none' | 'ours' | 'other';
@@ -105,7 +108,17 @@ export async function statuslineInstall(opts: StatuslineOptions = {}): Promise<v
   const kind = classifyStatusLine(settings);
 
   if (kind === 'ours') {
-    output.write(theme.success('✓ 이미 PromptFuzz 상태바가 설정되어 있어요.') + '\n');
+    // 우리 것이지만 옵션이 옛 버전(refreshInterval 누락 등)이면 최신으로 갱신.
+    // command가 같아 손상 위험 없으므로 백업 없이 덮어써도 안전.
+    const cur = settings.statusLine;
+    const upToDate = cur?.refreshInterval === OUR_STATUSLINE.refreshInterval && cur?.padding === OUR_STATUSLINE.padding;
+    if (upToDate) {
+      output.write(theme.success('✓ 이미 PromptFuzz 상태바가 최신 설정이에요.') + '\n');
+      return;
+    }
+    await writeSettings({ ...settings, statusLine: { ...OUR_STATUSLINE } });
+    output.write(theme.success('✓ PromptFuzz 상태바를 최신으로 갱신했어요.') + '\n');
+    output.write(theme.dim('  터미널 너비가 바뀌면 자동으로 맞춰집니다 (2초 주기 새로고침).') + '\n');
     return;
   }
 

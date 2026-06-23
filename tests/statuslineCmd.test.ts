@@ -33,7 +33,7 @@ function makeIO() {
   return { output, getOut: () => buf };
 }
 
-const ours = { type: 'command', command: PROMPTFUZZ_STATUSLINE_COMMAND, padding: 0 };
+const ours = { type: 'command', command: PROMPTFUZZ_STATUSLINE_COMMAND, padding: 0, refreshInterval: 2 };
 const other = { type: 'command', command: 'starship init' };
 
 describe('classifyStatusLine', () => {
@@ -59,11 +59,22 @@ describe('statuslineInstall', () => {
     expect(hoisted.backupCount.value).toBe(0); // 신규는 백업 불필요
   });
 
-  it('우리 것 이미 있음 → 스킵 (변경 X)', async () => {
+  it('우리 것(최신 설정) 이미 있음 → 스킵 (변경 X)', async () => {
     hoisted.settings.current = { statusLine: { ...ours } };
     const { output, getOut } = makeIO();
     await statuslineInstall({ isTTY: false, output });
     expect(getOut()).toContain('이미 PromptFuzz 상태바');
+  });
+
+  it('우리 것이지만 옛 설정(refreshInterval 없음) → 최신으로 갱신', async () => {
+    hoisted.settings.current = {
+      statusLine: { type: 'command', command: PROMPTFUZZ_STATUSLINE_COMMAND, padding: 0 },
+    };
+    const { output, getOut } = makeIO();
+    await statuslineInstall({ isTTY: false, output });
+    expect(hoisted.settings.current.statusLine?.refreshInterval).toBe(2);
+    expect(getOut()).toContain('갱신');
+    expect(hoisted.backupCount.value).toBe(0); // 우리 것이라 백업 불필요
   });
 
   it('남의 것 + 비대화형 (--yes 없음) → 거부 (exit 1), 보존', async () => {

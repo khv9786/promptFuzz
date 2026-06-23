@@ -162,15 +162,22 @@ describe('formatStatusLine 반응형 (COLUMNS 적응)', () => {
 describe('statusCommand({ line: true }) — 순수 읽기', () => {
   let logs: string[];
   let spy: ReturnType<typeof vi.spyOn>;
+  let origColumns: string | undefined;
 
   beforeEach(() => {
     vi.clearAllMocks();
     logs = [];
+    // COLUMNS 격리: 반응형 출력이 실행 환경(터미널 폭)에 좌우되지 않게 풀버전으로 고정.
+    origColumns = process.env.COLUMNS;
+    delete process.env.COLUMNS;
     spy = vi.spyOn(console, 'log').mockImplementation((...args: unknown[]) => {
       logs.push(args.map((a) => String(a)).join(' '));
     });
   });
-  afterEach(() => spy.mockRestore());
+  afterEach(() => {
+    spy.mockRestore();
+    if (origColumns !== undefined) process.env.COLUMNS = origColumns;
+  });
 
   it('한 줄만 출력한다', async () => {
     hoisted.state.current = baseState({ cumulativeTokens: 3_250_000, currentStage: 'rugged' });

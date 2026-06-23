@@ -20,6 +20,7 @@ export interface StatusLineConfig {
   type?: string;
   command?: string;
   padding?: number;
+  refreshInterval?: number; // 초 단위. 리사이즈 후 COLUMNS 갱신을 위한 주기적 재실행.
   [key: string]: unknown;
 }
 
