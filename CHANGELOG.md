@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.18] - 2026-06-22
+
+### Changed
+
+- statusLine이 터미널 너비에 맞춰 적응합니다 (`COLUMNS` 활용). 좁은 터미널에서도 수염 단계와 면도 신호(🪒)가 잘리지 않습니다 — 도구 이름 → "shave" 텍스트 → 단계명 순으로 우아하게 줄입니다.
+
 ## [0.1.17] - 2026-06-22
 
 ### Changed
