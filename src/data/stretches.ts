@@ -113,9 +113,18 @@ export const STRETCH_CARDS: StretchCard[] = [
   },
 ];
 
+/**
+ * exclude에 없는 카드 중 하나를 무작위로 고른다.
+ * exclude가 모든 카드를 덮어 후보가 비면(전부 본 경우) 다시 풀지만,
+ * exclude의 *마지막* id(= 가장 최근/현재 보고 있는 카드)만은 피한다 —
+ * 's'로 카드를 넘길 때 같은 카드가 다시 떠 "안 넘어가는" 현상 방지.
+ */
 export function randomStretchCard(exclude: string[] = []): StretchCard {
-  const available = STRETCH_CARDS.filter((c) => !exclude.includes(c.id));
-  const pool = available.length > 0 ? available : STRETCH_CARDS;
-  const card = pool[Math.floor(Math.random() * pool.length)];
-  return card!;
+  let pool = STRETCH_CARDS.filter((c) => !exclude.includes(c.id));
+  if (pool.length === 0) {
+    const last = exclude[exclude.length - 1];
+    pool = STRETCH_CARDS.filter((c) => c.id !== last);
+    if (pool.length === 0) pool = STRETCH_CARDS; // 카드가 1개뿐인 비현실적 경우
+  }
+  return pool[Math.floor(Math.random() * pool.length)]!;
 }

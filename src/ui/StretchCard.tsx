@@ -8,7 +8,7 @@ const BAR_WIDTH = 12;
 
 export interface StretchCardProps {
   initialCard: StretchCardData;
-  pickNext: () => StretchCardData;            // s 키 — 다른 카드 (Enter 전까지 기록 안 함)
+  pickNext: (excludeId: string) => StretchCardData; // s 키 — 현재 카드를 뺀 다른 카드 (Enter 전까지 기록 안 함)
   onComplete: (cardId: string) => void;       // Enter
   onAbort: () => void;                         // q 또는 Ctrl+C
 }
@@ -41,7 +41,7 @@ export function StretchCard({ initialCard, pickNext, onComplete, onAbort }: Stre
       return;
     }
     if (action === 'swap') {
-      const next = pickNext();
+      const next = pickNext(card.id); // 현재 카드를 제외해 같은 카드 재추첨 방지
       // 방어선 #2 — setCard와 setRemaining을 같은 batch에서 호출해
       // useEffect 발동 전 첫 render에서도 remaining > total 케이스 차단.
       setCard(next);

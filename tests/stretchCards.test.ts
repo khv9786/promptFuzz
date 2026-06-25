@@ -53,4 +53,18 @@ describe('randomStretchCard', () => {
     expect(card).toBeDefined();
     expect(card.id).toBeTruthy();
   });
+
+  it("'s' 넘기기 — 현재 카드(exclude에 포함)는 다시 안 나온다", () => {
+    // pickNext가 [...shown, 현재id]로 호출 → 현재 카드 제외 보장
+    for (let i = 0; i < 30; i++) {
+      expect(randomStretchCard(['wrist']).id).not.toBe('wrist');
+    }
+  });
+
+  it('전부 봤어도 현재 카드(exclude 마지막)는 다시 안 나온다 (fallback)', () => {
+    const all = STRETCH_CARDS.map((c) => c.id); // 마지막 = chest-open (= 현재 카드 가정)
+    for (let i = 0; i < 30; i++) {
+      expect(randomStretchCard(all).id).not.toBe(all[all.length - 1]);
+    }
+  });
 });

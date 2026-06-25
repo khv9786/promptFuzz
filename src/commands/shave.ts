@@ -121,7 +121,7 @@ async function runStretchCardModal(
     const app = ink.render(
       React.createElement(StretchCardComp, {
         initialCard,
-        pickNext: () => randomStretchCard(shown),
+        pickNext: (excludeId: string) => randomStretchCard([...shown, excludeId]),
         onComplete: (cardId: string) => {
           void recordStretchCard(cardId);
           app.unmount();
