@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.20] - 2026-06-22
+
+### Fixed
+
+- 스트레칭 카드에서 `s`(다른 카드)를 눌러도 같은 카드가 다시 떠 "안 넘어가던" 문제 수정 — 현재 보고 있는 카드를 다음 추첨에서 제외합니다.
+
 ## [0.1.19] - 2026-06-22
 
 ### Changed
