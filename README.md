@@ -16,6 +16,8 @@
 
 > 토큰을 수염으로, 휴식을 면도로 — Claude Code 사용 시간 관리 CLI 토이
 
+![PromptFuzz 데모](https://raw.githubusercontent.com/khv9786/promptFuzz/main/docs/promptfuzz.gif)
+
 Claude Code로 코딩하다 보면 시간 가는 줄 모르죠... (그쵸?) <br>
 PromptFuzz는 토큰 사용량을 추적해서 *당신(아빠)의 가상 수염* 이 자라게 됩니다. <br> 
 수염이 길어질수록 Claude Buddy(아들)은 "아빠 따가워요" 하며 멀어지고, <br>
