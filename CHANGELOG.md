@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.21] - 2026-07-07
+
+### Added
+
+- `promptfuzz`의 짧은 별칭 `fuzz` 명령 추가 (예: `fuzz shave`, `fuzz status`).
+
 ## [0.1.20] - 2026-06-22
 
 ### Fixed

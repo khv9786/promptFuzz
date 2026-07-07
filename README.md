@@ -46,6 +46,8 @@ promptfuzz install
 `install` 명령은 `~/.claude/settings.json`에 Stop hook을 추가합니다. <br> 
 기존 hook은 그대로 보존되고, 백업 파일(`settings.json.promptfuzz.bak`)도 자동 생성됩니다.
 
+> 💡 이후 모든 명령에서 `promptfuzz` 대신 짧은 별칭 `fuzz`를 써도 됩니다 (예: `fuzz install`, `fuzz shave`).
+
 ## 플랫폼 지원
 
 PromptFuzz는 Node.js 기반 크로스 플랫폼 도구입니다.
@@ -146,6 +148,8 @@ PromptFuzz 🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave
 ```
 
 ## 사용법
+
+> 💡 `promptfuzz` 대신 짧은 별칭 `fuzz`를 써도 됩니다 (예: `fuzz shave`).
 
 ```bash
 promptfuzz             # 환영 화면 + 사용 안내
