@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.23] - 2026-08-19
+
+### Docs
+
+- README에 statusLine git 브랜치 표시 예시·설명 추가.
+
 ## [0.1.22] - 2026-08-19
 
 ### Added

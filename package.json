@@ -1,6 +1,6 @@
 {
   "name": "promptfuzz",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "토큰을 수염으로, 휴식을 면도로 — Claude Code 사용 시간 관리 CLI 토이",
   "type": "module",
   "bin": {
