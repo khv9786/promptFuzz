@@ -121,6 +121,12 @@ Claude Code를 재시작하면 하단에 표시됩니다:
 PromptFuzz 🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave
 ```
 
+git 저장소 안에서 실행 중이면 이름 뒤에 현재 브랜치가 `[branch]`로 함께 표시됩니다 (detached HEAD는 짧은 SHA로 대체, git repo가 아니면 자동 생략):
+
+```
+PromptFuzz[main] 🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave
+```
+
 ## 수염 5단계
 
 임계치는 **프로필**(medium 기준)에 따라 달라집니다. 아래는 기본값(medium):
