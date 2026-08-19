@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.22] - 2026-08-19
+
+### Added
+
+- statusLine에 현재 git 브랜치 표시 (`PromptFuzz[main] ...`). git repo가 아니거나 detached HEAD면 짧은 SHA로 대체하거나 생략.
+
 ## [0.1.21] - 2026-07-07
 
 ### Added
