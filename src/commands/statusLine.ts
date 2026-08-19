@@ -41,22 +41,27 @@ function numeralFor(id: StageInfo['id']): string {
  * 임계값은 하드코딩하지 않고 각 버전의 visualWidth를 columns와 직접 비교한다
  * (토큰 자릿수 변동까지 자동 반영). columns 없음/NaN/0이면 풀버전 (구버전 호환).
  * 면도 신호(🪒)는 ③ 북슬북슬 이상에서 *모든 버전*에 유지 — 절대 생략 안 함.
+ *
+ * gitBranch가 있으면 이름 바로 뒤에 `[branch]`로 붙는다(풀버전에만). mid/short는
+ * 이름 자체가 생략되는 버전이라 브랜치도 함께 자동 생략된다 — 별도 처리 불필요.
  * 순수 함수: state를 읽지 않고 인자만으로 결정 → 단위 테스트 가능.
  */
 export function formatStatusLine(
   cumulativeTokens: number,
   stage: StageInfo,
   columns?: number,
+  gitBranch?: string | null,
 ): string {
   const hasShave = stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit';
   const tokens = formatCompactTokens(cumulativeTokens);
   const num = numeralFor(stage.id);
   const beard = stage.beardArt;
+  const name = gitBranch ? `PromptFuzz[${gitBranch}]` : 'PromptFuzz';
 
   const build = (head: string, shave: string | null): string =>
     [head, tokens, ...(hasShave && shave ? [shave] : [])].join(' · ');
 
-  const full = build(`PromptFuzz 🧔 ${beard} ${num} ${stage.nameKr}`, '🪒 shave');
+  const full = build(`${name} 🧔 ${beard} ${num} ${stage.nameKr}`, '🪒 shave');
   const mid = build(`🧔 ${beard} ${num} ${stage.nameKr}`, '🪒');
   const short = build(`🧔 ${beard} ${num}`, '🪒');
 

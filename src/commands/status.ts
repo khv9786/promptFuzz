@@ -8,6 +8,7 @@ import { educationHint } from '../ui/educationHint.js';
 import { formatStatusLine } from './statusLine.js';
 import { timeOfDayGreeting } from '../ui/greeting.js';
 import { renderDuo } from '../ui/duo.js';
+import { getGitBranchLabel } from '../state/git.js';
 
 const NUMERAL = ['①', '②', '③', '④', '⑤'] as const;
 
@@ -28,7 +29,8 @@ async function renderLine(): Promise<void> {
   const { state, stage } = await getCurrentState();
   // Claude Code v2.1.153+가 COLUMNS로 상태바 폭을 알려준다. 그 폭에 맞춰 적응.
   const columns = parseColumns(process.env.COLUMNS);
-  console.log(formatStatusLine(state.cumulativeTokens, stage, columns));
+  const gitBranch = getGitBranchLabel(process.cwd());
+  console.log(formatStatusLine(state.cumulativeTokens, stage, columns, gitBranch));
 }
 
 export interface StatusOptions {

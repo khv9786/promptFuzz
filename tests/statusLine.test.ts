@@ -24,12 +24,19 @@ vi.mock('../src/parser/index.js', () => ({
   CLAUDE_PROJECTS_DIR: '/__nonexistent_for_test__',
 }));
 
+// 실제 git 의존 없이 결정론적으로 테스트하기 위해 목킹.
+const gitHoisted = vi.hoisted(() => ({ label: null as string | null }));
+vi.mock('../src/state/git.js', () => ({
+  getGitBranchLabel: vi.fn(() => gitHoisted.label),
+}));
+
 // 목킹 선언 후 import
 import { formatCompactTokens, formatStatusLine } from '../src/commands/statusLine.js';
 import { getStage } from '../src/state/stages.js';
 import { statusCommand } from '../src/commands/status.js';
 import * as storage from '../src/state/storage.js';
 import * as parser from '../src/parser/index.js';
+import { getGitBranchLabel } from '../src/state/git.js';
 
 function baseState(overrides: Partial<PromptFuzzState> = {}): PromptFuzzState {
   return {
@@ -159,6 +166,30 @@ describe('formatStatusLine 반응형 (COLUMNS 적응)', () => {
   });
 });
 
+describe('formatStatusLine — gitBranch', () => {
+  it('gitBranch가 있으면 이름 뒤에 [branch]로 붙는다 (풀버전)', () => {
+    const line = formatStatusLine(0, getStage('smooth'), undefined, 'main');
+    expect(line.startsWith('PromptFuzz[main] ')).toBe(true);
+  });
+
+  it('gitBranch가 없으면 기존과 동일 (이름에 대괄호 없음)', () => {
+    const line = formatStatusLine(0, getStage('smooth'), undefined, null);
+    expect(line.startsWith('PromptFuzz ')).toBe(true);
+    expect(line).not.toContain('[');
+  });
+
+  it('gitBranch 인자를 아예 안 주면 기존과 100% 동일', () => {
+    expect(formatStatusLine(0, getStage('smooth'))).toBe(formatStatusLine(0, getStage('smooth'), undefined, undefined));
+  });
+
+  it('폭이 좁아 이름이 생략되는 버전에서는 브랜치도 함께 생략된다', () => {
+    const TOK = 28_800_000;
+    const line = formatStatusLine(TOK, getStage('hermit'), 48, 'main');
+    expect(line).not.toContain('PromptFuzz');
+    expect(line).not.toContain('[main]');
+  });
+});
+
 describe('statusCommand({ line: true }) — 순수 읽기', () => {
   let logs: string[];
   let spy: ReturnType<typeof vi.spyOn>;
@@ -167,6 +198,7 @@ describe('statusCommand({ line: true }) — 순수 읽기', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     logs = [];
+    gitHoisted.label = null;
     // COLUMNS 격리: 반응형 출력이 실행 환경(터미널 폭)에 좌우되지 않게 풀버전으로 고정.
     origColumns = process.env.COLUMNS;
     delete process.env.COLUMNS;
@@ -185,6 +217,21 @@ describe('statusCommand({ line: true }) — 순수 읽기', () => {
     expect(logs).toHaveLength(1);
     expect(logs[0]).toContain('④ 따갑따갑');
     expect(logs[0]).toContain('🪒 shave');
+  });
+
+  it('git 브랜치가 있으면 이름 뒤에 표시된다', async () => {
+    hoisted.state.current = baseState({ cumulativeTokens: 900_000, currentStage: 'bushy' });
+    gitHoisted.label = 'feature-x';
+    await statusCommand({ line: true });
+    expect(getGitBranchLabel).toHaveBeenCalledWith(process.cwd());
+    expect(logs[0]).toContain('PromptFuzz[feature-x]');
+  });
+
+  it('git 브랜치가 없으면(non-repo) 기존과 동일', async () => {
+    hoisted.state.current = baseState({ cumulativeTokens: 900_000, currentStage: 'bushy' });
+    gitHoisted.label = null;
+    await statusCommand({ line: true });
+    expect(logs[0]).not.toContain('[');
   });
 
   it('tick을 호출하지 않는다 (scanAllSessions 미호출)', async () => {
