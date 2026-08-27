@@ -16,8 +16,6 @@
 
 > 토큰을 수염으로, 휴식을 면도로 — Claude Code 사용 시간 관리 CLI 토이
 
-![PromptFuzz 데모](https://raw.githubusercontent.com/khv9786/promptFuzz/main/docs/promptfuzz.gif)
-
 Claude Code로 코딩하다 보면 시간 가는 줄 모르죠... (그쵸?) <br>
 PromptFuzz는 토큰 사용량을 추적해서 *당신(아빠)의 가상 수염* 이 자라게 됩니다. <br> 
 수염이 길어질수록 Claude Buddy(아들)은 "아빠 따가워요" 하며 멀어지고, <br>
@@ -87,6 +85,12 @@ PromptFuzz는 두 가지 표면으로 작동합니다:
 
 상태바와 `status`에 표시되는 토큰은 **Claude Code 누적 사용량**입니다 (input + 캐시 + output). PromptFuzz 자체는 토큰을 쓰지 않으며, Claude Code를 사용할 때 백그라운드 hook이 자동 추적합니다.
 
+상태바가 넓으면 다음 정보도 함께 뜹니다 (좁으면 자동으로 생략됩니다):
+
+- **오늘** — 오늘 하루 동안 추가된 토큰 (면도와 무관하게 누적)
+- **세션** — 지금 이 대화(세션)에서 지금까지 쓴 토큰
+- **컨텍스트** — 지금 이 대화가 압축(compact)되기까지 남은 컨텍스트 창 비율(%)
+
 ## Claude Code 상태바에 수염 띄우기 (권장)
 
 Claude Code 하단 상태바에 수염을 항상 표시할 수 있습니다. **토큰을 전혀 쓰지 않고**, 세션 중 늘 보입니다.
@@ -125,6 +129,12 @@ git 저장소 안에서 실행 중이면 이름 뒤에 현재 브랜치가 `[bra
 
 ```
 PromptFuzz[main] 🧔 \www/ ④ 따갑따갑 · 3.2M · 🪒 shave
+```
+
+터미널이 넓으면 오늘/세션 토큰과 컨텍스트 창 잔여율도 함께 표시됩니다(좁으면 세션 → 오늘 → 컨텍스트 순으로 자동 생략):
+
+```
+PromptFuzz[main] 🧔 \www/ ④ 따갑따갑 · 3.2M · 오늘 120K · 세션 45K · 컨텍스트 65% · 🪒 shave
 ```
 
 ## 수염 5단계

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.25] - 2026-08-27
+
+### Docs
+
+- README에서 데모 gif 제거, statusLine 예시(오늘/세션/컨텍스트 잔여율 포함)와 설명 갱신.
+- PRD.md의 `status --line` 관련 서술을 실제 동작(세션 갱신 시 state.json 쓰기 발생)과 맞게 정정.
+
 ## [0.1.24] - 2026-08-27
 
 ### Added

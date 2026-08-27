@@ -194,7 +194,7 @@ Claude Buddy는 '비공식 마스코트'로서 작고 둥근 ASCII 캐릭터로 
 | F14 | reset 명령 | P2 | `promptfuzz reset [--yes]` — 전체 초기화 (확인 후) |
 | F15 | 축약 알림 | P2 | `PROMPTFUZZ_COMPACT=1` — 단계 변화 알림 1줄 |
 | F16 | status 교육/요약 | P2 | 첫 5회 교육 멘트 + 최근 7일 미니 요약, `--json` |
-| F17 | status --line | P1 | `promptfuzz status --line` — Claude Code 상태바(statusLine)용 한 줄 출력. tick 미호출 순수 읽기(토큰 0), 상시 표시 |
+| F17 | status --line | P1 | `promptfuzz status --line` — Claude Code 상태바(statusLine)용 한 줄 출력. tick(JSONL 전체 스캔) 미호출, 상시 표시, 토큰 0. hook stdin에 세션 정보가 있으면 세션 토큰만 별도 저장(§13.4) |
 
 ---
 
@@ -349,9 +349,10 @@ Hook이 *추적*이라면, statusLine은 *상시 표시*다. Claude Code 하단 
 }
 ```
 
-- `status --line`은 `tick()`을 호출하지 않고 `state.json`만 읽는 순수 출력 — JSONL 스캔/상태 변경 없음.
+- `status --line`은 `tick()`(JSONL 전체 스캔 + 누적 토큰 갱신)을 호출하지 않는다. 다만 statusLine hook의 stdin에 `session_id`/`transcript_path`가 오면, 그 세션 파일만 증분 파싱해 `state.json`의 `currentSession`(오늘/세션 토큰 표시용)을 별도로 갱신·저장한다 — 완전한 읽기 전용은 아니며, 무거운 전체 스캔이 없다는 뜻으로 이해할 것.
 - statusLine은 Claude API 턴이 아니라 하버스가 실행하는 셸 명령이므로 **토큰을 소비하지 않는다**. (슬래시 커맨드로 상태를 확인하면 턴 1회의 컨텍스트가 다시 토큰으로 잡히는 "역설"이 있으나, statusLine은 그 역설이 없다.)
-- 역할 분담: **hook `tick` = 토큰 추적**(상태 갱신 + 단계 상승 알림), **statusLine = 상시 표시**(읽기 전용). 둘 다 토큰 0.
+- 역할 분담: **hook `tick` = 토큰 추적**(상태 갱신 + 단계 상승 알림 + 세션 갱신), **statusLine = 상시 표시**(+ 세션 토큰만 경량 갱신). 둘 다 토큰 0.
+- statusLine hook stdin의 `context_window` 필드로 컨텍스트 창 잔여율도 표시한다. 이 값은 그 순간의 값을 그대로 보여줄 뿐 `state.json`에 저장하지 않는다.
 - 비파괴: `statusLine`은 단일 값이라 기존 설정이 있으면 백업 후 신중히 병합해야 한다(hook 배열과 달리 append 불가). v0.1.0에서는 옵트인 문서로 안내하며 자동 설치하지 않는다.
 
 ---
