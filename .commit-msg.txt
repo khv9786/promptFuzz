@@ -1,5 +1,0 @@
-[docs] README gif 제거 + statusLine 예시 갱신, PRD 정합성 수정
-
-- README: 데모 gif 제거(npm/GitHub 공통 반영), statusLine 예시에 오늘/세션/컨텍스트 잔여율 추가
-- PRD.md: status --line이 세션 갱신 시 state.json에 쓰기도 한다는 점 반영
-- 0.1.25 버전 업 + CHANGELOG
