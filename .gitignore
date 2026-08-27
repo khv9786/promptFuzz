@@ -16,3 +16,6 @@ coverage/
 /docs/demo.gif
 /docs/demo.tape
 /docs/demo-setup.mjs
+
+# 커밋 메시지 임시 파일 (셸 파싱 이슈 우회용)
+.commit-msg.txt
