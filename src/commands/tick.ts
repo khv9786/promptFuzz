@@ -1,5 +1,6 @@
 import { tick } from '../state/index.js';
 import { loadState } from '../state/storage.js';
+import { readHookInput } from '../parser/hookInput.js';
 import { stageColor } from '../ui/theme.js';
 import { isQuietNow } from '../state/quietHours.js';
 import { renderStageChange } from './tickRender.js';
@@ -14,7 +15,8 @@ import { randomMessage } from '../state/stages.js';
  */
 export async function tickCommand(): Promise<void> {
   try {
-    const result = await tick();
+    const hookInput = await readHookInput(process.stdin);
+    const result = await tick(hookInput);
     if (!result.stageChanged || result.stage.id === 'smooth') return;
 
     // quiet hours suppress (상태는 이미 갱신됨, 알림만 침묵).

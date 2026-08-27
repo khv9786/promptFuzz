@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile, chmod } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
-import type { BeardStage, PromptFuzzState } from '../types/index.js';
+import type { BeardStage, PromptFuzzState, SessionUsage } from '../types/index.js';
 import { isValidProfileId, DEFAULT_PROFILE } from './profiles.js';
 import { isValidQuietHours } from './quietHours.js';
 
@@ -27,6 +27,7 @@ function createInitialState(): PromptFuzzState {
     dailyLog: {},
     statusViewCount: 0,
     quietHours: null,
+    currentSession: null,
   };
 }
 
@@ -63,6 +64,17 @@ export async function saveState(state: PromptFuzzState): Promise<void> {
   } catch {
     // 일부 환경(Windows 등)에선 무시
   }
+}
+
+function isValidSessionUsage(v: unknown): v is SessionUsage {
+  if (typeof v !== 'object' || v === null) return false;
+  const s = v as Record<string, unknown>;
+  return (
+    typeof s.id === 'string' &&
+    typeof s.transcriptPath === 'string' &&
+    typeof s.tokens === 'number' && Number.isFinite(s.tokens) &&
+    typeof s.offset === 'number' && Number.isFinite(s.offset)
+  );
 }
 
 function migrate(state: PromptFuzzState): PromptFuzzState {
@@ -105,6 +117,9 @@ function migrate(state: PromptFuzzState): PromptFuzzState {
   }
   if (!VALID_STAGES.includes(merged.currentStage)) {
     merged.currentStage = 'smooth';
+  }
+  if (merged.currentSession !== null && !isValidSessionUsage(merged.currentSession)) {
+    merged.currentSession = null;
   }
 
   return merged;

@@ -32,18 +32,24 @@ function numeralFor(id: StageInfo['id']): string {
  *
  * **터미널 너비 적응**: columns(=COLUMNS)에 맞는 *가장 풍부한* 버전을 고른다.
  * Claude Code가 무식하게 뒤를 자르기 전에 우리가 먼저 줄여, 핵심(수염 글리프 +
- * 단계 + 🪒 면도 신호)을 끝까지 보존한다. 생략 순서: 이름 → "shave" 텍스트 → 단계명.
+ * 단계 + 🪒 면도 신호)을 끝까지 보존한다.
+ * 생략 순서: 세션 → 오늘 → 컨텍스트 잔여율 → 이름 → "shave" 텍스트 → 단계명.
+ * 컨텍스트 잔여율은 "지금 압축 임박 여부"라 오늘/세션보다 더 오래 남긴다.
  *
- *   풀:   PromptFuzz 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 🪒 shave
+ *   최상: PromptFuzz 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 오늘 120K · 세션 45K · 컨텍스트 65% · 🪒 shave
+ *   상3:  PromptFuzz 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 오늘 120K · 컨텍스트 65% · 🪒 shave   (세션 생략)
+ *   상2:  PromptFuzz 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 컨텍스트 65% · 🪒 shave              (오늘도 생략)
+ *   풀:   PromptFuzz 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 🪒 shave                            (컨텍스트도 생략)
  *   중간: 🧔 \WWW/ ⑤ 고슴도치 · 28.8M · 🪒
  *   축약: 🧔 \WWW/ ⑤ · 28.8M · 🪒
  *
  * 임계값은 하드코딩하지 않고 각 버전의 visualWidth를 columns와 직접 비교한다
- * (토큰 자릿수 변동까지 자동 반영). columns 없음/NaN/0이면 풀버전 (구버전 호환).
+ * (토큰 자릿수 변동까지 자동 반영). columns 없음/NaN/0이면 최상위 버전 (구버전 호환).
  * 면도 신호(🪒)는 ③ 북슬북슬 이상에서 *모든 버전*에 유지 — 절대 생략 안 함.
  *
- * gitBranch가 있으면 이름 바로 뒤에 `[branch]`로 붙는다(풀버전에만). mid/short는
+ * gitBranch가 있으면 이름 바로 뒤에 `[branch]`로 붙는다(이름이 남는 버전에만). mid/short는
  * 이름 자체가 생략되는 버전이라 브랜치도 함께 자동 생략된다 — 별도 처리 불필요.
+ * todayTokens/sessionTokens/contextRemainingPercent를 안 넘기면 기존과 동일한 문자열(하위호환).
  * 순수 함수: state를 읽지 않고 인자만으로 결정 → 단위 테스트 가능.
  */
 export function formatStatusLine(
@@ -51,6 +57,9 @@ export function formatStatusLine(
   stage: StageInfo,
   columns?: number,
   gitBranch?: string | null,
+  todayTokens?: number,
+  sessionTokens?: number | null,
+  contextRemainingPercent?: number | null,
 ): string {
   const hasShave = stage.id === 'bushy' || stage.id === 'rugged' || stage.id === 'hermit';
   const tokens = formatCompactTokens(cumulativeTokens);
@@ -58,19 +67,33 @@ export function formatStatusLine(
   const beard = stage.beardArt;
   const name = gitBranch ? `PromptFuzz[${gitBranch}]` : 'PromptFuzz';
 
-  const build = (head: string, shave: string | null): string =>
-    [head, tokens, ...(hasShave && shave ? [shave] : [])].join(' · ');
+  const build = (head: string, extras: string[], shave: string | null): string =>
+    [head, tokens, ...extras, ...(hasShave && shave ? [shave] : [])].join(' · ');
 
-  const full = build(`${name} 🧔 ${beard} ${num} ${stage.nameKr}`, '🪒 shave');
-  const mid = build(`🧔 ${beard} ${num} ${stage.nameKr}`, '🪒');
-  const short = build(`🧔 ${beard} ${num}`, '🪒');
+  // 0/null이면 굳이 안 보여줌 ("오늘 0"은 노이즈).
+  const todayExtra = todayTokens ? [`오늘 ${formatCompactTokens(todayTokens)}`] : [];
+  const sessionExtra = sessionTokens ? [`세션 ${formatCompactTokens(sessionTokens)}`] : [];
+  const contextExtra = typeof contextRemainingPercent === 'number'
+    ? [`컨텍스트 ${Math.round(contextRemainingPercent)}%`]
+    : [];
+
+  const fullHead = `${name} 🧔 ${beard} ${num} ${stage.nameKr}`;
+  const richest = build(fullHead, [...todayExtra, ...sessionExtra, ...contextExtra], '🪒 shave');
+  const noSession = build(fullHead, [...todayExtra, ...contextExtra], '🪒 shave');
+  const contextOnly = build(fullHead, contextExtra, '🪒 shave');
+  const full = build(fullHead, [], '🪒 shave');
+  const mid = build(`🧔 ${beard} ${num} ${stage.nameKr}`, [], '🪒');
+  const short = build(`🧔 ${beard} ${num}`, [], '🪒');
 
   if (typeof columns === 'number' && Number.isFinite(columns) && columns > 0) {
+    if (visualWidth(richest) <= columns) return richest;
+    if (visualWidth(noSession) <= columns) return noSession;
+    if (visualWidth(contextOnly) <= columns) return contextOnly;
     if (visualWidth(full) <= columns) return full;
     if (visualWidth(mid) <= columns) return mid;
     return short;
   }
-  return full;
+  return richest;
 }
 
 // ── statusline install/uninstall 명령 ──────────────────────────────────

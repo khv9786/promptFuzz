@@ -1,5 +1,6 @@
 import { loadState, saveState } from './storage.js';
 import { scanAllSessions } from '../parser/index.js';
+import { parseJsonlFile } from '../parser/jsonl-stream.js';
 import { stageFromTokens } from './stages.js';
 import { getProfile } from './profiles.js';
 import {
@@ -9,6 +10,7 @@ import {
   pruneOldEntries,
 } from './dailyLog.js';
 import type { BeardStage, PromptFuzzState, StageInfo } from '../types/index.js';
+import type { HookInput } from '../parser/hookInput.js';
 
 export interface TickResult {
   state: PromptFuzzState;
@@ -21,8 +23,11 @@ export interface TickResult {
 /**
  * Hook이 호출하는 핵심 갱신 함수.
  * JSONL을 스캔해 새 토큰을 합산하고, 단계 변화를 감지한다.
+ *
+ * @param hookInput Stop hook stdin에서 읽은 session_id/transcript_path. 있으면 현재
+ *   세션 누적 토큰도 함께 갱신한다.
  */
-export async function tick(): Promise<TickResult> {
+export async function tick(hookInput: HookInput | null = null): Promise<TickResult> {
   const state = await loadState();
   const previousStage = state.currentStage;
   const profile = getProfile(state.thresholdProfile);
@@ -42,6 +47,7 @@ export async function tick(): Promise<TickResult> {
   // 그날 활동 기록 (토큰 증가가 있을 때만) + 오래된 entry 정리.
   updated = updateDailyTokens(updated, totalDelta.total, stage.id);
   updated = { ...updated, dailyLog: pruneOldEntries(updated.dailyLog) };
+  updated = await updateCurrentSession(updated, hookInput);
 
   await saveState(updated);
 
@@ -79,6 +85,37 @@ export async function recordStretchCard(cardId: string): Promise<void> {
   const shown = [...state.stretchCardsShown, cardId].slice(-10);
   const updated = recordDailyStretch({ ...state, stretchCardsShown: shown });
   await saveState(updated);
+}
+
+/**
+ * hookInput 기준으로 현재 세션 누적 토큰을 갱신. session_id가 바뀌면 처음부터 다시 센다.
+ * 파일 접근 실패는 무시 — 세션 트래킹은 부가 정보라 렌더링을 막으면 안 됨.
+ */
+export async function updateCurrentSession(
+  state: PromptFuzzState,
+  hookInput: HookInput | null,
+): Promise<PromptFuzzState> {
+  if (!hookInput) return state;
+
+  const prev = state.currentSession;
+  const isNewSession = !prev || prev.id !== hookInput.sessionId;
+  const offset = isNewSession ? 0 : prev.offset;
+  const baseTokens = isNewSession ? 0 : prev.tokens;
+
+  try {
+    const { delta, newOffset } = await parseJsonlFile(hookInput.transcriptPath, offset);
+    return {
+      ...state,
+      currentSession: {
+        id: hookInput.sessionId,
+        transcriptPath: hookInput.transcriptPath,
+        tokens: baseTokens + delta.total,
+        offset: newOffset,
+      },
+    };
+  } catch {
+    return state;
+  }
 }
 
 export async function getCurrentState(): Promise<{

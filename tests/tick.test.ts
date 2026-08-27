@@ -45,6 +45,7 @@ function baseState(overrides: Partial<PromptFuzzState> = {}): PromptFuzzState {
     dailyLog: {},
     statusViewCount: 0,
     quietHours: null,
+    currentSession: null,
     ...overrides,
   };
 }
@@ -53,11 +54,17 @@ describe('tickCommand 출력', () => {
   let logs: string[];
   let spy: ReturnType<typeof vi.spyOn>;
   let previousChalkLevel: number;
+  let origIsTTY: boolean | undefined;
 
   beforeEach(() => {
     // ANSI 색상 코드가 문자열 매칭을 깨뜨리지 않도록 chalk를 무색 모드로.
     previousChalkLevel = chalk.level;
     chalk.level = 0;
+
+    // stdin을 TTY로 고정해 readHookInput이 즉시 null을 반환하게 함
+    // (아니면 hook JSON 없는 실제 stdin을 200ms 타임아웃까지 기다림).
+    origIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
 
     logs = [];
     spy = vi.spyOn(console, 'log').mockImplementation((...args: unknown[]) => {
@@ -68,6 +75,7 @@ describe('tickCommand 출력', () => {
   afterEach(() => {
     spy.mockRestore();
     chalk.level = previousChalkLevel;
+    Object.defineProperty(process.stdin, 'isTTY', { value: origIsTTY, configurable: true });
   });
 
   // medium 프로필 임계치: stubble 50K / bushy 300K / rugged 1.5M / hermit 5M

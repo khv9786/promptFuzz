@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.24] - 2026-08-27
+
+### Added
+
+- statusLine/`status`에 오늘 사용량, 이번 세션 사용량, 컨텍스트 창 잔여율 표시.
+  - 오늘/세션 토큰: hook stdin의 session_id·transcript_path로 세션별 누적을 추적(state.json에 `currentSession` 필드 추가).
+  - 컨텍스트 잔여율: statusLine hook stdin의 `context_window` 필드를 그대로 사용(네트워크 호출 없음).
+  - statusLine 폭 적응 우선순위: 세션 → 오늘 → 컨텍스트 잔여율 → 이름 → "shave" 텍스트 → 단계명 순으로 생략.
+
 ## [0.1.23] - 2026-08-19
 
 ### Docs

@@ -35,6 +35,7 @@ function baseState(o: Partial<PromptFuzzState> = {}): PromptFuzzState {
     dailyLog: {},
     statusViewCount: 0,
     quietHours: null,
+    currentSession: null,
     ...o,
   };
 }

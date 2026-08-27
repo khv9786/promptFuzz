@@ -33,6 +33,7 @@ vi.mock('../src/state/git.js', () => ({
 // 목킹 선언 후 import
 import { formatCompactTokens, formatStatusLine } from '../src/commands/statusLine.js';
 import { getStage } from '../src/state/stages.js';
+import { getLocalDateString } from '../src/state/dailyLog.js';
 import { statusCommand } from '../src/commands/status.js';
 import * as storage from '../src/state/storage.js';
 import * as parser from '../src/parser/index.js';
@@ -52,6 +53,7 @@ function baseState(overrides: Partial<PromptFuzzState> = {}): PromptFuzzState {
     dailyLog: {},
     statusViewCount: 0,
     quietHours: null,
+    currentSession: null,
     ...overrides,
   };
 }
@@ -190,10 +192,124 @@ describe('formatStatusLine — gitBranch', () => {
   });
 });
 
+describe('formatStatusLine — 오늘/세션 토큰', () => {
+  it('todayTokens를 주면 "오늘 N"이 붙는다', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, 120_000);
+    expect(line).toContain('오늘 120K');
+  });
+
+  it('sessionTokens를 주면 "세션 N"이 붙는다', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, undefined, 45_000);
+    expect(line).toContain('세션 45K');
+  });
+
+  it('오늘이 세션보다 앞에 온다', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, 120_000, 45_000);
+    expect(line.indexOf('오늘')).toBeLessThan(line.indexOf('세션'));
+  });
+
+  it('todayTokens가 0이면 노이즈이므로 생략', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, 0, 45_000);
+    expect(line).not.toContain('오늘');
+    expect(line).toContain('세션 45K');
+  });
+
+  it('sessionTokens가 null이면 생략', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, 120_000, null);
+    expect(line).toContain('오늘 120K');
+    expect(line).not.toContain('세션');
+  });
+
+  it('둘 다 안 주면 기존과 100% 동일', () => {
+    const stage = getStage('bushy');
+    expect(formatStatusLine(900_000, stage)).toBe(
+      formatStatusLine(900_000, stage, undefined, undefined, undefined, undefined)
+    );
+  });
+
+  // 실측: 최상(오늘+세션) 77 / 상(오늘만) 65 / 풀(기존) 52칸.
+  it('폭 경계 77 → 최상, 76 → 세션 생략(상)', () => {
+    const TOK = 28_800_000;
+    const hermit = getStage('hermit');
+    const line = (cols?: number) => formatStatusLine(TOK, hermit, cols, undefined, 120_000, 45_000);
+
+    expect(line(77)).toContain('세션');
+    expect(line(76)).not.toContain('세션');
+    expect(line(76)).toContain('오늘');
+  });
+
+  it('폭 경계 65 → 상(오늘만), 64 → 오늘도 생략(풀)', () => {
+    const TOK = 28_800_000;
+    const hermit = getStage('hermit');
+    const line = (cols?: number) => formatStatusLine(TOK, hermit, cols, undefined, 120_000, 45_000);
+
+    expect(line(65)).toContain('오늘');
+    expect(line(64)).not.toContain('오늘');
+    expect(line(64)).toContain('PromptFuzz'); // 기존 풀버전으로 강등
+  });
+
+  it('COLUMNS 없음 → 가장 풍부한(오늘+세션 포함) 버전', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, 120_000, 45_000);
+    expect(line).toContain('오늘');
+    expect(line).toContain('세션');
+  });
+});
+
+describe('formatStatusLine — 컨텍스트 잔여율', () => {
+  it('contextRemainingPercent를 주면 "컨텍스트 N%"이 붙는다', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, undefined, undefined, 65);
+    expect(line).toContain('컨텍스트 65%');
+  });
+
+  it('소수점은 반올림한다', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, undefined, undefined, 64.6);
+    expect(line).toContain('컨텍스트 65%');
+  });
+
+  it('null이면 생략', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, undefined, undefined, null);
+    expect(line).not.toContain('컨텍스트');
+  });
+
+  it('오늘/세션 뒤, shave 힌트 앞에 온다', () => {
+    const line = formatStatusLine(900_000, getStage('bushy'), undefined, undefined, 120_000, 45_000, 65);
+    expect(line.indexOf('세션')).toBeLessThan(line.indexOf('컨텍스트'));
+    expect(line.indexOf('컨텍스트')).toBeLessThan(line.indexOf('🪒'));
+  });
+
+  it('안 주면 기존과 100% 동일', () => {
+    const stage = getStage('bushy');
+    expect(formatStatusLine(900_000, stage, undefined, undefined, 120_000, 45_000)).toBe(
+      formatStatusLine(900_000, stage, undefined, undefined, 120_000, 45_000, undefined)
+    );
+  });
+
+  // 실측: 최상(오늘+세션+컨텍스트) 93 / 세션생략 81 / 오늘도생략(컨텍스트만) 68 / 풀(기존) 52칸.
+  it('폭이 좁아져도 오늘/세션보다 컨텍스트가 나중까지 남는다', () => {
+    const TOK = 28_800_000;
+    const hermit = getStage('hermit');
+    const line = (cols?: number) => formatStatusLine(TOK, hermit, cols, undefined, 120_000, 45_000, 65);
+
+    expect(line(93)).toContain('세션');
+    expect(line(93)).toContain('컨텍스트');
+
+    expect(line(81)).not.toContain('세션');
+    expect(line(81)).toContain('오늘');
+    expect(line(81)).toContain('컨텍스트');
+
+    expect(line(68)).not.toContain('오늘');
+    expect(line(68)).toContain('컨텍스트');
+
+    expect(line(67)).not.toContain('컨텍스트');
+    expect(line(67)).toContain('PromptFuzz'); // 기존 풀버전으로 강등
+  });
+});
+
 describe('statusCommand({ line: true }) — 순수 읽기', () => {
   let logs: string[];
   let spy: ReturnType<typeof vi.spyOn>;
   let origColumns: string | undefined;
+  let origIsTTY: boolean | undefined;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -202,6 +318,10 @@ describe('statusCommand({ line: true }) — 순수 읽기', () => {
     // COLUMNS 격리: 반응형 출력이 실행 환경(터미널 폭)에 좌우되지 않게 풀버전으로 고정.
     origColumns = process.env.COLUMNS;
     delete process.env.COLUMNS;
+    // stdin을 TTY로 고정해 readHookInput이 즉시 null을 반환하게 함
+    // (아니면 hook JSON 없는 실제 stdin을 200ms 타임아웃까지 기다림).
+    origIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
     spy = vi.spyOn(console, 'log').mockImplementation((...args: unknown[]) => {
       logs.push(args.map((a) => String(a)).join(' '));
     });
@@ -209,6 +329,7 @@ describe('statusCommand({ line: true }) — 순수 읽기', () => {
   afterEach(() => {
     spy.mockRestore();
     if (origColumns !== undefined) process.env.COLUMNS = origColumns;
+    Object.defineProperty(process.stdin, 'isTTY', { value: origIsTTY, configurable: true });
   });
 
   it('한 줄만 출력한다', async () => {
@@ -242,6 +363,37 @@ describe('statusCommand({ line: true }) — 순수 읽기', () => {
 
   it('상태를 변경하지 않는다 (saveState 미호출)', async () => {
     hoisted.state.current = baseState({ cumulativeTokens: 900_000, currentStage: 'bushy' });
+    await statusCommand({ line: true });
+    expect(storage.saveState).not.toHaveBeenCalled();
+  });
+
+  it('오늘 토큰이 있으면 상태바에 반영된다', async () => {
+    const today = getLocalDateString(new Date());
+    hoisted.state.current = baseState({
+      cumulativeTokens: 900_000,
+      currentStage: 'bushy',
+      dailyLog: { [today]: { date: today, tokensAdded: 120_000, peakStage: 'bushy', shaveCount: 0, stretchCount: 0 } },
+    });
+    await statusCommand({ line: true });
+    expect(logs[0]).toContain('오늘 120K');
+  });
+
+  it('currentSession이 있으면 상태바에 반영된다 (stdin 없어도 저장된 값은 읽음)', async () => {
+    hoisted.state.current = baseState({
+      cumulativeTokens: 900_000,
+      currentStage: 'bushy',
+      currentSession: { id: 's1', transcriptPath: '/x.jsonl', tokens: 45_000, offset: 100 },
+    });
+    await statusCommand({ line: true });
+    expect(logs[0]).toContain('세션 45K');
+  });
+
+  it('stdin이 TTY면 hookInput이 없어 세션을 갱신하지 않는다 (saveState 미호출 유지)', async () => {
+    hoisted.state.current = baseState({
+      cumulativeTokens: 900_000,
+      currentStage: 'bushy',
+      currentSession: { id: 's1', transcriptPath: '/x.jsonl', tokens: 45_000, offset: 100 },
+    });
     await statusCommand({ line: true });
     expect(storage.saveState).not.toHaveBeenCalled();
   });

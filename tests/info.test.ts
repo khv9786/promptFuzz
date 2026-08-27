@@ -49,6 +49,7 @@ function baseState(o: Partial<PromptFuzzState> = {}): PromptFuzzState {
     },
     statusViewCount: 0,
     quietHours: null,
+    currentSession: null,
     ...o,
   };
 }

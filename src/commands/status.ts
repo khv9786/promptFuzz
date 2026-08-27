@@ -1,6 +1,9 @@
-import { getCurrentState, incrementStatusView } from '../state/index.js';
+import { getCurrentState, incrementStatusView, updateCurrentSession } from '../state/index.js';
 import { isInstalled } from '../hooks/manager.js';
 import { tick } from '../state/index.js';
+import { saveState } from '../state/storage.js';
+import { readHookInput } from '../parser/hookInput.js';
+import { getLocalDateString } from '../state/dailyLog.js';
 import { getStage, STAGE_ORDER, randomMessage } from '../state/stages.js';
 import { stageColor, theme } from '../ui/theme.js';
 import { computeWeeklySummary, trendArrow } from '../state/weeklySummary.js';
@@ -24,13 +27,33 @@ function parseColumns(raw: string | undefined): number | undefined {
   return Number.isFinite(n) && n > 0 ? n : undefined;
 }
 
-/** statusline용 한 줄 출력. 평문(ANSI 없음), tick 미호출(순수 읽기). */
+/**
+ * statusline용 한 줄 출력. 평문(ANSI 없음).
+ * tick(JSONL 전체 스캔)은 호출하지 않지만, stdin에 hook JSON이 있으면 현재 세션
+ * 토큰만 별도로 갱신한다(2초 refresh로 실시간성 담당 — Stop hook의 tick()과는 별도 트랙).
+ */
 async function renderLine(): Promise<void> {
-  const { state, stage } = await getCurrentState();
+  let { state, stage } = await getCurrentState();
+  const hookInput = await readHookInput(process.stdin);
+  if (hookInput) {
+    const updated = await updateCurrentSession(state, hookInput);
+    if (updated !== state) {
+      await saveState(updated);
+      state = updated;
+    }
+  }
   // Claude Code v2.1.153+가 COLUMNS로 상태바 폭을 알려준다. 그 폭에 맞춰 적응.
   const columns = parseColumns(process.env.COLUMNS);
   const gitBranch = getGitBranchLabel(process.cwd());
-  console.log(formatStatusLine(state.cumulativeTokens, stage, columns, gitBranch));
+  const todayTokens = state.dailyLog[getLocalDateString(new Date())]?.tokensAdded ?? 0;
+  const sessionTokens = state.currentSession?.tokens ?? null;
+  // 컨텍스트 잔여율은 이 hook 호출 순간의 값이라 state에 저장하지 않고 그대로 사용.
+  const contextRemainingPercent = hookInput?.contextRemainingPercent ?? null;
+  console.log(
+    formatStatusLine(
+      state.cumulativeTokens, stage, columns, gitBranch, todayTokens, sessionTokens, contextRemainingPercent
+    )
+  );
 }
 
 export interface StatusOptions {
@@ -51,6 +74,8 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
 
   const { state, stage } = await getCurrentState();
   const installed = await isInstalled();
+  const todayTokens = state.dailyLog[getLocalDateString(new Date())]?.tokensAdded ?? 0;
+  const sessionTokens = state.currentSession?.tokens ?? null;
 
   // --json: 부수효과 없음 (count 증가 X, 교육 멘트 X).
   if (opts.json) {
@@ -64,6 +89,8 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
           profile: state.thresholdProfile,
           shaveCount: state.shaveHistory.length,
           hookInstalled: installed,
+          todayTokens,
+          sessionTokens,
           weekly: summary,
         },
         null,
@@ -100,6 +127,14 @@ export async function statusCommand(opts: StatusOptions = {}): Promise<void> {
   lines.push(
     '  ' + theme.dim('프로필: ') + theme.bold(state.thresholdProfile) +
       theme.dim('  ·  promptfuzz config 로 변경')
+  );
+
+  const sessionPart = sessionTokens !== null
+    ? theme.dim('  ·  이번 세션: ') + theme.bold(sessionTokens.toLocaleString()) + theme.dim(' 토큰')
+    : '';
+  lines.push(
+    '  ' + theme.dim('오늘: ') + theme.bold(todayTokens.toLocaleString()) +
+      theme.dim(' 토큰') + sessionPart
   );
 
   const summary = computeWeeklySummary(state.dailyLog);

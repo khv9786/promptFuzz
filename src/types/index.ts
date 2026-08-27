@@ -28,6 +28,14 @@ export interface DailyEntry {
   stretchCount: number; // 그 날 완료한 스트레칭 카드
 }
 
+/** 현재 hook 세션(session_id)의 누적 토큰. offset은 transcriptPath 증분 파싱용. */
+export interface SessionUsage {
+  id: string;
+  transcriptPath: string;
+  tokens: number;
+  offset: number;
+}
+
 export interface PromptFuzzState {
   version: string;
   installedAt: string;
@@ -41,6 +49,7 @@ export interface PromptFuzzState {
   dailyLog: Record<string, DailyEntry>;
   statusViewCount: number;
   quietHours: { start: number; end: number } | null;
+  currentSession: SessionUsage | null;
 }
 
 export interface UsageDelta {
